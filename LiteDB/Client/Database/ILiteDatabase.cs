@@ -86,6 +86,7 @@ namespace LiteDB
         /// </summary>
         bool RenameCollection(string oldName, string newName);
 
+#if !NO_SQL
         /// <summary>
         /// Execute SQL commands and return as data reader.
         /// </summary>
@@ -100,6 +101,7 @@ namespace LiteDB
         /// Execute SQL commands and return as data reader
         /// </summary>
         IBsonDataReader Execute(string command, params BsonValue[] args);
+#endif
 
         /// <summary>
         /// Do database checkpoint. Copy all commited transaction from log file into datafile.

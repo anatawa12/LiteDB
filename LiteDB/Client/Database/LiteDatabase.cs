@@ -225,6 +225,7 @@ namespace LiteDB
 
         #region Execute SQL
 
+#if !NO_SQL
         /// <summary>
         /// Execute SQL commands and return as data reader.
         /// </summary>
@@ -269,6 +270,7 @@ namespace LiteDB
 
             return this.Execute(command, p);
         }
+#endif
 
         #endregion
 

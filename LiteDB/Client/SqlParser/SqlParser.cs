@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !NO_SQL
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -57,3 +58,4 @@ namespace LiteDB
         }
     }
 }
+#endif

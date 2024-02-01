@@ -21,6 +21,9 @@ namespace LiteDB.Engine
 
         public override IEnumerable<BsonDocument> Input(BsonValue options)
         {
+#if NO_SQL
+            throw Unsupported.Query;
+#else
             var query = options?.AsString ?? throw new LiteException(0, $"Collection $query(sql) requires `sql` string parameter");
 
             var sql = new SqlParser(_engine, new Tokenizer(query), null);
@@ -34,6 +37,7 @@ namespace LiteDB.Engine
                     yield return value.IsDocument ? value.AsDocument : new BsonDocument { ["expr"] = value };
                 }
             }
+#endif
         }
     }
 }

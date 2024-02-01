@@ -164,11 +164,15 @@ namespace LiteDB.Engine
             // if collection starts with $ it's system collection
             if (into.StartsWith("$"))
             {
+#if NO_SQL
+                throw Unsupported.Query;
+                #else
                 SqlParser.ParseCollection(new Tokenizer(into), out var name, out var options);
 
                 var sys = _engine.GetSystemCollection(name);
 
                 result = sys.Output(GetResultset(), options);
+#endif
             }
             // otherwise insert as normal collection
             else
