@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !NO_REPOSITORY
+using System;
 using System.Collections.Generic;
 #if !NO_LINQ_EXPRESSION
 using System.Linq.Expressions;
@@ -167,3 +168,4 @@ namespace LiteDB
 #endif
     }
 }
+#endif

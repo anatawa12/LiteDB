@@ -56,6 +56,7 @@
     <DefineConstants>$(DefineConstants);NO_FILE_STORAGE</DefineConstants>
     <DefineConstants>$(DefineConstants);NO_SQL</DefineConstants>
     <DefineConstants>$(DefineConstants);NO_SHARED</DefineConstants>
+    <DefineConstants>$(DefineConstants);NO_REPOSITORY</DefineConstants>
   </PropertyGroup>
 
   <!-- Begin References -->
