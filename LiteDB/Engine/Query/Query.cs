@@ -33,7 +33,9 @@ namespace LiteDB
         public BsonExpression Having { get; set; } = null;
 #endif
 
+#if !NO_OFFSET_QUERY
         public int Offset { get; set; } = 0;
+#endif
         public int Limit { get; set; } = int.MaxValue;
         public bool ForUpdate { get; set; } = false;
 
@@ -114,10 +116,12 @@ namespace LiteDB
                 sb.AppendLine($"LIMIT {this.Limit}");
             }
 
+#if !NO_OFFSET_QUERY
             if (this.Offset != 0)
             {
                 sb.AppendLine($"OFFSET {this.Offset}");
             }
+#endif
 
             if (this.ForUpdate)
             {

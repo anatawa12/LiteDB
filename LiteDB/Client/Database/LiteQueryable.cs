@@ -223,6 +223,7 @@ namespace LiteDB
             return this;
         }
 
+#if !NO_OFFSET_QUERY
         /// <summary>
         /// Bypasses a specified number of documents in resultset and retun the remaining documents (same as Skip)
         /// </summary>
@@ -236,6 +237,7 @@ namespace LiteDB
         /// Bypasses a specified number of documents in resultset and retun the remaining documents (same as Offset)
         /// </summary>
         public ILiteQueryableResult<T> Skip(int offset) => this.Offset(offset);
+#endif
 
         /// <summary>
         /// Return a specified number of contiguous documents from start of resultset

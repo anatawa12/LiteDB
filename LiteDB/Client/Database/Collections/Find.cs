@@ -51,7 +51,11 @@ namespace LiteDB
         {
             if (query == null) throw new ArgumentNullException(nameof(query));
 
+#if !NO_OFFSET_QUERY
             if (skip != 0) query.Offset = skip;
+#else
+            if (skip != 0) throw Unsupported.OffsetQuery;
+#endif
             if (limit != int.MaxValue) query.Limit = limit;
 
             return new LiteQueryable<T>(_engine, _mapper, _collection, query)
