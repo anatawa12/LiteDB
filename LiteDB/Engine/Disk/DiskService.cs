@@ -106,7 +106,9 @@ namespace LiteDB.Engine
 
             if (initialSize > 0)
             {
+#if !LITEDB_FOR_VRC_GET
                 if (stream is AesStream) throw LiteException.InitialSizeCryptoNotSupported();
+#endif
                 if (initialSize % PAGE_SIZE != 0) throw LiteException.InvalidInitialSize();
                 stream.SetLength(initialSize);
             }

@@ -53,7 +53,12 @@ namespace LiteDB.Engine
                 File.SetAttributes(_filename, FileAttributes.Hidden);
             }
 
+#if LITEDB_FOR_VRC_GET
+            if (_password != null) throw Unsupported.AesRemoved;
+            return stream;
+#else
             return _password == null ? (Stream)stream : new AesStream(_password, stream);
+#endif
         }
 
         /// <summary>

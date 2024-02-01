@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !LITEDB_FOR_VRC_GET
+using System;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -242,3 +243,4 @@ namespace LiteDB.Engine
         }
     }
 }
+#endif
