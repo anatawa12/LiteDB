@@ -9,6 +9,5 @@ namespace LiteDB
         public static Exception Shared => new Exception("Shared Connection is removed");
         public static Exception WhereQuery => new Exception("Where querty support is removed");
         public static Exception OffsetQuery => new Exception("Offset query support is removed");
-        public static Exception LimitQuery => new Exception("Limit query support is removed");
     }
 }
