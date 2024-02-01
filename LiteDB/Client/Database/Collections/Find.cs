@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-#if !LITEDB_FOR_VRC_GET // linq expression
+#if !NO_LINQ_EXPRESSION
 using System.Linq.Expressions;
 #endif
 using static LiteDB.Constants;
@@ -50,7 +50,7 @@ namespace LiteDB
                 .ToEnumerable();
         }
 
-#if !LITEDB_FOR_VRC_GET // linq expression
+#if !NO_LINQ_EXPRESSION
         /// <summary>
         /// Find documents inside a collection using predicate expression.
         /// </summary>
@@ -86,7 +86,7 @@ namespace LiteDB
         /// </summary>
         public T FindOne(BsonExpression predicate, params BsonValue[] args) => this.FindOne(BsonExpression.Create(predicate, args));
 
-#if !LITEDB_FOR_VRC_GET // linq expression
+#if !NO_LINQ_EXPRESSION
         /// <summary>
         /// Find the first document using predicate expression. Returns null if not found
         /// </summary>

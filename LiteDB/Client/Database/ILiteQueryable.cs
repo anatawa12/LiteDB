@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-#if !LITEDB_FOR_VRC_GET // linq expression
+#if !NO_LINQ_EXPRESSION
 using System.Linq.Expressions;
 #endif
 
@@ -11,23 +11,23 @@ namespace LiteDB
     {
         ILiteQueryable<T> Include(BsonExpression path);
         ILiteQueryable<T> Include(List<BsonExpression> paths);
-#if !LITEDB_FOR_VRC_GET // linq expression
+#if !NO_LINQ_EXPRESSION
         ILiteQueryable<T> Include<K>(Expression<Func<T, K>> path);
 #endif
 
         ILiteQueryable<T> Where(BsonExpression predicate);
         ILiteQueryable<T> Where(string predicate, BsonDocument parameters);
         ILiteQueryable<T> Where(string predicate, params BsonValue[] args);
-#if !LITEDB_FOR_VRC_GET // linq expression
+#if !NO_LINQ_EXPRESSION
         ILiteQueryable<T> Where(Expression<Func<T, bool>> predicate);
 #endif
 
         ILiteQueryable<T> OrderBy(BsonExpression keySelector, int order = 1);
-#if !LITEDB_FOR_VRC_GET // linq expression
+#if !NO_LINQ_EXPRESSION
         ILiteQueryable<T> OrderBy<K>(Expression<Func<T, K>> keySelector, int order = 1);
 #endif
         ILiteQueryable<T> OrderByDescending(BsonExpression keySelector);
-#if !LITEDB_FOR_VRC_GET // linq expression
+#if !NO_LINQ_EXPRESSION
         ILiteQueryable<T> OrderByDescending<K>(Expression<Func<T, K>> keySelector);
 #endif
 
@@ -35,7 +35,7 @@ namespace LiteDB
         ILiteQueryable<T> Having(BsonExpression predicate);
 
         ILiteQueryableResult<BsonDocument> Select(BsonExpression selector);
-#if !LITEDB_FOR_VRC_GET // linq expression
+#if !NO_LINQ_EXPRESSION
         ILiteQueryableResult<K> Select<K>(Expression<Func<T, K>> selector);
 #endif
     }

@@ -38,7 +38,7 @@ namespace LiteDB.Engine
             }
             else
             {
-#if LITEDB_FOR_VRC_GET
+#if NO_AES
                 throw Unsupported.AesRemoved;
 #else
                 return new AesStream(_password, new ConcurrentStream(_stream, canWrite));

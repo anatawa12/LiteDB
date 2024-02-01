@@ -75,7 +75,7 @@ namespace LiteDB
         /// </summary>
         public IEnumerable<LiteFileInfo<TFileId>> Find(string predicate, params BsonValue[] args) => this.Find(BsonExpression.Create(predicate, args));
 
-#if !LITEDB_FOR_VRC_GET // linq expression
+#if !NO_LINQ_EXPRESSION
         /// <summary>
         /// Find all files that match with predicate expression.
         /// </summary>

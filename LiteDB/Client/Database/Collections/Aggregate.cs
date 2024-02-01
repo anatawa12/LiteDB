@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-#if !LITEDB_FOR_VRC_GET // linq expression
+#if !NO_LINQ_EXPRESSION
 using System.Linq.Expressions;
 #endif
 using static LiteDB.Constants;
@@ -40,7 +40,7 @@ namespace LiteDB
         /// </summary>
         public int Count(string predicate, params BsonValue[] args) => this.Count(BsonExpression.Create(predicate, args));
 
-#if !LITEDB_FOR_VRC_GET // linq expression
+#if !NO_LINQ_EXPRESSION
         /// <summary>
         /// Count documents matching a query. This method does not deserialize any documents. Needs indexes on query expression
         /// </summary>
@@ -84,7 +84,7 @@ namespace LiteDB
         /// </summary>
         public long LongCount(string predicate, params BsonValue[] args) => this.LongCount(BsonExpression.Create(predicate, args));
 
-#if !LITEDB_FOR_VRC_GET // linq expression
+#if !NO_LINQ_EXPRESSION
         /// <summary>
         /// Get document count in collection using predicate filter expression
         /// </summary>
@@ -121,7 +121,7 @@ etExpression(predicate));
         /// </summary>
         public bool Exists(string predicate, params BsonValue[] args) => this.Exists(BsonExpression.Create(predicate, args));
 
-#if !LITEDB_FOR_VRC_GET // linq expression
+#if !NO_LINQ_EXPRESSION
         /// <summary>
         /// Get true if collection contains at least 1 document that satisfies the predicate expression
         /// </summary>
@@ -159,7 +159,7 @@ etExpression(predicate));
         /// </summary>
         public BsonValue Min() => this.Min("_id");
 
-#if !LITEDB_FOR_VRC_GET // linq expression
+#if !NO_LINQ_EXPRESSION
         /// <summary>
         /// Returns the min value from specified key value in collection
         /// </summary>
@@ -197,7 +197,7 @@ etExpression(predicate));
         /// </summary>
         public BsonValue Max() => this.Max("_id");
 
-#if !LITEDB_FOR_VRC_GET // linq expression
+#if !NO_LINQ_EXPRESSION
         /// <summary>
         /// Returns the last/max field using a linq expression
         /// </summary>

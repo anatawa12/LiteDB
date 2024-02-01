@@ -53,7 +53,7 @@ namespace LiteDB.Engine
                 File.SetAttributes(_filename, FileAttributes.Hidden);
             }
 
-#if LITEDB_FOR_VRC_GET
+#if NO_AES
             if (_password != null) throw Unsupported.AesRemoved;
             return stream;
 #else

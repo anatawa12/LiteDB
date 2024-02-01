@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-#if !LITEDB_FOR_VRC_GET // linq expression
+#if !NO_LINQ_EXPRESSION
 using System.Linq.Expressions;
 #endif
 
@@ -23,7 +23,7 @@ namespace LiteDB
         /// </summary>
         EntityMapper EntityMapper { get; }
 
-#if !LITEDB_FOR_VRC_GET // linq expression
+#if !NO_LINQ_EXPRESSION
         /// <summary>
         /// Run an include action in each document returned by Find(), FindById(), FindOne() and All() methods to load DbRef documents
         /// Returns a new Collection with this action included
@@ -73,7 +73,7 @@ namespace LiteDB
         /// </summary>
         int UpdateMany(BsonExpression transform, BsonExpression predicate);
 
-#if !LITEDB_FOR_VRC_GET // linq expression
+#if !NO_LINQ_EXPRESSION
         /// <summary>
         /// Update many document based on merge current document with extend expression. Use your class with initializers. 
         /// Eg: col.UpdateMany(x => new Customer { Name = x.Name.ToUpper(), Salary: 100 }, x => x.Name == "John")
@@ -116,7 +116,7 @@ namespace LiteDB
         /// <param name="unique">If is a unique index</param>
         bool EnsureIndex(BsonExpression expression, bool unique = false);
 
-#if !LITEDB_FOR_VRC_GET // linq expression
+#if !NO_LINQ_EXPRESSION
         /// <summary>
         /// Create a new permanent index in all documents inside this collections if index not exists already.
         /// </summary>
@@ -153,7 +153,7 @@ namespace LiteDB
         /// </summary>
         IEnumerable<T> Find(Query query, int skip = 0, int limit = int.MaxValue);
 
-#if !LITEDB_FOR_VRC_GET // linq expression
+#if !NO_LINQ_EXPRESSION
         /// <summary>
         /// Find documents inside a collection using predicate expression.
         /// </summary>
@@ -180,7 +180,7 @@ namespace LiteDB
         /// </summary>
         T FindOne(BsonExpression predicate, params BsonValue[] args);
 
-#if !LITEDB_FOR_VRC_GET // linq expression
+#if !NO_LINQ_EXPRESSION
         /// <summary>
         /// Find the first document using predicate expression. Returns null if not found
         /// </summary>
@@ -222,7 +222,7 @@ namespace LiteDB
         /// </summary>
         int DeleteMany(string predicate, params BsonValue[] args);
 
-#if !LITEDB_FOR_VRC_GET // linq expression
+#if !NO_LINQ_EXPRESSION
         /// <summary>
         /// Delete all documents based on predicate expression. Returns how many documents was deleted
         /// </summary>
@@ -249,7 +249,7 @@ namespace LiteDB
         /// </summary>
         int Count(string predicate, params BsonValue[] args);
 
-#if !LITEDB_FOR_VRC_GET // linq expression
+#if !NO_LINQ_EXPRESSION
         /// <summary>
         /// Count documents matching a query. This method does not deserialize any documents. Needs indexes on query expression
         /// </summary>
@@ -281,7 +281,7 @@ namespace LiteDB
         /// </summary>
         long LongCount(string predicate, params BsonValue[] args);
 
-#if !LITEDB_FOR_VRC_GET // linq expression
+#if !NO_LINQ_EXPRESSION
         /// <summary>
         /// Count documents matching a query. This method does not deserialize any documents. Needs indexes on query expression
         /// </summary>
@@ -308,7 +308,7 @@ namespace LiteDB
         /// </summary>
         bool Exists(string predicate, params BsonValue[] args);
 
-#if !LITEDB_FOR_VRC_GET // linq expression
+#if !NO_LINQ_EXPRESSION
         /// <summary>
         /// Returns true if query returns any document. This method does not deserialize any document. Needs indexes on query expression
         /// </summary>
@@ -330,7 +330,7 @@ namespace LiteDB
         /// </summary>
         BsonValue Min();
 
-#if !LITEDB_FOR_VRC_GET // linq expression
+#if !NO_LINQ_EXPRESSION
         /// <summary>
         /// Returns the min value from specified key value in collection
         /// </summary>
@@ -347,7 +347,7 @@ namespace LiteDB
         /// </summary>
         BsonValue Max();
 
-#if !LITEDB_FOR_VRC_GET // linq expression
+#if !NO_LINQ_EXPRESSION
         /// <summary>
         /// Returns the last/max field using a linq expression
         /// </summary>

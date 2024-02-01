@@ -1,4 +1,4 @@
-﻿#if !LITEDB_FOR_VRC_GET
+﻿#if !NO_AES
 using System;
 using System.IO;
 using System.Linq;

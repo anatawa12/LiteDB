@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-#if !LITEDB_FOR_VRC_GET // linq expression
+#if !NO_LINQ_EXPRESSION
 using System.Linq.Expressions;
 #endif
 using System.Text.RegularExpressions;
@@ -39,7 +39,7 @@ namespace LiteDB
             return this.EnsureIndex(name, expression, unique);
         }
 
-#if !LITEDB_FOR_VRC_GET // linq expression
+#if !NO_LINQ_EXPRESSION
         /// <summary>
         /// Create a new permanent index in all documents inside this collections if index not exists already.
         /// </summary>

@@ -170,7 +170,7 @@ namespace LiteDB
 
         #region Get LinqVisitor processor
 
-#if !LITEDB_FOR_VRC_GET // linq expression
+#if !NO_LINQ_EXPRESSION
         /// <summary>
         /// Resolve LINQ expression into BsonExpression
         /// </summary>

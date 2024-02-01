@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-#if !LITEDB_FOR_VRC_GET // linq expression
+#if !NO_LINQ_EXPRESSION
 using System.Linq.Expressions;
 #endif
 
@@ -29,7 +29,7 @@ namespace LiteDB
         /// </summary>
         IEnumerable<LiteFileInfo<TFileId>> Find(string predicate, params BsonValue[] args);
 
-#if !LITEDB_FOR_VRC_GET // linq expression
+#if !NO_LINQ_EXPRESSION
         /// <summary>
         /// Find all files that match with predicate expression.
         /// </summary>

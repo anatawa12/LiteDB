@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-#if !LITEDB_FOR_VRC_GET // linq expression
+#if !NO_LINQ_EXPRESSION
 using System.Linq.Expressions;
 #endif
 
@@ -53,7 +53,7 @@ namespace LiteDB
         /// </summary>
         int DeleteMany<T>(BsonExpression predicate, string collectionName = null);
 
-#if !LITEDB_FOR_VRC_GET // linq expression
+#if !NO_LINQ_EXPRESSION
         /// <summary>
         /// Delete entity based on predicate filter expression
         /// </summary>
@@ -82,7 +82,7 @@ namespace LiteDB
         /// <param name="collectionName">Collection Name</param>
         bool EnsureIndex<T>(BsonExpression expression, bool unique = false, string collectionName = null);
 
-#if !LITEDB_FOR_VRC_GET // linq expression
+#if !NO_LINQ_EXPRESSION
         /// <summary>
         /// Create a new permanent index in all documents inside this collections if index not exists already.
         /// </summary>
@@ -111,7 +111,7 @@ namespace LiteDB
         /// </summary>
         List<T> Fetch<T>(BsonExpression predicate, string collectionName = null);
 
-#if !LITEDB_FOR_VRC_GET // linq expression
+#if !NO_LINQ_EXPRESSION
         /// <summary>
         /// Execute Query[T].Where(predicate).ToList();
         /// </summary>
@@ -123,7 +123,7 @@ namespace LiteDB
         /// </summary>
         T First<T>(BsonExpression predicate, string collectionName = null);
 
-#if !LITEDB_FOR_VRC_GET // linq expression
+#if !NO_LINQ_EXPRESSION
         /// <summary>
         /// Execute Query[T].Where(predicate).First();
         /// </summary>
@@ -135,7 +135,7 @@ namespace LiteDB
         /// </summary>
         T FirstOrDefault<T>(BsonExpression predicate, string collectionName = null);
 
-#if !LITEDB_FOR_VRC_GET // linq expression
+#if !NO_LINQ_EXPRESSION
         /// <summary>
         /// Execute Query[T].Where(predicate).FirstOrDefault();
         /// </summary>
@@ -147,7 +147,7 @@ namespace LiteDB
         /// </summary>
         T Single<T>(BsonExpression predicate, string collectionName = null);
 
-#if !LITEDB_FOR_VRC_GET // linq expression
+#if !NO_LINQ_EXPRESSION
         /// <summary>
         /// Execute Query[T].Where(predicate).Single();
         /// </summary>
@@ -159,7 +159,7 @@ namespace LiteDB
         /// </summary>
         T SingleOrDefault<T>(BsonExpression predicate, string collectionName = null);
 
-#if !LITEDB_FOR_VRC_GET // linq expression
+#if !NO_LINQ_EXPRESSION
         /// <summary>
         /// Execute Query[T].Where(predicate).SingleOrDefault();
         /// </summary>

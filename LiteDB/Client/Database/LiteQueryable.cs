@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-#if !LITEDB_FOR_VRC_GET // linq expression
+#if !NO_LINQ_EXPRESSION
 using System.Linq.Expressions;
 #endif
 using System.Reflection;
@@ -34,7 +34,7 @@ namespace LiteDB
 
         #region Includes
 
-#if !LITEDB_FOR_VRC_GET // linq expression
+#if !NO_LINQ_EXPRESSION
         /// <summary>
         /// Load cross reference documents from path expression (DbRef reference)
         /// </summary>
@@ -94,7 +94,7 @@ namespace LiteDB
             return this;
         }
 
-#if !LITEDB_FOR_VRC_GET // linq expression
+#if !NO_LINQ_EXPRESSION
         /// <summary>
         /// Filters a sequence of documents based on a predicate expression
         /// </summary>
@@ -120,7 +120,7 @@ namespace LiteDB
             return this;
         }
 
-#if !LITEDB_FOR_VRC_GET // linq expression
+#if !NO_LINQ_EXPRESSION
         /// <summary>
         /// Sort the documents of resultset in ascending (or descending) order according to a key (support only one OrderBy)
         /// </summary>
@@ -135,7 +135,7 @@ namespace LiteDB
         /// </summary>
         public ILiteQueryable<T> OrderByDescending(BsonExpression keySelector) => this.OrderBy(keySelector, Query.Descending);
 
-#if !LITEDB_FOR_VRC_GET // linq expression
+#if !NO_LINQ_EXPRESSION
         /// <summary>
         /// Sort the documents of resultset in descending order according to a key (support only one OrderBy)
         /// </summary>
@@ -186,7 +186,7 @@ namespace LiteDB
             return new LiteQueryable<BsonDocument>(_engine, _mapper, _collection, _query);
         }
 
-#if !LITEDB_FOR_VRC_GET // linq expression
+#if !NO_LINQ_EXPRESSION
         /// <summary>
         /// Project each document of resultset into a new document/value based on selector expression
         /// </summary>

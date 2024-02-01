@@ -51,7 +51,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <DefineConstants>$(DefineConstants);LITEDB_FOR_VRC_GET</DefineConstants>
+    <DefineConstants>$(DefineConstants);NO_AES</DefineConstants>
+    <DefineConstants>$(DefineConstants);NO_LINQ_EXPRESSION</DefineConstants>
   </PropertyGroup>
 
   <!-- Begin References -->

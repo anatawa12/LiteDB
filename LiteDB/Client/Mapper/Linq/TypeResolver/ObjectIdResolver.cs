@@ -1,4 +1,4 @@
-﻿#if !LITEDB_FOR_VRC_GET // linq expression
+﻿#if !NO_LINQ_EXPRESSION
 using System;
 using System.Collections;
 using System.Collections.Generic;
