@@ -336,6 +336,7 @@ namespace LiteDB
         /// </summary>
         bool Exists(Query query);
 
+#if !NO_ORDERBY_QUERY
         /// <summary>
         /// Returns the min value from specified key value in collection
         /// </summary>
@@ -368,6 +369,7 @@ namespace LiteDB
         /// Returns the last/max field using a linq expression
         /// </summary>
         K Max<K>(Expression<Func<T, K>> keySelector);
+#endif
 #endif
     }
 }

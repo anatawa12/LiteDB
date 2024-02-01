@@ -154,7 +154,9 @@ namespace LiteDB.Engine
 #endif
             fields.AddRange(_query.GroupBy?.Fields);
             fields.AddRange(_query.Having?.Fields);
+#if !NO_ORDERBY_QUERY
             fields.AddRange(_query.OrderBy?.Fields);
+#endif
 
             // if contains $, all fields must be deserialized
             if (fields.Contains("$"))
@@ -281,11 +283,18 @@ namespace LiteDB.Engine
             }
 
             // if no index found, try use same index in orderby/groupby/preferred
-            if (lowest == null && (_query.OrderBy != null || _query.GroupBy != null || preferred != null))
+            if (lowest == null && (
+#if !NO_ORDERBY_QUERY
+                    _query.OrderBy != null || 
+#endif
+                    _query.GroupBy != null || 
+                    preferred != null))
             {
                 var index =
                     indexes.FirstOrDefault(x => x.Expression == _query.GroupBy?.Source) ??
+#if !NO_ORDERBY_QUERY
                     indexes.FirstOrDefault(x => x.Expression == _query.OrderBy?.Source) ??
+#endif
                     indexes.FirstOrDefault(x => x.Expression == preferred);
 
                 if (index != null)
@@ -306,6 +315,7 @@ namespace LiteDB.Engine
         /// </summary>
         private void DefineOrderBy()
         {
+#if !NO_ORDERBY_QUERY // orderby == null
             // if has no order by, returns null
             if (_query.OrderBy == null) return;
 
@@ -324,6 +334,7 @@ namespace LiteDB.Engine
 
             // otherwise, query.OrderBy will be setted according user defined
             _queryPlan.OrderBy = orderBy;
+#endif
         }
 
         /// <summary>
@@ -333,7 +344,9 @@ namespace LiteDB.Engine
         {
             if (_query.GroupBy == null) return;
 
+#if !NO_ORDERBY_QUERY
             if (_query.OrderBy != null) throw new NotSupportedException("GROUP BY expression do not support ORDER BY");
+#endif
 #if !NO_INCLUDE_QUERY
             if (_query.Includes.Count > 0) throw new NotSupportedException("GROUP BY expression do not support INCLUDE");
 #endif

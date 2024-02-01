@@ -143,6 +143,7 @@ etExpression(predicate));
 
         #region Min/Max
 
+#if !NO_ORDERBY_QUERY
         /// <summary>
         /// Returns the min value from specified key value in collection
         /// </summary>
@@ -217,6 +218,7 @@ etExpression(predicate));
 
             return (K)_mapper.Deserialize(typeof(K), value);
         }
+#endif
 #endif
 
         #endregion

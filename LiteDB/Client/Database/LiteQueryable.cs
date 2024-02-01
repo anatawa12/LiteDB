@@ -112,6 +112,7 @@ namespace LiteDB
 
         #region OrderBy
 
+#if !NO_ORDERBY_QUERY
         /// <summary>
         /// Sort the documents of resultset in ascending (or descending) order according to a key (support only one OrderBy)
         /// </summary>
@@ -144,6 +145,7 @@ namespace LiteDB
         /// Sort the documents of resultset in descending order according to a key (support only one OrderBy)
         /// </summary>
         public ILiteQueryable<T> OrderByDescending<K>(Expression<Func<T, K>> keySelector) => this.OrderBy(keySelector, Query.Descending);
+#endif
 #endif
 
         #endregion

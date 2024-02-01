@@ -28,7 +28,7 @@ namespace LiteDB
         {
             return new Query();
         }
-
+#if !NO_ORDERBY_QUERY
         /// <summary>
         /// Returns all documents
         /// </summary>
@@ -44,6 +44,7 @@ namespace LiteDB
         {
             return new Query { OrderBy = field, Order = order };
         }
+#endif
 
         /// <summary>
         /// Returns all documents that value are equals to value (=)
