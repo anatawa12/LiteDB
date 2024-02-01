@@ -50,6 +50,10 @@
     <DefineConstants>HAVE_SHA1_MANAGED</DefineConstants>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <DefineConstants>$(DefineConstants);LITEDB_FOR_VRC_GET</DefineConstants>
+  </PropertyGroup>
+
   <!-- Begin References -->
   <ItemGroup>
     <None Include="..\LICENSE" Pack="true" PackagePath="" />
