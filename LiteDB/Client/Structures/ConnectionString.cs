@@ -119,7 +119,11 @@ namespace LiteDB
             }
             else if (this.Connection == ConnectionType.Shared)
             {
+#if NO_SHARED
+                throw Unsupported.Shared;
+#else
                 return new SharedEngine(settings);
+#endif
             }
             else
             {
