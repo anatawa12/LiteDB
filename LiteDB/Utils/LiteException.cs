@@ -56,6 +56,8 @@ namespace LiteDB
         public const int NOT_ENCRYPTED = 216;
         public const int INVALID_PASSWORD = 217;
 
+        public const int UNSUPPORTED = 300;
+
         #endregion
 
         #region Ctor
