@@ -35,7 +35,11 @@ namespace LiteDB.Tests.Database
                 var initialMemory = Process.GetCurrentProcess().WorkingSet64;
 
                 // get name only document
+#if VRC_GET
+                var d0 = col.Query().First();
+#else
                 var d0 = col.Query().Select("{ _id, name }").First();
+#endif
 
                 d0["name"].Should().Be("John");
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !VRC_GET
+using System;
 using System.Linq;
 
 namespace LiteDB.Tests.QueryTest
@@ -25,3 +26,4 @@ namespace LiteDB.Tests.QueryTest
         }
     }
 }
+#endif

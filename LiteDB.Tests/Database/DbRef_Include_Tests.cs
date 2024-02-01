@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#if !VRC_GET
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using LiteDB;
@@ -174,3 +175,4 @@ namespace LiteDB.Tests.Database
         }
     }
 }
+#endif

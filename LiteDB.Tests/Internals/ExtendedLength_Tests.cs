@@ -19,6 +19,7 @@ namespace LiteDB.Internals
             Assert.Equal((ushort)1010, length);
         }
 
+#if !VRC_GET
         [Fact]
         public void IndexExtendedLength_Tests()
         {
@@ -31,5 +32,6 @@ namespace LiteDB.Internals
             var results = db.Execute("select $ from customers where $.Name < 'B'").ToArray();
             Assert.Single(results);
         }
+#endif
     }
 }

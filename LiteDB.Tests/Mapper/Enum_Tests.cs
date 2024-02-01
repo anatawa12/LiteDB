@@ -13,6 +13,7 @@ namespace LiteDB.Tests.Mapper
             New,
             Loyal
         }
+#if !VRC_GET
         public class Customer
         {
             public int Id { get; set; }
@@ -62,6 +63,7 @@ namespace LiteDB.Tests.Mapper
             expr2.Parameters["p0"].AsInt32.Should().Be(2);
 
         }
+#endif
 
         [Fact]
         public void Enum_Array_Test()

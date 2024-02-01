@@ -10,6 +10,7 @@ namespace LiteDB.Tests.Engine
 {
     public class Collation_Tests
     {
+#if !VRC_GET
         [Fact]
         public void Culture_Ordinal_Sort()
         {
@@ -69,6 +70,7 @@ namespace LiteDB.Tests.Engine
                 findByIndex.Should().BeEquivalentTo(findByLinq);
             }
         }
+#endif
 
         [Fact(Skip = "Must fix in CI - works only in Windows local machine")]
         public void Create_Database_Using_Current_Culture()
@@ -87,6 +89,7 @@ namespace LiteDB.Tests.Engine
             CultureInfo.CurrentCulture = current;
         }
 
+#if !VRC_GET
         [Fact]
         public void Change_Thread_Culture()
         {
@@ -118,6 +121,7 @@ namespace LiteDB.Tests.Engine
                 CultureInfo.CurrentCulture = current;
             }
         }
+#endif
 
         [Fact]
         public void Collaction_New_Database()

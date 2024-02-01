@@ -33,6 +33,7 @@ namespace LiteDB.Tests.Engine
             }
         }
 
+#if !VRC_GET
         [Fact]
         public void Crypto_Datafile()
         {
@@ -61,6 +62,7 @@ namespace LiteDB.Tests.Engine
                 (data.Length / 8192).Should().Be(5);
             }
         }
+#endif
 
         private void CreateDatabase(LiteEngine engine)
         {

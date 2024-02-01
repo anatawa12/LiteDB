@@ -16,6 +16,7 @@ namespace LiteDB.Tests
             return engine.Update(collection, new BsonDocument[] {doc});
         }
 
+#if !VRC_GET
         public static List<BsonDocument> Find(this LiteEngine engine, string collection, BsonExpression where)
         {
             var q = new LiteDB.Query();
@@ -42,5 +43,16 @@ namespace LiteDB.Tests
         {
             return engine.Find($"$dump({pageID})", "1=1").Last();
         }
+#endif
+
+#if VRC_GET
+        
+        public static bool EnsureIndex(this LiteEngine engine, string collection, string name, string expression, bool unique) =>
+            engine.EnsureIndex(collection, name, BsonExpression.ForIndex(expression), unique);
+        public static bool EnsureIndex<T>(this ILiteCollection<T> collection, string name, string expression,
+            bool unique = false) => collection.EnsureIndex(name, BsonExpression.ForIndex(expression), unique);
+        public static bool EnsureIndex<T>(this ILiteCollection<T> collection, string expression,
+            bool unique = false) => collection.EnsureIndex(BsonExpression.ForIndex(expression), unique);
+#endif
     }
 }

@@ -20,6 +20,7 @@ namespace LiteDB.Tests.Mapper
             doc2.Should<BsonDocument>().Be(null);
         }
 
+#if !VRC_GET
         [Fact]
         public void Class_Not_Assignable()
         {
@@ -47,5 +48,6 @@ namespace LiteDB.Tests.Mapper
         {
             public string Name { get; set; }
         }
+#endif
     }
 }

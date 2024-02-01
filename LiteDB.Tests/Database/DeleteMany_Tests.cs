@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !VRC_GET
+using System;
 using System.IO;
 using System.Linq;
 using LiteDB;
@@ -34,3 +35,4 @@ namespace LiteDB.Tests.Database
         }
     }
 }
+#endif

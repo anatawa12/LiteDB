@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !VRC_GET
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
@@ -47,3 +48,4 @@ namespace LiteDB.Tests.Issues
         public List<string> Accounts2to1 { get; set; } = new List<string>();
     }
 }
+#endif

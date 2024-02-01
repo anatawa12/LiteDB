@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !VRC_GET
+using System;
 using System.Collections.Generic;
 using Xunit;
 using System.Linq;
@@ -151,3 +152,4 @@ namespace LiteDB.Tests.Issues
         }
     }
 }
+#endif

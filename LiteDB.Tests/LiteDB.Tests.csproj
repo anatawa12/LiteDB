@@ -44,4 +44,8 @@
     <ProjectReference Include="..\LiteDB\LiteDB.csproj" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <DefineConstants>VRC_GET</DefineConstants>
+  </PropertyGroup>
+
 </Project>

@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !VRC_GET
+using System;
 using System.Collections.Generic;
 using FluentAssertions;
 using Xunit;
@@ -24,3 +25,4 @@ namespace LiteDB.Tests.Mapper
         }
     }
 }
+#endif

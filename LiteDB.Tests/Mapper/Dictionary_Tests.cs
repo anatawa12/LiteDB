@@ -16,6 +16,7 @@ namespace LiteDB.Tests.Mapper
 
         private BsonMapper _mapper = new BsonMapper();
 
+#if !VRC_GET
         [Fact]
         public void Dictionary_Map()
         {
@@ -57,6 +58,7 @@ namespace LiteDB.Tests.Mapper
             Assert.Single(dic);
             Assert.Equal(1, dic["x"]);
         }
+#endif
 
         [Fact]
         public void Serialize_Hashtable()
@@ -70,6 +72,7 @@ namespace LiteDB.Tests.Mapper
             Assert.Equal(1, result["x"].AsInt32);
         }
 
+#if !VRC_GET
         [Fact]
         public void Deserialize_Uri()
         {
@@ -81,5 +84,6 @@ namespace LiteDB.Tests.Mapper
             Assert.Single(dict2);
             Assert.Equal(dict.Keys.Single(), dict2.Keys.Single());
         }
+#endif
     }
 }

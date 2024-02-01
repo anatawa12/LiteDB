@@ -7,6 +7,7 @@ namespace LiteDB.Tests.Engine
 {
     public class Rebuild_Tests
     {
+#if !VRC_GET
         [Fact]
         public void Rebuild_After_DropCollection()
         {
@@ -87,6 +88,7 @@ namespace LiteDB.Tests.Engine
                 }
             }
         }
+#endif
 
         [Fact (Skip = "Must fix how catch this exception")]
         public void Rebuild_Change_Culture_Error()

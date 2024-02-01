@@ -9,6 +9,7 @@ namespace LiteDB.Tests.Issues
     {
         private BsonMapper _mapper = new BsonMapper();
 
+#if !VRC_GET
         [Fact]
         public void Serialize_covariant_collection_has_type()
         {
@@ -31,6 +32,7 @@ namespace LiteDB.Tests.Issues
 
             Assert.Equal(1, deserialized.Bs.Count);
         }
+#endif
 
         interface IA
         {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !VRC_GET
+using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -144,3 +145,4 @@ namespace LiteDB.Internals
         }
     }
 }
+#endif

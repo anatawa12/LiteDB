@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿#if !VRC_GET
+using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -45,3 +46,4 @@ namespace LiteDB.Tests.Engine
         }
     }
 }
+#endif

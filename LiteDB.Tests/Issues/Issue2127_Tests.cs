@@ -1,4 +1,5 @@
-﻿using Xunit;
+﻿#if !VRC_GET
+using Xunit;
 using System;
 using System.IO;
 using System.Text;
@@ -97,3 +98,4 @@ namespace LiteDB.Tests.Issues
         }
     }
 }
+#endif

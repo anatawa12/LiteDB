@@ -16,16 +16,22 @@ namespace LiteDB.Tests.Expressions
 
             BsonValue S(string s)
             {
+#if VRC_GET
+                return BsonExpression.ForIndex(s).ExecuteScalar(doc);
+#else
                 return BsonExpression.Create(s).ExecuteScalar(doc);
+#endif
             }
 
             // cover the fix of "copy/paste" errors
             doc = new BsonDocument();
+#if !VRC_GET
             S("[1, 6] ALL > 5").ExpectValue(false);
             S("[1, 6] ALL >= 5").ExpectValue(false);
             S("[1, 6] ALL < 5").ExpectValue(false);
             S("[1, 6] ALL <= 5").ExpectValue(false);
             S("[1, 5] ALL != 5").ExpectValue(false);
+#endif
 
             // direct path navigation
             doc = J("{ a: 1, b: null, c: true, d:[1,2], e:{d:4} }");
@@ -62,8 +68,10 @@ namespace LiteDB.Tests.Expressions
             // Root and Current in array
             doc = J("{ a: [ { b: 1, c: 2 }, { b: 2, c: 3 } ], i: 0 }");
 
+#if !VRC_GET
             S("FIRST(a[@.b = 1].c)").ExpectValue(2);
             S("FIRST(a[b = 2].c)").ExpectValue(3);
+#endif
 
             // Complex field name
             doc = J("{ \"a b\": 1, \"c d\": { \"x y\": 2 }, x: { \"$y!z\\\"'\": 3 } }");
@@ -73,11 +81,15 @@ namespace LiteDB.Tests.Expressions
             S("$.x.[\"$y!z\\\"'\"]").ExpectValue(3);
 
             // Object creation
+#if !VRC_GET
             S("'lite' + \"db\"").ExpectValue("litedb");
+#endif
             S("true").ExpectValue(true);
             S("123").ExpectValue(123);
             S("{ a: 1}").ExpectJson("{ a: 1}");
+#if !VRC_GET
             S("{ b: 1+1 }").ExpectJson("{ b: 2 }");
+#endif
             S("{'a-b':1, \"x+1\": 2, 'y': 3}").ExpectJson("{\"a-b\": 1, \"x+1\": 2, y: 3 }");
 
             // Document simplified notation declaration
@@ -94,15 +106,23 @@ namespace LiteDB.Tests.Expressions
             S("{ 'c' }").ExpectJson("{ c: 2 }");
         }
 
+#if !VRC_GET
         [Fact]
         public void Expressions_Scalar_Operator()
         {
             BsonDocument doc;
 
+#if VRC_GET
+            BsonValue S(string s)
+            {
+                return BsonExpression.ForIndex(s).ExecuteScalar(doc);
+            }
+#else
             BsonValue S(string s, params BsonValue[] args)
             {
                 return BsonExpression.Create(s, args).ExecuteScalar(doc);
             }
+#endif
 
             // Operators order
             doc = J("{ a: 1, b: 2, c: 3 }");
@@ -129,7 +149,9 @@ namespace LiteDB.Tests.Expressions
             doc = J("{ a: 50, b: 'm' }");
 
             S("5 between 1 AND 10").ExpectValue(true);
+#if !VRC_GET
             S("b between @0   and @1", "a", "z").ExpectValue(true);
+#endif
 
             // Greater and Less
             S("1 < 3.0").ExpectValue(true);
@@ -141,7 +163,9 @@ namespace LiteDB.Tests.Expressions
             // String Like
             S("'John' LIKE 'J'").ExpectValue(false);
             S("'John' LIKE 'J%'").ExpectValue(true);
+#if !VRC_GET
             S("'John' LIKE @0", "%o%").ExpectValue(true);
+#endif
             S("'John' LIKE 1").ExpectValue(false);
 
             doc = J("{ names: ['John', 'Joana', 'Carlos'] }");
@@ -167,10 +191,17 @@ namespace LiteDB.Tests.Expressions
         {
             BsonDocument doc;
 
+#if VRC_GET
+            BsonValue S(string s)
+            {
+                return BsonExpression.ForIndex(s).ExecuteScalar(doc);
+            }
+#else
             BsonValue S(string s, params BsonValue[] args)
             {
                 return BsonExpression.Create(s, args).ExecuteScalar(doc);
             };
+#endif
 
             doc = J("{}");
 
@@ -285,10 +316,18 @@ namespace LiteDB.Tests.Expressions
         {
             List<BsonDocument> docs;
 
+            
+#if VRC_GET
+            IEnumerable<BsonValue> A(string s)
+            {
+                return BsonExpression.ForIndex(s).Execute(docs);
+            };
+#else
             IEnumerable<BsonValue> A(string s, params BsonValue[] args)
             {
                 return BsonExpression.Create(s, args).Execute(docs);
             };
+#endif
 
             docs = new List<BsonDocument>()
             {
@@ -299,7 +338,9 @@ namespace LiteDB.Tests.Expressions
 
             A("SUM(*.a)").ExpectValues(8);
             A("*.b").ExpectValues(5, 15, 10);
+#if !VRC_GET
             A("MAP(*.c => UPPER(@))", "FIRST", "SECOND", "LAST");
+#endif
 
             A("SUM(*.arr[*])").ExpectValues(32);
             A("SUM(*.arr[@ < 2]) + 7").ExpectValues(10);
@@ -392,5 +433,6 @@ namespace LiteDB.Tests.Expressions
 
             r2.AsString.Should().Be("too-short");
         }
+#endif
     }
 }

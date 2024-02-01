@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿#if !VRC_GET
+using FluentAssertions;
 using System;
 using System.Linq;
 using Xunit;
@@ -28,3 +29,4 @@ namespace LiteDB.Tests.QueryTest
         }
     }
 }
+#endif

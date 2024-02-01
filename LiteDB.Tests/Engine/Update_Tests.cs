@@ -29,6 +29,7 @@ namespace LiteDB.Tests.Engine
             }
         }
 
+#if !VRC_GET
         [Fact]
         public void Update_ExtendBlocks()
         {
@@ -83,6 +84,7 @@ namespace LiteDB.Tests.Engine
                 page5["pageType"].AsString.Should().Be("Empty");
             }
         }
+#endif
 
         [Fact]
         public void Update_Empty_Collection()

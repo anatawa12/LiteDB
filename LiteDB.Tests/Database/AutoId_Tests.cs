@@ -11,6 +11,7 @@ namespace LiteDB.Tests.Database
     {
         #region Model
 
+#if !VRC_GET
         public class EntityInt
         {
             public int Id { get; set; }
@@ -40,9 +41,11 @@ namespace LiteDB.Tests.Database
             public string Id { get; set; }
             public string Name { get; set; }
         }
+#endif
 
         #endregion
 
+#if !VRC_GET
         [Fact]
         public void AutoId_Strong_Typed()
         {
@@ -184,7 +187,9 @@ namespace LiteDB.Tests.Database
                 cint_12.Id.Should().Be(12);
             }
         }
+#endif
 
+#if !VRC_GET
         [Fact]
         public void AutoId_BsonDocument()
         {
@@ -205,10 +210,12 @@ namespace LiteDB.Tests.Database
                 jack["_id"].IsInt32.Should().BeTrue(); // jack do not use AutoId (fixed in int32)
             }
         }
+#endif
 
         [Fact]
         public void AutoId_No_Duplicate_After_Delete()
         {
+#if !VRC_GET
             // using strong type
             using (var db = new LiteDatabase(new MemoryStream()))
             {
@@ -236,6 +243,7 @@ namespace LiteDB.Tests.Database
                 three.Id.Should().Be(3);
                 four.Id.Should().Be(4);
             }
+#endif
 
             // using bsondocument/engine
             using (var db = new LiteDatabase(new MemoryStream()))

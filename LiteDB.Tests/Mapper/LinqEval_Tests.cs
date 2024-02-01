@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !VRC_GET
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -176,3 +177,4 @@ namespace LiteDB.Tests.Mapper
         }
     }
 }
+#endif

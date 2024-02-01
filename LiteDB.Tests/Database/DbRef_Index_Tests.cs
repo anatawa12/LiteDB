@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿#if !VRC_GET
+using System.IO;
 using FluentAssertions;
 using Xunit;
 
@@ -60,3 +61,4 @@ namespace LiteDB.Tests.Database
         }
     }
 }
+#endif

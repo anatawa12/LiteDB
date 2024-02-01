@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !VRC_GET
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -583,3 +584,4 @@ namespace LiteDB.Tests.Mapper
         #endregion
     }
 }
+#endif

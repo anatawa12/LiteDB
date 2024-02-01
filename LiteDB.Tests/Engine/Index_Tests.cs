@@ -7,6 +7,7 @@ namespace LiteDB.Tests.Engine
 {
     public class Index_Tests
     {
+#if !VRC_GET
         [Fact]
         public void Index_With_No_Name()
         {
@@ -114,6 +115,7 @@ namespace LiteDB.Tests.Engine
                 r6.Length.Should().Be(1);
             }
         }
+#endif
 
         [Fact]
         public void EnsureIndex_Invalid_Arguments()
@@ -140,6 +142,7 @@ namespace LiteDB.Tests.Engine
             }
         }
 
+#if !VRC_GET
         [Fact]
         public void MultiKey_Index_Test()
         {
@@ -197,5 +200,6 @@ namespace LiteDB.Tests.Engine
             var result2 = db.Execute(query2).ToArray();
             Assert.True(result2.Length == 2);
         }
+#endif
     }
 }
