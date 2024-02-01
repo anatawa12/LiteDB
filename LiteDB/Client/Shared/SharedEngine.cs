@@ -1,4 +1,4 @@
-﻿#if NO_SHARED
+﻿#if !NO_SHARED
 using LiteDB.Engine;
 using System;
 using System.Collections.Generic;
