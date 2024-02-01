@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !NO_FILE_STORAGE
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -249,3 +250,4 @@ namespace LiteDB
         #endregion
     }
 }
+#endif

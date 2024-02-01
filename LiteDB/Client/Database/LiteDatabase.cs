@@ -150,6 +150,7 @@ namespace LiteDB
 
         #region FileStorage
 
+#if !NO_FILE_STORAGE
         private ILiteStorage<string> _fs = null;
 
         /// <summary>
@@ -167,6 +168,7 @@ namespace LiteDB
         {
             return new LiteStorage<TFileId>(this, filesCollection, chunksCollection);
         }
+#endif
 
         #endregion
 

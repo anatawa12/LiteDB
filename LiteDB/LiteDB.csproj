@@ -53,6 +53,7 @@
   <PropertyGroup>
     <DefineConstants>$(DefineConstants);NO_AES</DefineConstants>
     <DefineConstants>$(DefineConstants);NO_LINQ_EXPRESSION</DefineConstants>
+    <DefineConstants>$(DefineConstants);NO_FILE_STORAGE</DefineConstants>
   </PropertyGroup>
 
   <!-- Begin References -->

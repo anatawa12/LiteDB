@@ -12,10 +12,12 @@ namespace LiteDB
         /// </summary>
         BsonMapper Mapper { get; }
 
+#if !NO_FILE_STORAGE
         /// <summary>
         /// Returns a special collection for storage files/stream inside datafile. Use _files and _chunks collection names. FileId is implemented as string. Use "GetStorage" for custom options
         /// </summary>
         ILiteStorage<string> FileStorage { get; }
+#endif
 
         /// <summary>
         /// Get a collection using a entity class as strong typed document. If collection does not exits, create a new one.
@@ -57,10 +59,12 @@ namespace LiteDB
         /// </summary>
         bool Rollback();
 
+#if !NO_FILE_STORAGE
         /// <summary>
         /// Get new instance of Storage using custom FileId type, custom "_files" collection name and custom "_chunks" collection. LiteDB support multiples file storages (using different files/chunks collection names)
         /// </summary>
         ILiteStorage<TFileId> GetStorage<TFileId>(string filesCollection = "_files", string chunksCollection = "_chunks");
+#endif
 
         /// <summary>
         /// Get all collections name inside this database.

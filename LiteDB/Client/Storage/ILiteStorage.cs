@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !NO_FILE_STORAGE
+using System;
 using System.Collections.Generic;
 using System.IO;
 #if !NO_LINQ_EXPRESSION
@@ -87,3 +88,4 @@ namespace LiteDB
         bool Delete(TFileId id);
     }
 }
+#endif
