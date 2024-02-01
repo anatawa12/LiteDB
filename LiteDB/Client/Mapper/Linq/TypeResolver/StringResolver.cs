@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !LITEDB_FOR_VRC_GET // linq expression
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -58,3 +59,4 @@ namespace LiteDB
         public string ResolveCtor(ConstructorInfo ctor) => null;
     }
 }
+#endif

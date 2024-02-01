@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+#if !LITEDB_FOR_VRC_GET // linq expression
 using System.Linq.Expressions;
+#endif
 
 namespace LiteDB
 {
@@ -21,11 +23,13 @@ namespace LiteDB
         /// </summary>
         EntityMapper EntityMapper { get; }
 
+#if !LITEDB_FOR_VRC_GET // linq expression
         /// <summary>
         /// Run an include action in each document returned by Find(), FindById(), FindOne() and All() methods to load DbRef documents
         /// Returns a new Collection with this action included
         /// </summary>
         ILiteCollection<T> Include<K>(Expression<Func<T, K>> keySelector);
+#endif
 
         /// <summary>
         /// Run an include action in each document returned by Find(), FindById(), FindOne() and All() methods to load DbRef documents
@@ -69,11 +73,13 @@ namespace LiteDB
         /// </summary>
         int UpdateMany(BsonExpression transform, BsonExpression predicate);
 
+#if !LITEDB_FOR_VRC_GET // linq expression
         /// <summary>
         /// Update many document based on merge current document with extend expression. Use your class with initializers. 
         /// Eg: col.UpdateMany(x => new Customer { Name = x.Name.ToUpper(), Salary: 100 }, x => x.Name == "John")
         /// </summary>
         int UpdateMany(Expression<Func<T, T>> extend, Expression<Func<T, bool>> predicate);
+#endif
 
         /// <summary>
         /// Insert a new entity to this collection. Document Id must be a new value in collection - Returns document Id
@@ -110,6 +116,7 @@ namespace LiteDB
         /// <param name="unique">If is a unique index</param>
         bool EnsureIndex(BsonExpression expression, bool unique = false);
 
+#if !LITEDB_FOR_VRC_GET // linq expression
         /// <summary>
         /// Create a new permanent index in all documents inside this collections if index not exists already.
         /// </summary>
@@ -124,6 +131,7 @@ namespace LiteDB
         /// <param name="keySelector">LinqExpression to be converted into BsonExpression to be indexed</param>
         /// <param name="unique">Create a unique keys index?</param>
         bool EnsureIndex<K>(string name, Expression<Func<T, K>> keySelector, bool unique = false);
+#endif
 
         /// <summary>
         /// Drop index and release slot for another index
@@ -145,10 +153,12 @@ namespace LiteDB
         /// </summary>
         IEnumerable<T> Find(Query query, int skip = 0, int limit = int.MaxValue);
 
+#if !LITEDB_FOR_VRC_GET // linq expression
         /// <summary>
         /// Find documents inside a collection using predicate expression.
         /// </summary>
         IEnumerable<T> Find(Expression<Func<T, bool>> predicate, int skip = 0, int limit = int.MaxValue);
+#endif
 
         /// <summary>
         /// Find a document using Document Id. Returns null if not found.
@@ -170,10 +180,12 @@ namespace LiteDB
         /// </summary>
         T FindOne(BsonExpression predicate, params BsonValue[] args);
 
+#if !LITEDB_FOR_VRC_GET // linq expression
         /// <summary>
         /// Find the first document using predicate expression. Returns null if not found
         /// </summary>
         T FindOne(Expression<Func<T, bool>> predicate);
+#endif
 
         /// <summary>
         /// Find the first document using defined query structure. Returns null if not found
@@ -210,10 +222,12 @@ namespace LiteDB
         /// </summary>
         int DeleteMany(string predicate, params BsonValue[] args);
 
+#if !LITEDB_FOR_VRC_GET // linq expression
         /// <summary>
         /// Delete all documents based on predicate expression. Returns how many documents was deleted
         /// </summary>
         int DeleteMany(Expression<Func<T, bool>> predicate);
+#endif
 
         /// <summary>
         /// Get document count using property on collection.
@@ -235,10 +249,12 @@ namespace LiteDB
         /// </summary>
         int Count(string predicate, params BsonValue[] args);
 
+#if !LITEDB_FOR_VRC_GET // linq expression
         /// <summary>
         /// Count documents matching a query. This method does not deserialize any documents. Needs indexes on query expression
         /// </summary>
         int Count(Expression<Func<T, bool>> predicate);
+#endif
 
         /// <summary>
         /// Count documents matching a query. This method does not deserialize any documents. Needs indexes on query expression
@@ -265,10 +281,12 @@ namespace LiteDB
         /// </summary>
         long LongCount(string predicate, params BsonValue[] args);
 
+#if !LITEDB_FOR_VRC_GET // linq expression
         /// <summary>
         /// Count documents matching a query. This method does not deserialize any documents. Needs indexes on query expression
         /// </summary>
         long LongCount(Expression<Func<T, bool>> predicate);
+#endif
 
         /// <summary>
         /// Count documents matching a query. This method does not deserialize any documents. Needs indexes on query expression
@@ -290,10 +308,12 @@ namespace LiteDB
         /// </summary>
         bool Exists(string predicate, params BsonValue[] args);
 
+#if !LITEDB_FOR_VRC_GET // linq expression
         /// <summary>
         /// Returns true if query returns any document. This method does not deserialize any document. Needs indexes on query expression
         /// </summary>
         bool Exists(Expression<Func<T, bool>> predicate);
+#endif
 
         /// <summary>
         /// Returns true if query returns any document. This method does not deserialize any document. Needs indexes on query expression
@@ -310,10 +330,12 @@ namespace LiteDB
         /// </summary>
         BsonValue Min();
 
+#if !LITEDB_FOR_VRC_GET // linq expression
         /// <summary>
         /// Returns the min value from specified key value in collection
         /// </summary>
         K Min<K>(Expression<Func<T, K>> keySelector);
+#endif
 
         /// <summary>
         /// Returns the max value from specified key value in collection
@@ -325,9 +347,11 @@ namespace LiteDB
         /// </summary>
         BsonValue Max();
 
+#if !LITEDB_FOR_VRC_GET // linq expression
         /// <summary>
         /// Returns the last/max field using a linq expression
         /// </summary>
         K Max<K>(Expression<Func<T, K>> keySelector);
+#endif
     }
 }

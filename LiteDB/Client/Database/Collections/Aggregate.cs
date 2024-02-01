@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
+#if !LITEDB_FOR_VRC_GET // linq expression
 using System.Linq.Expressions;
+#endif
 using static LiteDB.Constants;
 
 namespace LiteDB
@@ -38,10 +40,12 @@ namespace LiteDB
         /// </summary>
         public int Count(string predicate, params BsonValue[] args) => this.Count(BsonExpression.Create(predicate, args));
 
+#if !LITEDB_FOR_VRC_GET // linq expression
         /// <summary>
         /// Count documents matching a query. This method does not deserialize any documents. Needs indexes on query expression
         /// </summary>
         public int Count(Expression<Func<T, bool>> predicate) => this.Count(_mapper.GetExpression(predicate));
+#endif
 
         /// <summary>
         /// Get document count in collection using predicate filter expression
@@ -80,10 +84,13 @@ namespace LiteDB
         /// </summary>
         public long LongCount(string predicate, params BsonValue[] args) => this.LongCount(BsonExpression.Create(predicate, args));
 
+#if !LITEDB_FOR_VRC_GET // linq expression
         /// <summary>
         /// Get document count in collection using predicate filter expression
         /// </summary>
-        public long LongCount(Expression<Func<T, bool>> predicate) => this.LongCount(_mapper.GetExpression(predicate));
+        public long LongCount(Expression<Func<T, bool>> predicate) => this.LongCount(_mapper.G
+etExpression(predicate));
+#endif
 
         /// <summary>
         /// Get document count in collection using predicate filter expression
@@ -114,10 +121,12 @@ namespace LiteDB
         /// </summary>
         public bool Exists(string predicate, params BsonValue[] args) => this.Exists(BsonExpression.Create(predicate, args));
 
+#if !LITEDB_FOR_VRC_GET // linq expression
         /// <summary>
         /// Get true if collection contains at least 1 document that satisfies the predicate expression
         /// </summary>
         public bool Exists(Expression<Func<T, bool>> predicate) => this.Exists(_mapper.GetExpression(predicate));
+#endif
 
         /// <summary>
         /// Get true if collection contains at least 1 document that satisfies the predicate expression
@@ -150,6 +159,7 @@ namespace LiteDB
         /// </summary>
         public BsonValue Min() => this.Min("_id");
 
+#if !LITEDB_FOR_VRC_GET // linq expression
         /// <summary>
         /// Returns the min value from specified key value in collection
         /// </summary>
@@ -163,6 +173,7 @@ namespace LiteDB
 
             return (K)_mapper.Deserialize(typeof(K), value);
         }
+#endif
 
         /// <summary>
         /// Returns the max value from specified key value in collection
@@ -186,6 +197,7 @@ namespace LiteDB
         /// </summary>
         public BsonValue Max() => this.Max("_id");
 
+#if !LITEDB_FOR_VRC_GET // linq expression
         /// <summary>
         /// Returns the last/max field using a linq expression
         /// </summary>
@@ -199,6 +211,7 @@ namespace LiteDB
 
             return (K)_mapper.Deserialize(typeof(K), value);
         }
+#endif
 
         #endregion
     }

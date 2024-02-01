@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+#if !LITEDB_FOR_VRC_GET // linq expression
 using System.Linq.Expressions;
+#endif
 using static LiteDB.Constants;
 
 namespace LiteDB
@@ -137,6 +139,7 @@ namespace LiteDB
             return _db.GetCollection<T>(collectionName).DeleteMany(predicate);
         }
 
+#if !LITEDB_FOR_VRC_GET // linq expression
         /// <summary>
         /// Delete entity based on predicate filter expression
         /// </summary>
@@ -144,6 +147,7 @@ namespace LiteDB
         {
             return _db.GetCollection<T>(collectionName).DeleteMany(predicate);
         }
+#endif
 
         #endregion
 
@@ -184,6 +188,7 @@ namespace LiteDB
             return _db.GetCollection<T>(collectionName).EnsureIndex(expression, unique);
         }
 
+#if !LITEDB_FOR_VRC_GET // linq expression
         /// <summary>
         /// Create a new permanent index in all documents inside this collections if index not exists already.
         /// </summary>
@@ -206,6 +211,7 @@ namespace LiteDB
         {
             return _db.GetCollection<T>(collectionName).EnsureIndex(name, keySelector, unique);
         }
+#endif
 
         #endregion
 
@@ -231,6 +237,7 @@ namespace LiteDB
                 .ToList();
         }
 
+#if !LITEDB_FOR_VRC_GET // linq expression
         /// <summary>
         /// Execute Query[T].Where(predicate).ToList();
         /// </summary>
@@ -240,6 +247,7 @@ namespace LiteDB
                 .Where(predicate)
                 .ToList();
         }
+#endif
 
         /// <summary>
         /// Execute Query[T].Where(predicate).First();
@@ -251,6 +259,7 @@ namespace LiteDB
                 .First();
         }
 
+#if !LITEDB_FOR_VRC_GET // linq expression
         /// <summary>
         /// Execute Query[T].Where(predicate).First();
         /// </summary>
@@ -260,6 +269,7 @@ namespace LiteDB
                 .Where(predicate)
                 .First();
         }
+#endif
 
         /// <summary>
         /// Execute Query[T].Where(predicate).FirstOrDefault();
@@ -271,6 +281,7 @@ namespace LiteDB
                 .FirstOrDefault();
         }
 
+#if !LITEDB_FOR_VRC_GET // linq expression
         /// <summary>
         /// Execute Query[T].Where(predicate).FirstOrDefault();
         /// </summary>
@@ -280,6 +291,7 @@ namespace LiteDB
                 .Where(predicate)
                 .FirstOrDefault();
         }
+#endif
 
         /// <summary>
         /// Execute Query[T].Where(predicate).Single();
@@ -291,6 +303,7 @@ namespace LiteDB
                 .Single();
         }
 
+#if !LITEDB_FOR_VRC_GET // linq expression
         /// <summary>
         /// Execute Query[T].Where(predicate).Single();
         /// </summary>
@@ -300,6 +313,7 @@ namespace LiteDB
                 .Where(predicate)
                 .Single();
         }
+#endif
 
         /// <summary>
         /// Execute Query[T].Where(predicate).SingleOrDefault();
@@ -311,6 +325,7 @@ namespace LiteDB
                 .SingleOrDefault();
         }
 
+#if !LITEDB_FOR_VRC_GET // linq expression
         /// <summary>
         /// Execute Query[T].Where(predicate).SingleOrDefault();
         /// </summary>
@@ -320,6 +335,7 @@ namespace LiteDB
                 .Where(predicate)
                 .SingleOrDefault();
         }
+#endif
 
         #endregion
 

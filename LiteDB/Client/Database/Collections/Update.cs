@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+#if !LITEDB_FOR_VRC_GET // linq expression
 using System.Linq.Expressions;
+#endif
 using static LiteDB.Constants;
 
 namespace LiteDB
@@ -65,6 +67,7 @@ namespace LiteDB
             return _engine.UpdateMany(_collection, transform, predicate);
         }
 
+#if !LITEDB_FOR_VRC_GET // linq expression
         /// <summary>
         /// Update many document based on merge current document with extend expression. Use your class with initializers. 
         /// Eg: col.UpdateMany(x => new Customer { Name = x.Name.ToUpper(), Salary: 100 }, x => x.Name == "John")
@@ -84,5 +87,6 @@ namespace LiteDB
 
             return _engine.UpdateMany(_collection, ext, pred);
         }
+#endif
     }
 }

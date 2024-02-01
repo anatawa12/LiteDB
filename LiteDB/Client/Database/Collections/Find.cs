@@ -2,7 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+#if !LITEDB_FOR_VRC_GET // linq expression
 using System.Linq.Expressions;
+#endif
 using static LiteDB.Constants;
 
 namespace LiteDB
@@ -48,10 +50,12 @@ namespace LiteDB
                 .ToEnumerable();
         }
 
+#if !LITEDB_FOR_VRC_GET // linq expression
         /// <summary>
         /// Find documents inside a collection using predicate expression.
         /// </summary>
         public IEnumerable<T> Find(Expression<Func<T, bool>> predicate, int skip = 0, int limit = int.MaxValue) => this.Find(_mapper.GetExpression(predicate), skip, limit);
+#endif
 
         #endregion
 
@@ -82,10 +86,12 @@ namespace LiteDB
         /// </summary>
         public T FindOne(BsonExpression predicate, params BsonValue[] args) => this.FindOne(BsonExpression.Create(predicate, args));
 
+#if !LITEDB_FOR_VRC_GET // linq expression
         /// <summary>
         /// Find the first document using predicate expression. Returns null if not found
         /// </summary>
         public T FindOne(Expression<Func<T, bool>> predicate) => this.FindOne(_mapper.GetExpression(predicate));
+#endif
 
         /// <summary>
         /// Find the first document using defined query structure. Returns null if not found

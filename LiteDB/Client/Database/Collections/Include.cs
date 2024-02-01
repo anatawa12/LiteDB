@@ -7,6 +7,7 @@ namespace LiteDB
 {
     public partial class LiteCollection<T>
     {
+#if !LITEDB_FOR_VRC_GET // linq expression
         /// <summary>
         /// Run an include action in each document returned by Find(), FindById(), FindOne() and All() methods to load DbRef documents
         /// Returns a new Collection with this action included
@@ -19,6 +20,7 @@ namespace LiteDB
 
             return this.Include(path);
         }
+#endif
 
         /// <summary>
         /// Run an include action in each document returned by Find(), FindById(), FindOne() and All() methods to load DbRef documents

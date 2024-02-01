@@ -1,5 +1,7 @@
 ﻿using System;
+#if !LITEDB_FOR_VRC_GET // linq expression
 using System.Linq.Expressions;
+#endif
 using static LiteDB.Constants;
 
 namespace LiteDB
@@ -44,9 +46,11 @@ namespace LiteDB
         /// </summary>
         public int DeleteMany(string predicate, params BsonValue[] args) => this.DeleteMany(BsonExpression.Create(predicate, args));
 
+#if !LITEDB_FOR_VRC_GET // linq expression
         /// <summary>
         /// Delete all documents based on predicate expression. Returns how many documents was deleted
         /// </summary>
         public int DeleteMany(Expression<Func<T, bool>> predicate) => this.DeleteMany(_mapper.GetExpression(predicate));
+#endif
     }
 }

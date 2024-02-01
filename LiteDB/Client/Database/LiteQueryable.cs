@@ -3,7 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+#if !LITEDB_FOR_VRC_GET // linq expression
 using System.Linq.Expressions;
+#endif
 using System.Reflection;
 using static LiteDB.Constants;
 
@@ -32,6 +34,7 @@ namespace LiteDB
 
         #region Includes
 
+#if !LITEDB_FOR_VRC_GET // linq expression
         /// <summary>
         /// Load cross reference documents from path expression (DbRef reference)
         /// </summary>
@@ -40,6 +43,7 @@ namespace LiteDB
             _query.Includes.Add(_mapper.GetExpression(path));
             return this;
         }
+#endif
 
         /// <summary>
         /// Load cross reference documents from path expression (DbRef reference)
@@ -90,6 +94,7 @@ namespace LiteDB
             return this;
         }
 
+#if !LITEDB_FOR_VRC_GET // linq expression
         /// <summary>
         /// Filters a sequence of documents based on a predicate expression
         /// </summary>
@@ -97,6 +102,7 @@ namespace LiteDB
         {
             return this.Where(_mapper.GetExpression(predicate));
         }
+#endif
 
         #endregion
 
@@ -114,6 +120,7 @@ namespace LiteDB
             return this;
         }
 
+#if !LITEDB_FOR_VRC_GET // linq expression
         /// <summary>
         /// Sort the documents of resultset in ascending (or descending) order according to a key (support only one OrderBy)
         /// </summary>
@@ -121,16 +128,19 @@ namespace LiteDB
         {
             return this.OrderBy(_mapper.GetExpression(keySelector), order);
         }
+#endif
 
         /// <summary>
         /// Sort the documents of resultset in descending order according to a key (support only one OrderBy)
         /// </summary>
         public ILiteQueryable<T> OrderByDescending(BsonExpression keySelector) => this.OrderBy(keySelector, Query.Descending);
 
+#if !LITEDB_FOR_VRC_GET // linq expression
         /// <summary>
         /// Sort the documents of resultset in descending order according to a key (support only one OrderBy)
         /// </summary>
         public ILiteQueryable<T> OrderByDescending<K>(Expression<Func<T, K>> keySelector) => this.OrderBy(keySelector, Query.Descending);
+#endif
 
         #endregion
 
@@ -176,6 +186,7 @@ namespace LiteDB
             return new LiteQueryable<BsonDocument>(_engine, _mapper, _collection, _query);
         }
 
+#if !LITEDB_FOR_VRC_GET // linq expression
         /// <summary>
         /// Project each document of resultset into a new document/value based on selector expression
         /// </summary>
@@ -187,6 +198,7 @@ namespace LiteDB
 
             return new LiteQueryable<K>(_engine, _mapper, _collection, _query);
         }
+#endif
 
         #endregion
 

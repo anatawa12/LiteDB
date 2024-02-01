@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+#if !LITEDB_FOR_VRC_GET // linq expression
 using System.Linq.Expressions;
+#endif
 
 namespace LiteDB
 {
@@ -51,10 +53,12 @@ namespace LiteDB
         /// </summary>
         int DeleteMany<T>(BsonExpression predicate, string collectionName = null);
 
+#if !LITEDB_FOR_VRC_GET // linq expression
         /// <summary>
         /// Delete entity based on predicate filter expression
         /// </summary>
         int DeleteMany<T>(Expression<Func<T, bool>> predicate, string collectionName = null);
+#endif
 
         /// <summary>
         /// Returns new instance of LiteQueryable that provides all method to query any entity inside collection. Use fluent API to apply filter/includes an than run any execute command, like ToList() or First()
@@ -78,6 +82,7 @@ namespace LiteDB
         /// <param name="collectionName">Collection Name</param>
         bool EnsureIndex<T>(BsonExpression expression, bool unique = false, string collectionName = null);
 
+#if !LITEDB_FOR_VRC_GET // linq expression
         /// <summary>
         /// Create a new permanent index in all documents inside this collections if index not exists already.
         /// </summary>
@@ -94,6 +99,7 @@ namespace LiteDB
         /// <param name="unique">Create a unique keys index?</param>
         /// <param name="collectionName">Collection Name</param>
         bool EnsureIndex<T, K>(string name, Expression<Func<T, K>> keySelector, bool unique = false, string collectionName = null);
+#endif
 
         /// <summary>
         /// Search for a single instance of T by Id. Shortcut from Query.SingleById
@@ -105,49 +111,59 @@ namespace LiteDB
         /// </summary>
         List<T> Fetch<T>(BsonExpression predicate, string collectionName = null);
 
+#if !LITEDB_FOR_VRC_GET // linq expression
         /// <summary>
         /// Execute Query[T].Where(predicate).ToList();
         /// </summary>
         List<T> Fetch<T>(Expression<Func<T, bool>> predicate, string collectionName = null);
+#endif
 
         /// <summary>
         /// Execute Query[T].Where(predicate).First();
         /// </summary>
         T First<T>(BsonExpression predicate, string collectionName = null);
 
+#if !LITEDB_FOR_VRC_GET // linq expression
         /// <summary>
         /// Execute Query[T].Where(predicate).First();
         /// </summary>
         T First<T>(Expression<Func<T, bool>> predicate, string collectionName = null);
+#endif
 
         /// <summary>
         /// Execute Query[T].Where(predicate).FirstOrDefault();
         /// </summary>
         T FirstOrDefault<T>(BsonExpression predicate, string collectionName = null);
 
+#if !LITEDB_FOR_VRC_GET // linq expression
         /// <summary>
         /// Execute Query[T].Where(predicate).FirstOrDefault();
         /// </summary>
         T FirstOrDefault<T>(Expression<Func<T, bool>> predicate, string collectionName = null);
+#endif
 
         /// <summary>
         /// Execute Query[T].Where(predicate).Single();
         /// </summary>
         T Single<T>(BsonExpression predicate, string collectionName = null);
 
+#if !LITEDB_FOR_VRC_GET // linq expression
         /// <summary>
         /// Execute Query[T].Where(predicate).Single();
         /// </summary>
         T Single<T>(Expression<Func<T, bool>> predicate, string collectionName = null);
+#endif
 
         /// <summary>
         /// Execute Query[T].Where(predicate).SingleOrDefault();
         /// </summary>
         T SingleOrDefault<T>(BsonExpression predicate, string collectionName = null);
 
+#if !LITEDB_FOR_VRC_GET // linq expression
         /// <summary>
         /// Execute Query[T].Where(predicate).SingleOrDefault();
         /// </summary>
         T SingleOrDefault<T>(Expression<Func<T, bool>> predicate, string collectionName = null);
+#endif
     }
 }

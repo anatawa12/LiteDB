@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+#if !LITEDB_FOR_VRC_GET // linq expression
 using System.Linq.Expressions;
+#endif
 
 namespace LiteDB
 {
@@ -27,10 +29,12 @@ namespace LiteDB
         /// </summary>
         IEnumerable<LiteFileInfo<TFileId>> Find(string predicate, params BsonValue[] args);
 
+#if !LITEDB_FOR_VRC_GET // linq expression
         /// <summary>
         /// Find all files that match with predicate expression.
         /// </summary>
         IEnumerable<LiteFileInfo<TFileId>> Find(Expression<Func<LiteFileInfo<TFileId>, bool>> predicate);
+#endif
 
         /// <summary>
         /// Find all files inside file collections
