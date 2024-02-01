@@ -47,11 +47,13 @@ namespace LiteDB.Engine
         /// </summary>
         public QueryPlan ProcessQuery()
         {
+#if !NO_WHERE_QUERY
             // split where expressions into TERMs (splited by AND operator)
             this.SplitWherePredicateInTerms();
 
             // do terms optimizations
             this.OptimizeTerms();
+#endif
 
             // define Fields
             this.DefineQueryFields();
@@ -59,26 +61,30 @@ namespace LiteDB.Engine
             // define Index, IndexCost, IndexExpression, IsIndexKeyOnly + Where (filters - index)
             this.DefineIndex();
 
+#if !NO_ORDERBY_OR_GROUPBY_QUERY
             // define OrderBy
             this.DefineOrderBy();
 
             // define GroupBy
             this.DefineGroupBy();
+#endif
 
+#if !NO_INCLUDE_QUERY && !NO_WHERE_QUERY
             // define IncludeBefore + IncludeAfter
             this.DefineIncludes();
+#endif
 
             return _queryPlan;
         }
 
         #region Split Where
 
+#if !NO_WHERE_QUERY
         /// <summary>
         /// Fill terms from where predicate list
         /// </summary>
         private void SplitWherePredicateInTerms()
         {
-#if !NO_WHERE_QUERY
             void add(BsonExpression predicate)
             {
                 // do not accept source * in WHERE
@@ -111,7 +117,6 @@ namespace LiteDB.Engine
             {
                 add(predicate);
             }
-#endif
         }
 
         /// <summary>
@@ -119,7 +124,6 @@ namespace LiteDB.Engine
         /// </summary>
         private void OptimizeTerms()
         {
-#if !NO_WHERE_QUERY
             // simple optimization
             for (var i = 0; i < _terms.Count; i++)
             {
@@ -135,8 +139,8 @@ namespace LiteDB.Engine
                     _terms[i] = BsonExpression.Create(term.Right.Source + " IN ARRAY(" + term.Left.Source + ")", term.Parameters);
                 }
             }
-#endif
         }
+#endif
 
         #endregion
 
@@ -324,12 +328,12 @@ namespace LiteDB.Engine
 
         #region OrderBy / GroupBy Definition
 
+#if !NO_ORDERBY_OR_GROUPBY_QUERY
         /// <summary>
         /// Define OrderBy optimization (try re-use index)
         /// </summary>
         private void DefineOrderBy()
         {
-#if !NO_ORDERBY_OR_GROUPBY_QUERY // orderby == null
             // if has no order by, returns null
             if (_query.OrderBy == null) return;
 
@@ -348,7 +352,6 @@ namespace LiteDB.Engine
 
             // otherwise, query.OrderBy will be setted according user defined
             _queryPlan.OrderBy = orderBy;
-#endif
         }
 
         /// <summary>
@@ -356,7 +359,6 @@ namespace LiteDB.Engine
         /// </summary>
         private void DefineGroupBy()
         {
-#if !NO_ORDERBY_OR_GROUPBY_QUERY // GroupBy always like null
             if (_query.GroupBy == null) return;
 
             if (_query.OrderBy != null) throw new NotSupportedException("GROUP BY expression do not support ORDER BY");
@@ -384,17 +386,17 @@ namespace LiteDB.Engine
 
             _queryPlan.GroupBy = groupBy;
             _queryPlan.OrderBy = orderBy;
-#endif
         }
+#endif
 
         #endregion
 
+#if !NO_INCLUDE_QUERY && !NO_WHERE_QUERY
         /// <summary>
         /// Will define each include to be run BEFORE where (worst) OR AFTER where (best)
         /// </summary>
         private void DefineIncludes()
         {
-#if !NO_INCLUDE_QUERY && !NO_WHERE_QUERY
             foreach(var include in _query.Includes)
             {
                 // includes always has one single field
@@ -415,7 +417,7 @@ namespace LiteDB.Engine
                     _queryPlan.IncludeAfter.Add(include);
                 }
             }
-#endif
         }
+#endif
     }
 }
