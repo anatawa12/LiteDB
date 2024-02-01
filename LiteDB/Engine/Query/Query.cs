@@ -21,12 +21,12 @@ namespace LiteDB
         public List<BsonExpression> Where { get; } = new List<BsonExpression>();
 #endif
 
-#if !NO_ORDERBY_QUERY
+#if !NO_ORDERBY_OR_GROUPBY_QUERY
         public BsonExpression OrderBy { get; set; } = null;
         public int Order { get; set; } = Query.Ascending;
 #endif
 
-#if !NO_GROUPBY_QUERY
+#if !NO_ORDERBY_OR_GROUPBY_QUERY
         public BsonExpression GroupBy { get; set; } = null;
 #endif
 #if !NO_HAVING_QUERY
@@ -92,7 +92,7 @@ namespace LiteDB
             }
 #endif
 
-#if !NO_GROUPBY_QUERY
+#if !NO_ORDERBY_OR_GROUPBY_QUERY
             if (this.GroupBy != null)
             {
                 sb.AppendLine($"GROUP BY {this.GroupBy.Source}");
@@ -106,7 +106,7 @@ namespace LiteDB
             }
 #endif
 
-#if !NO_ORDERBY_QUERY
+#if !NO_ORDERBY_OR_GROUPBY_QUERY
             if (this.OrderBy != null)
             {
                 sb.AppendLine($"ORDER BY {this.OrderBy.Source} {(this.Order == Query.Ascending ? "ASC" : "DESC")}");

@@ -26,7 +26,7 @@ namespace LiteDB
 #endif
 #endif
 
-#if !NO_ORDERBY_QUERY
+#if !NO_ORDERBY_OR_GROUPBY_QUERY
         ILiteQueryable<T> OrderBy(BsonExpression keySelector, int order = 1);
 #if !NO_LINQ_EXPRESSION
         ILiteQueryable<T> OrderBy<K>(Expression<Func<T, K>> keySelector, int order = 1);
@@ -35,9 +35,7 @@ namespace LiteDB
 #if !NO_LINQ_EXPRESSION
         ILiteQueryable<T> OrderByDescending<K>(Expression<Func<T, K>> keySelector);
 #endif
-#endif
 
-#if !NO_GROUPBY_QUERY
         ILiteQueryable<T> GroupBy(BsonExpression keySelector);
 #endif
 #if !NO_HAVING_QUERY

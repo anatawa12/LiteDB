@@ -336,7 +336,7 @@ namespace LiteDB
         /// </summary>
         bool Exists(Query query);
 
-#if !NO_ORDERBY_QUERY
+#if !NO_ORDERBY_OR_GROUPBY_QUERY
         /// <summary>
         /// Returns the min value from specified key value in collection
         /// </summary>

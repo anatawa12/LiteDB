@@ -162,13 +162,13 @@ namespace LiteDB.Engine
 #if !NO_INCLUDE_QUERY
             fields.AddRange(_query.Includes.SelectMany(x => x.Fields));
 #endif
-#if !NO_GROUPBY_QUERY
+#if !NO_ORDERBY_OR_GROUPBY_QUERY
             fields.AddRange(_query.GroupBy?.Fields);
 #endif
 #if !NO_HAVING_QUERY
             fields.AddRange(_query.Having?.Fields);
 #endif
-#if !NO_ORDERBY_QUERY
+#if !NO_ORDERBY_OR_GROUPBY_QUERY
             fields.AddRange(_query.OrderBy?.Fields);
 #endif
 
@@ -302,19 +302,15 @@ namespace LiteDB.Engine
 
             // if no index found, try use same index in orderby/groupby/preferred
             if (lowest == null && (
-#if !NO_ORDERBY_QUERY
+#if !NO_ORDERBY_OR_GROUPBY_QUERY
                     _query.OrderBy != null || 
-#endif
-#if !NO_GROUPBY_QUERY
                     _query.GroupBy != null || 
 #endif
                     preferred != null))
             {
                 var index =
-#if !NO_GROUPBY_QUERY
+#if !NO_ORDERBY_OR_GROUPBY_QUERY
                     indexes.FirstOrDefault(x => x.Expression == _query.GroupBy?.Source) ??
-#endif
-#if !NO_ORDERBY_QUERY
                     indexes.FirstOrDefault(x => x.Expression == _query.OrderBy?.Source) ??
 #endif
                     indexes.FirstOrDefault(x => x.Expression == preferred);
@@ -337,7 +333,7 @@ namespace LiteDB.Engine
         /// </summary>
         private void DefineOrderBy()
         {
-#if !NO_ORDERBY_QUERY // orderby == null
+#if !NO_ORDERBY_OR_GROUPBY_QUERY // orderby == null
             // if has no order by, returns null
             if (_query.OrderBy == null) return;
 
@@ -364,12 +360,10 @@ namespace LiteDB.Engine
         /// </summary>
         private void DefineGroupBy()
         {
-#if !NO_GROUPBY_QUERY // GroupBy always like null
+#if !NO_ORDERBY_OR_GROUPBY_QUERY // GroupBy always like null
             if (_query.GroupBy == null) return;
 
-#if !NO_ORDERBY_QUERY
             if (_query.OrderBy != null) throw new NotSupportedException("GROUP BY expression do not support ORDER BY");
-#endif
 #if !NO_INCLUDE_QUERY
             if (_query.Includes.Count > 0) throw new NotSupportedException("GROUP BY expression do not support INCLUDE");
 #endif

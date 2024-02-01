@@ -28,7 +28,7 @@ namespace LiteDB
         {
             return new Query();
         }
-#if !NO_ORDERBY_QUERY
+#if !NO_ORDERBY_OR_GROUPBY_QUERY
         /// <summary>
         /// Returns all documents
         /// </summary>

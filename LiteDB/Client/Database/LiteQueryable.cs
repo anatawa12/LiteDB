@@ -112,7 +112,7 @@ namespace LiteDB
 
         #region OrderBy
 
-#if !NO_ORDERBY_QUERY
+#if !NO_ORDERBY_OR_GROUPBY_QUERY
         /// <summary>
         /// Sort the documents of resultset in ascending (or descending) order according to a key (support only one OrderBy)
         /// </summary>
@@ -152,7 +152,7 @@ namespace LiteDB
 
         #region GroupBy
 
-#if !NO_GROUPBY_QUERY
+#if !NO_ORDERBY_OR_GROUPBY_QUERY
         /// <summary>
         /// Groups the documents of resultset according to a specified key selector expression (support only one GroupBy)
         /// </summary>
