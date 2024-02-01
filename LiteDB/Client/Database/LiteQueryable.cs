@@ -152,6 +152,7 @@ namespace LiteDB
 
         #region GroupBy
 
+#if !NO_GROUPBY_QUERY
         /// <summary>
         /// Groups the documents of resultset according to a specified key selector expression (support only one GroupBy)
         /// </summary>
@@ -162,6 +163,7 @@ namespace LiteDB
             _query.GroupBy = keySelector;
             return this;
         }
+#endif
 
         #endregion
 

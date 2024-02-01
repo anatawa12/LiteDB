@@ -26,7 +26,9 @@ namespace LiteDB
         public int Order { get; set; } = Query.Ascending;
 #endif
 
+#if !NO_GROUPBY_QUERY
         public BsonExpression GroupBy { get; set; } = null;
+#endif
         public BsonExpression Having { get; set; } = null;
 
         public int Offset { get; set; } = 0;
@@ -84,10 +86,12 @@ namespace LiteDB
             }
 #endif
 
+#if !NO_GROUPBY_QUERY
             if (this.GroupBy != null)
             {
                 sb.AppendLine($"GROUP BY {this.GroupBy.Source}");
             }
+#endif
 
             if (this.Having != null)
             {

@@ -152,7 +152,9 @@ namespace LiteDB.Engine
 #if !NO_INCLUDE_QUERY
             fields.AddRange(_query.Includes.SelectMany(x => x.Fields));
 #endif
+#if !NO_GROUPBY_QUERY
             fields.AddRange(_query.GroupBy?.Fields);
+#endif
             fields.AddRange(_query.Having?.Fields);
 #if !NO_ORDERBY_QUERY
             fields.AddRange(_query.OrderBy?.Fields);
@@ -287,11 +289,15 @@ namespace LiteDB.Engine
 #if !NO_ORDERBY_QUERY
                     _query.OrderBy != null || 
 #endif
+#if !NO_GROUPBY_QUERY
                     _query.GroupBy != null || 
+#endif
                     preferred != null))
             {
                 var index =
+#if !NO_GROUPBY_QUERY
                     indexes.FirstOrDefault(x => x.Expression == _query.GroupBy?.Source) ??
+#endif
 #if !NO_ORDERBY_QUERY
                     indexes.FirstOrDefault(x => x.Expression == _query.OrderBy?.Source) ??
 #endif
@@ -342,6 +348,7 @@ namespace LiteDB.Engine
         /// </summary>
         private void DefineGroupBy()
         {
+#if !NO_GROUPBY_QUERY // GroupBy always like null
             if (_query.GroupBy == null) return;
 
 #if !NO_ORDERBY_QUERY
@@ -367,6 +374,7 @@ namespace LiteDB.Engine
 
             _queryPlan.GroupBy = groupBy;
             _queryPlan.OrderBy = orderBy;
+#endif
         }
 
         #endregion
