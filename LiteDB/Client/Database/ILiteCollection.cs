@@ -23,6 +23,7 @@ namespace LiteDB
         /// </summary>
         EntityMapper EntityMapper { get; }
 
+#if !NO_INCLUDE_QUERY
 #if !NO_LINQ_EXPRESSION
         /// <summary>
         /// Run an include action in each document returned by Find(), FindById(), FindOne() and All() methods to load DbRef documents
@@ -36,6 +37,7 @@ namespace LiteDB
         /// Returns a new Collection with this action included
         /// </summary>
         ILiteCollection<T> Include(BsonExpression keySelector);
+#endif
 
         /// <summary>
         /// Insert or Update a document in this collection.

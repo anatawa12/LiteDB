@@ -9,10 +9,12 @@ namespace LiteDB
 {
     public interface ILiteQueryable<T> : ILiteQueryableResult<T>
     {
+#if !NO_INCLUDE_QUERY
         ILiteQueryable<T> Include(BsonExpression path);
         ILiteQueryable<T> Include(List<BsonExpression> paths);
 #if !NO_LINQ_EXPRESSION
         ILiteQueryable<T> Include<K>(Expression<Func<T, K>> path);
+#endif
 #endif
 
         ILiteQueryable<T> Where(BsonExpression predicate);

@@ -45,6 +45,7 @@ namespace LiteDB
         }
 #endif
 
+#if !NO_INCLUDE_QUERY
         /// <summary>
         /// Load cross reference documents from path expression (DbRef reference)
         /// </summary>
@@ -62,6 +63,7 @@ namespace LiteDB
             _query.Includes.AddRange(paths);
             return this;
         }
+#endif
 
         #endregion
 

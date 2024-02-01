@@ -14,7 +14,9 @@ namespace LiteDB
     {
         public BsonExpression Select { get; set; } = BsonExpression.Root;
 
+#if !NO_INCLUDE_QUERY
         public List<BsonExpression> Includes { get; } = new List<BsonExpression>();
+#endif
         public List<BsonExpression> Where { get; } = new List<BsonExpression>();
 
         public BsonExpression OrderBy { get; set; } = null;
@@ -64,10 +66,12 @@ namespace LiteDB
 
             sb.AppendLine($"FROM {collection}");
 
+#if !NO_INCLUDE_QUERY
             if (this.Includes.Count > 0)
             {
                 sb.AppendLine($"INCLUDE {string.Join(", ", this.Includes.Select(x => x.Source))}");
             }
+#endif
 
             if (this.Where.Count > 0)
             {

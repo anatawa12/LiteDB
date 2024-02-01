@@ -16,7 +16,11 @@ namespace LiteDB
         /// </summary>
         public ILiteQueryable<T> Query()
         {
+#if NO_INCLUDE_QUERY
+            return new LiteQueryable<T>(_engine, _mapper, _collection, new Query());
+#else
             return new LiteQueryable<T>(_engine, _mapper, _collection, new Query()).Include(_includes);
+#endif
         }
 
         #region Find
@@ -29,7 +33,9 @@ namespace LiteDB
             if (predicate == null) throw new ArgumentNullException(nameof(predicate));
 
             return this.Query()
+#if !NO_INCLUDE_QUERY
                 .Include(_includes)
+#endif
                 .Where(predicate)
                 .Skip(skip)
                 .Limit(limit)
@@ -101,7 +107,11 @@ namespace LiteDB
         /// <summary>
         /// Returns all documents inside collection order by _id index.
         /// </summary>
+#if NO_INCLUDE_QUERY
+        public IEnumerable<T> FindAll() => this.Query().ToEnumerable();
+#else
         public IEnumerable<T> FindAll() => this.Query().Include(_includes).ToEnumerable();
+#endif
 
         #endregion
     }

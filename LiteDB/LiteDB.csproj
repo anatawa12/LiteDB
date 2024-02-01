@@ -57,6 +57,7 @@
     <DefineConstants>$(DefineConstants);NO_SQL</DefineConstants>
     <DefineConstants>$(DefineConstants);NO_SHARED</DefineConstants>
     <DefineConstants>$(DefineConstants);NO_REPOSITORY</DefineConstants>
+    <DefineConstants>$(DefineConstants);NO_INCLUDE_QUERY</DefineConstants>
   </PropertyGroup>
 
   <!-- Begin References -->

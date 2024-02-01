@@ -147,7 +147,9 @@ namespace LiteDB.Engine
             // include all fields detected in all used expressions
             fields.AddRange(_query.Select.Fields);
             fields.AddRange(_terms.SelectMany(x => x.Fields));
+#if !NO_INCLUDE_QUERY
             fields.AddRange(_query.Includes.SelectMany(x => x.Fields));
+#endif
             fields.AddRange(_query.GroupBy?.Fields);
             fields.AddRange(_query.Having?.Fields);
             fields.AddRange(_query.OrderBy?.Fields);
@@ -330,7 +332,9 @@ namespace LiteDB.Engine
             if (_query.GroupBy == null) return;
 
             if (_query.OrderBy != null) throw new NotSupportedException("GROUP BY expression do not support ORDER BY");
+#if !NO_INCLUDE_QUERY
             if (_query.Includes.Count > 0) throw new NotSupportedException("GROUP BY expression do not support INCLUDE");
+#endif
 
             var groupBy = new GroupBy(_query.GroupBy, _queryPlan.Select.Expression, _query.Having);
             var orderBy = (OrderBy)null;
@@ -357,6 +361,7 @@ namespace LiteDB.Engine
         /// </summary>
         private void DefineIncludes()
         {
+#if !NO_INCLUDE_QUERY
             foreach(var include in _query.Includes)
             {
                 // includes always has one single field
@@ -377,6 +382,7 @@ namespace LiteDB.Engine
                     _queryPlan.IncludeAfter.Add(include);
                 }
             }
+#endif
         }
     }
 }

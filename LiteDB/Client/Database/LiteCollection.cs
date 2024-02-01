@@ -9,7 +9,9 @@ namespace LiteDB
     {
         private readonly string _collection;
         private readonly ILiteEngine _engine;
+#if !NO_INCLUDE_QUERY
         private readonly List<BsonExpression> _includes;
+#endif
         private readonly BsonMapper _mapper;
         private readonly EntityMapper _entity;
         private readonly MemberMapper _id;
@@ -35,7 +37,9 @@ namespace LiteDB
             _collection = name ?? mapper.ResolveCollectionName(typeof(T));
             _engine = engine;
             _mapper = mapper;
+#if !NO_INCLUDE_QUERY
             _includes = new List<BsonExpression>();
+#endif
 
             // if strong typed collection, get _id member mapped (if exists)
             if (typeof(T) == typeof(BsonDocument))

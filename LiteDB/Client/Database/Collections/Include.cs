@@ -7,6 +7,7 @@ namespace LiteDB
 {
     public partial class LiteCollection<T>
     {
+#if !NO_INCLUDE_QUERY
 #if !NO_LINQ_EXPRESSION
         /// <summary>
         /// Run an include action in each document returned by Find(), FindById(), FindOne() and All() methods to load DbRef documents
@@ -38,5 +39,6 @@ namespace LiteDB
 
             return newcol;
         }
+#endif
     }
 }
