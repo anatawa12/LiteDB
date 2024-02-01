@@ -18,10 +18,12 @@ namespace LiteDB
         /// </summary>
         BsonAutoId AutoId { get; }
 
+#if !NO_ENTITY_MAPPER
         /// <summary>
         /// Getting entity mapper from current collection. Returns null if collection are BsonDocument type
         /// </summary>
         EntityMapper EntityMapper { get; }
+#endif
 
 #if !NO_INCLUDE_QUERY
 #if !NO_LINQ_EXPRESSION

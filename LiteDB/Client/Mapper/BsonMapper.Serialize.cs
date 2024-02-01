@@ -140,7 +140,11 @@ namespace LiteDB
             // otherwise serialize as a plain object
             else
             {
+#if NO_ENTITY_MAPPER
+                throw Unsupported.EntityMapper;
+#else
                 return this.SerializeObject(type, obj, depth);
+#endif
             }
         }
 
@@ -176,6 +180,7 @@ namespace LiteDB
             return o;
         }
 
+#if !NO_ENTITY_MAPPER
         private BsonDocument SerializeObject(Type type, object obj, int depth)
         {
             var t = obj.GetType();
@@ -208,5 +213,6 @@ namespace LiteDB
 
             return doc;
         }
+#endif
     }
 }

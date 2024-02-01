@@ -1,3 +1,4 @@
+#if !NO_ENTITY_MAPPER
 using System;
 using System.Reflection;
 
@@ -16,3 +17,4 @@ namespace LiteDB
         public Type GetType(string name) => Type.GetType(name);
     }
 }
+#endif

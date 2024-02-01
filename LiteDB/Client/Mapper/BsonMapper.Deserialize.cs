@@ -149,13 +149,20 @@ namespace LiteDB
                 }
                 else
                 {
+#if NO_ENTITY_MAPPER
+                    throw Unsupported.EntityMapper;
+#else
                     return this.DeserializeList(type, value.AsArray);
+#endif
                 }
             }
 
             // if value is document, deserialize as document
             else if (value.IsDocument)
             {
+#if NO_ENTITY_MAPPER
+                throw Unsupported.EntityMapper;
+#else
                 // if type is anonymous use special handler
                 if (type.IsAnonymousType())
                 {
@@ -224,6 +231,7 @@ namespace LiteDB
                 }
 
                 return o;
+#endif
             }
 
             // in last case, return value as-is - can cause "cast error"
@@ -244,6 +252,7 @@ namespace LiteDB
             return arr;
         }
 
+#if !NO_ENTITY_MAPPER
         private object DeserializeList(Type type, BsonArray value)
         {
             var itemType = Reflection.GetListItemType(type);
@@ -316,5 +325,6 @@ namespace LiteDB
 
             return obj;
         }
+#endif
     }
 }

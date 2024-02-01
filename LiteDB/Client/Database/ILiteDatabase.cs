@@ -19,6 +19,7 @@ namespace LiteDB
         ILiteStorage<string> FileStorage { get; }
 #endif
 
+#if !NO_ENTITY_MAPPER
         /// <summary>
         /// Get a collection using a entity class as strong typed document. If collection does not exits, create a new one.
         /// </summary>
@@ -35,6 +36,7 @@ namespace LiteDB
         /// Get a collection using a name based on typeof(T).Name (BsonMapper.ResolveCollectionName function)
         /// </summary>
         ILiteCollection<T> GetCollection<T>(BsonAutoId autoId);
+#endif
 
         /// <summary>
         /// Get a collection using a generic BsonDocument. If collection does not exits, create a new one.

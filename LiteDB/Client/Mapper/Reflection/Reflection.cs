@@ -27,6 +27,7 @@ namespace LiteDB
     {
         #region CreateInstance
 
+#if !NO_ENTITY_MAPPER
         private static Dictionary<Type, CreateObject> _cacheCtor = new Dictionary<Type, CreateObject>();
 
         /// <summary>
@@ -102,6 +103,7 @@ namespace LiteDB
                 }
             }
         }
+#endif
 
         #endregion
 
@@ -149,6 +151,7 @@ namespace LiteDB
             return type.GetGenericArguments()[0];
         }
 
+#if !NO_ENTITY_MAPPER
         public static Type GetGenericListOfType(Type type)
         {
             var listType = typeof(List<>);
@@ -166,6 +169,7 @@ namespace LiteDB
             var dictionaryType = typeof(Dictionary<,>);
             return dictionaryType.MakeGenericType(k, v);
         }
+#endif
 
         /// <summary>
         /// Get item type from a generic List or Array
@@ -174,6 +178,7 @@ namespace LiteDB
         {
             if (listType.IsArray) return listType.GetElementType();
 
+#if !NO_ENTITY_MAPPER
             foreach (var i in listType.GetInterfaces())
             {
                 if (i.GetTypeInfo().IsGenericType && i.GetGenericTypeDefinition() == typeof(IEnumerable<>))
@@ -187,10 +192,12 @@ namespace LiteDB
                     return listType.GetGenericArguments()[0];
                 }
             }
+#endif
 
             return typeof(object);
         }
 
+#if !NO_ENTITY_MAPPER
         /// <summary>
         /// Returns true if Type is any kind of Array/IList/ICollection/....
         /// </summary>
@@ -213,6 +220,7 @@ namespace LiteDB
 
             return false;
         }
+#endif
 
         /// <summary>
         /// Return if type is simple value
@@ -238,6 +246,7 @@ namespace LiteDB
                 type == typeof(Guid);
         }
 
+#if !NO_ENTITY_MAPPER
         /// <summary>
         /// Returns true if Type implement ICollection (like List, HashSet)
         /// </summary>
@@ -275,6 +284,7 @@ namespace LiteDB
 
             return null;
         }
+#endif
 
         #endregion
 

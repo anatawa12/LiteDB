@@ -88,6 +88,7 @@ namespace LiteDB
 
         #region Collections
 
+#if !NO_ENTITY_MAPPER
         /// <summary>
         /// Get a collection using an entity class as strong typed document. If collection does not exist, create a new one.
         /// </summary>
@@ -113,6 +114,7 @@ namespace LiteDB
         {
             return this.GetCollection<T>(null, autoId);
         }
+#endif
 
         /// <summary>
         /// Get a collection using a generic BsonDocument. If collection does not exist, create a new one.
