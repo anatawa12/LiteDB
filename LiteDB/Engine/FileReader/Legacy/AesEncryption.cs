@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !NO_AES
+using System;
 using System.Security.Cryptography;
 using System.IO;
 using System.Text;
@@ -100,3 +101,4 @@ namespace LiteDB
         }
     }
 }
+#endif

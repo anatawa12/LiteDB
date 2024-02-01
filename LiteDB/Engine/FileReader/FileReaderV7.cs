@@ -18,7 +18,9 @@ namespace LiteDB.Engine
         private const int V7_PAGE_SIZE = 4096;
 
         private readonly Stream _stream;
+#if !NO_AES
         private readonly AesEncryption _aes;
+#endif
         private readonly BsonDocument _header;
 
         private byte[] _buffer = new byte[V7_PAGE_SIZE];
@@ -36,6 +38,9 @@ namespace LiteDB.Engine
             }
             else if (password != null)
             {
+#if NO_AES
+                throw Unsupported.AesRemoved;
+#else
                 if (_header["salt"].AsBinary.IsFullZero())
                 {
                     throw LiteException.FileNotEncrypted();
@@ -47,11 +52,13 @@ namespace LiteDB.Engine
                 {
                     throw LiteException.InvalidPassword();
                 }
+#endif
             }
-
+#if !NO_AES
             _aes = password == null ?
                 null :
                 new AesEncryption(password, _header["salt"].AsBinary);
+#endif
         }
 
         /// <summary>
@@ -161,10 +168,12 @@ namespace LiteDB.Engine
             _stream.Read(_buffer, 0, V7_PAGE_SIZE);
 
             // decrypt encrypted page (except header page - header are plain data)
+#if !NO_AES
             if (_aes != null && pageID > 0)
             {
                 _buffer = _aes.Decrypt(_buffer);
             }
+#endif
 
             var reader = new ByteReader(_buffer);
 
