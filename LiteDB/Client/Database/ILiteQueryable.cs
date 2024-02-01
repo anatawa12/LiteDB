@@ -51,10 +51,8 @@ namespace LiteDB
     public interface ILiteQueryableResult<T>
     {
         ILiteQueryableResult<T> Limit(int limit);
-#if !NO_OFFSET_QUERY
         ILiteQueryableResult<T> Skip(int offset);
         ILiteQueryableResult<T> Offset(int offset);
-#endif
         ILiteQueryableResult<T> ForUpdate();
 
         BsonDocument GetPlan();

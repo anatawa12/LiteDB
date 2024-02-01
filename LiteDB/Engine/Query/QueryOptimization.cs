@@ -33,9 +33,7 @@ namespace LiteDB.Engine
                 Select = new Select(_query.Select, _query.Select.UseSource),
                 ForUpdate = query.ForUpdate,
                 Limit = query.Limit,
-#if !NO_OFFSET_QUERY
                 Offset = query.Offset
-#endif
             };
         }
 
