@@ -36,7 +36,9 @@ namespace LiteDB
 #if !NO_OFFSET_QUERY
         public int Offset { get; set; } = 0;
 #endif
+#if !NO_LIMIT_QUERY
         public int Limit { get; set; } = int.MaxValue;
+#endif
         public bool ForUpdate { get; set; } = false;
 
         public string Into { get; set; }
@@ -111,10 +113,12 @@ namespace LiteDB
             }
 #endif
 
+#if !NO_LIMIT_QUERY
             if (this.Limit != int.MaxValue)
             {
                 sb.AppendLine($"LIMIT {this.Limit}");
             }
+#endif
 
 #if !NO_OFFSET_QUERY
             if (this.Offset != 0)

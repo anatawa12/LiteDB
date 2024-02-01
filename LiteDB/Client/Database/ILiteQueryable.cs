@@ -52,7 +52,9 @@ namespace LiteDB
 
     public interface ILiteQueryableResult<T>
     {
+#if !NO_LIMIT_QUERY
         ILiteQueryableResult<T> Limit(int limit);
+#endif
 #if !NO_OFFSET_QUERY
         ILiteQueryableResult<T> Skip(int offset);
         ILiteQueryableResult<T> Offset(int offset);

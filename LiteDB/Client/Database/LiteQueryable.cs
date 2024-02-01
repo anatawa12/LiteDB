@@ -239,6 +239,7 @@ namespace LiteDB
         public ILiteQueryableResult<T> Skip(int offset) => this.Offset(offset);
 #endif
 
+#if !NO_LIMIT_QUERY
         /// <summary>
         /// Return a specified number of contiguous documents from start of resultset
         /// </summary>
@@ -247,6 +248,7 @@ namespace LiteDB
             _query.Limit = limit;
             return this;
         }
+#endif
 
         #endregion
 

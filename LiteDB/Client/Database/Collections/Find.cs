@@ -56,7 +56,11 @@ namespace LiteDB
 #else
             if (skip != 0) throw Unsupported.OffsetQuery;
 #endif
+#if !NO_LIMIT_QUERY
             if (limit != int.MaxValue) query.Limit = limit;
+#else
+            if (limit != int.MaxValue) throw Unsupported.LimitQuery;
+#endif
 
             return new LiteQueryable<T>(_engine, _mapper, _collection, query)
                 .ToEnumerable();

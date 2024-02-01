@@ -30,7 +30,9 @@ namespace LiteDB.Engine
                 Index = source != null ? new IndexVirtual(source) : null,
                 Select = new Select(_query.Select, _query.Select.UseSource),
                 ForUpdate = query.ForUpdate,
+#if !NO_LIMIT_QUERY
                 Limit = query.Limit,
+#endif
 #if !NO_OFFSET_QUERY
                 Offset = query.Offset
 #endif

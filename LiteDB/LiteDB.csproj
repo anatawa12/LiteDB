@@ -63,6 +63,7 @@
     <DefineConstants>$(DefineConstants);NO_GROUPBY_QUERY</DefineConstants>
     <DefineConstants>$(DefineConstants);NO_HAVING_QUERY</DefineConstants>
     <DefineConstants>$(DefineConstants);NO_OFFSET_QUERY</DefineConstants>
+    <DefineConstants>$(DefineConstants);NO_LIMIT_QUERY</DefineConstants>
   </PropertyGroup>
 
   <!-- Begin References -->
