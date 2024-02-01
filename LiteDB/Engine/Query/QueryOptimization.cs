@@ -364,7 +364,11 @@ namespace LiteDB.Engine
             if (_query.Includes.Count > 0) throw new NotSupportedException("GROUP BY expression do not support INCLUDE");
 #endif
 
+#if NO_HAVING_QUERY
+            var groupBy = new GroupBy(_query.GroupBy, _queryPlan.Select.Expression);
+#else
             var groupBy = new GroupBy(_query.GroupBy, _queryPlan.Select.Expression, _query.Having);
+#endif
             var orderBy = (OrderBy)null;
 
             // if groupBy use same expression in index, set group by order to MaxValue to not run
@@ -390,7 +394,7 @@ namespace LiteDB.Engine
         /// </summary>
         private void DefineIncludes()
         {
-#if !NO_INCLUDE_QUERY
+#if !NO_INCLUDE_QUERY && !NO_WHERE_QUERY
             foreach(var include in _query.Includes)
             {
                 // includes always has one single field

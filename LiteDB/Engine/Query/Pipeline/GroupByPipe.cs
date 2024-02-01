@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !NO_ORDERBY_OR_GROUPBY_QUERY
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using static LiteDB.Constants;
@@ -30,11 +31,13 @@ namespace LiteDB.Engine
             // starts pipe loading document
             var source = this.LoadDocument(nodes);
 
+#if !NO_WHERE_QUERY
             // filter results according filter expressions
             foreach (var expr in query.Filters)
             {
                 source = this.Filter(source, expr);
             }
+#endif
 
             // run orderBy used in GroupBy (if not already ordered by index)
             if (query.OrderBy != null)
@@ -120,12 +123,14 @@ namespace LiteDB.Engine
 
                 try
                 {
+#if !NO_HAVING_QUERY
                     if (groupBy.Having != null)
                     {
                         var filter = groupBy.Having.ExecuteScalar(group, null, null, _pragmas.Collation);
 
                         if (!filter.IsBoolean || !filter.AsBoolean) continue;
                     }
+#endif
 
                     value = groupBy.Select.ExecuteScalar(group, null, null, _pragmas.Collation);
                 }
@@ -146,3 +151,4 @@ namespace LiteDB.Engine
         }
     }
 }
+#endif

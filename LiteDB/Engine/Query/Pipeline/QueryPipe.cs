@@ -31,6 +31,7 @@ namespace LiteDB.Engine
             // starts pipe loading document
             var source = this.LoadDocument(nodes);
 
+#if !NO_WHERE_QUERY
             // do includes in result before filter
             foreach (var path in query.IncludeBefore)
             {
@@ -42,13 +43,16 @@ namespace LiteDB.Engine
             {
                 source = this.Filter(source, expr);
             }
+#endif
 
+#if !NO_ORDERBY_OR_GROUPBY_QUERY
             if (query.OrderBy != null)
             {
                 // pipe: orderby with offset+limit
                 source = this.OrderBy(source, query.OrderBy.Expression, query.OrderBy.Order, query.Offset, query.Limit);
             }
             else
+#endif
             {
                 // pipe: apply offset (no orderby)
                 if (query.Offset > 0) source = source.Skip(query.Offset);
@@ -57,11 +61,13 @@ namespace LiteDB.Engine
                 if (query.Limit < int.MaxValue) source = source.Take(query.Limit);
             }
 
+#if !NO_WHERE_QUERY
             // do includes in result after filter
             foreach (var path in query.IncludeAfter)
             {
                 source = this.Include(source, path);
             }
+#endif
 
             // if is an aggregate query, run select transform over all resultset - will return a single value
             if (query.Select.All)

@@ -42,6 +42,7 @@ namespace LiteDB.Engine
         /// </summary>
         public bool IsIndexKeyOnly { get; set; } = false;
 
+#if !NO_WHERE_QUERY
         /// <summary>
         /// List of filters of documents
         /// </summary>
@@ -56,7 +57,9 @@ namespace LiteDB.Engine
         /// List of includes must be done AFTER filter (it's optimized because will include result only)
         /// </summary>
         public List<BsonExpression> IncludeAfter { get; set; } = new List<BsonExpression>();
+#endif
 
+#if !NO_ORDERBY_OR_GROUPBY_QUERY
         /// <summary>
         /// Expression to order by resultset
         /// </summary>
@@ -66,6 +69,7 @@ namespace LiteDB.Engine
         /// Expression to group by document results
         /// </summary>
         public GroupBy GroupBy { get; set; } = null;
+#endif
 
         /// <summary>
         /// Transaformation data before return - if null there is no transform (return document)
@@ -99,14 +103,18 @@ namespace LiteDB.Engine
         /// </summary>
         public BasePipe GetPipe(TransactionService transaction, Snapshot snapshot, SortDisk tempDisk, EnginePragmas pragmas)
         {
+#if !NO_ORDERBY_OR_GROUPBY_QUERY
             if (this.GroupBy == null)
+#endif
             {
                 return new QueryPipe(transaction, this.GetLookup(snapshot, pragmas), tempDisk, pragmas);
             }
+#if !NO_ORDERBY_OR_GROUPBY_QUERY
             else
             {
                 return new GroupByPipe(transaction, this.GetLookup(snapshot, pragmas), tempDisk, pragmas);
             }
+#endif
         }
 
         /// <summary>
@@ -147,7 +155,11 @@ namespace LiteDB.Engine
             {
                 ["collection"] = this.Collection,
                 ["snaphost"] = this.ForUpdate ? "write" : "read",
+#if NO_ORDERBY_OR_GROUPBY_QUERY
+                ["pipe"] = "queryPipe"
+#else
                 ["pipe"] = this.GroupBy == null ? "queryPipe" : "groupByPipe"
+#endif
             };
 
             doc["index"] = new BsonDocument
@@ -167,6 +179,7 @@ namespace LiteDB.Engine
                     (BsonValue)new BsonArray(this.Fields.Select(x => new BsonValue(x))),
             };
 
+#if !NO_WHERE_QUERY
             if (this.IncludeBefore.Count > 0)
             {
                 doc["includeBefore"] = new BsonArray(this.IncludeBefore.Select(x => new BsonValue(x.Source)));
@@ -176,7 +189,9 @@ namespace LiteDB.Engine
             {
                 doc["filters"] = new BsonArray(this.Filters.Select(x => new BsonValue(x.Source)));
             }
+#endif
 
+#if !NO_ORDERBY_OR_GROUPBY_QUERY
             if (this.OrderBy != null)
             {
                 doc["orderBy"] = new BsonDocument
@@ -185,32 +200,43 @@ namespace LiteDB.Engine
                     ["order"] = this.OrderBy.Order,
                 };
             }
+#endif
 
+#if !NO_LIMIT_QUERY
             if (this.Limit != int.MaxValue)
             {
                 doc["limit"] = this.Limit;
             }
+#endif
 
+#if !NO_OFFSET_QUERY
             if (this.Offset != 0)
             {
                 doc["offset"] = this.Offset;
             }
+#endif
 
+#if !NO_WHERE_QUERY
             if (this.IncludeAfter.Count > 0)
             {
                 doc["includeAfter"] = new BsonArray(this.IncludeAfter.Select(x => new BsonValue(x.Source)));
             }
+#endif
 
+#if !NO_ORDERBY_OR_GROUPBY_QUERY
             if (this.GroupBy != null)
             {
                 doc["groupBy"] = new BsonDocument
                 {
                     ["expr"] = this.GroupBy.Expression.Source,
+#if !NO_HAVING_QUERY
                     ["having"] = this.GroupBy.Having?.Source,
+#endif
                     ["select"] = this.GroupBy.Select?.Source
                 };
             }
             else
+#endif
             {
                 doc["select"] = new BsonDocument
                 {
