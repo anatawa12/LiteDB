@@ -344,10 +344,8 @@ namespace LiteDB
         {
             if (tokenizer == null) throw new ArgumentNullException(nameof(tokenizer));
 
-            var context = new ExpressionContext();
-
             // compilation is performed in parser
-            return BsonExpressionParser.ParseFullExpression(tokenizer, context, null, scope);
+            return BsonExpressionParser.ParseFullExpression(tokenizer, null, null, scope);
         }
 
         /// <summary>
@@ -357,10 +355,8 @@ namespace LiteDB
         {
             if (tokenizer == null) throw new ArgumentNullException(nameof(tokenizer));
 
-            var context = new ExpressionContext();
-
             // compilation is performed in parser
-            return BsonExpressionParser.ParseSingleExpression(tokenizer, context, null, scope);
+            return BsonExpressionParser.ParseSingleExpression(tokenizer, null, null, scope);
         }
 
 #endif
