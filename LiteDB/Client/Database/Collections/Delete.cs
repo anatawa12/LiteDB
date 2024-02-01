@@ -37,6 +37,7 @@ namespace LiteDB
             return _engine.DeleteMany(_collection, predicate);
         }
 
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
         /// <summary>
         /// Delete all documents based on predicate expression. Returns how many documents was deleted
         /// </summary>
@@ -46,6 +47,7 @@ namespace LiteDB
         /// Delete all documents based on predicate expression. Returns how many documents was deleted
         /// </summary>
         public int DeleteMany(string predicate, params BsonValue[] args) => this.DeleteMany(BsonExpression.Create(predicate, args));
+#endif
 
 #if !NO_LINQ_EXPRESSION
         /// <summary>

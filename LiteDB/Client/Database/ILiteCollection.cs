@@ -177,6 +177,7 @@ namespace LiteDB
         /// </summary>
         T FindOne(BsonExpression predicate);
 
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
         /// <summary>
         /// Find the first document using predicate expression. Returns null if not found
         /// </summary>
@@ -186,6 +187,7 @@ namespace LiteDB
         /// Find the first document using predicate expression. Returns null if not found
         /// </summary>
         T FindOne(BsonExpression predicate, params BsonValue[] args);
+#endif
 
 #if !NO_LINQ_EXPRESSION
         /// <summary>
@@ -221,6 +223,7 @@ namespace LiteDB
         /// </summary>
         int DeleteMany(BsonExpression predicate);
 
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
         /// <summary>
         /// Delete all documents based on predicate expression. Returns how many documents was deleted
         /// </summary>
@@ -230,6 +233,7 @@ namespace LiteDB
         /// Delete all documents based on predicate expression. Returns how many documents was deleted
         /// </summary>
         int DeleteMany(string predicate, params BsonValue[] args);
+#endif
 
 #if !NO_LINQ_EXPRESSION
         /// <summary>
@@ -250,6 +254,7 @@ namespace LiteDB
         /// </summary>
         int Count(BsonExpression predicate);
 
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
         /// <summary>
         /// Count documents matching a query. This method does not deserialize any document. Needs indexes on query expression
         /// </summary>
@@ -259,6 +264,7 @@ namespace LiteDB
         /// Count documents matching a query. This method does not deserialize any document. Needs indexes on query expression
         /// </summary>
         int Count(string predicate, params BsonValue[] args);
+#endif
 
 #if !NO_LINQ_EXPRESSION
         /// <summary>
@@ -284,6 +290,7 @@ namespace LiteDB
         /// </summary>
         long LongCount(BsonExpression predicate);
 
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
         /// <summary>
         /// Count documents matching a query. This method does not deserialize any documents. Needs indexes on query expression
         /// </summary>
@@ -293,6 +300,7 @@ namespace LiteDB
         /// Count documents matching a query. This method does not deserialize any documents. Needs indexes on query expression
         /// </summary>
         long LongCount(string predicate, params BsonValue[] args);
+#endif
 
 #if !NO_LINQ_EXPRESSION
         /// <summary>
@@ -313,6 +321,7 @@ namespace LiteDB
         /// </summary>
         bool Exists(BsonExpression predicate);
 
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
         /// <summary>
         /// Returns true if query returns any document. This method does not deserialize any document. Needs indexes on query expression
         /// </summary>
@@ -322,6 +331,7 @@ namespace LiteDB
         /// Returns true if query returns any document. This method does not deserialize any document. Needs indexes on query expression
         /// </summary>
         bool Exists(string predicate, params BsonValue[] args);
+#endif
 
 #if !NO_LINQ_EXPRESSION
         /// <summary>

@@ -106,7 +106,11 @@ namespace LiteDB.Engine
                     {
                         this.EnsureIndex(collection,
                             index.Name,
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+                            BsonExpression.ForIndex(index.Expression),
+#else
                             BsonExpression.Create(index.Expression),
+#endif
                             index.Unique);
                     }
 

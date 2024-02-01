@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -155,3 +156,4 @@ namespace LiteDB
         #endregion
     }
 }
+#endif

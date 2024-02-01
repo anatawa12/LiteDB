@@ -46,6 +46,7 @@ namespace LiteDB
         }
 #endif
 
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
         /// <summary>
         /// Returns all documents that value are equals to value (=)
         /// </summary>
@@ -165,12 +166,14 @@ namespace LiteDB
         {
             return In(field, new BsonArray(values));
         }
+#endif
 
         /// <summary>
         /// Get all operands to works with array or enumerable values
         /// </summary>
         public static QueryAny Any() => new QueryAny();
 
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
         /// <summary>
         /// Returns document that exists in BOTH queries results. If both queries has indexes, left query has index preference (other side will be run in full scan)
         /// </summary>
@@ -226,5 +229,6 @@ namespace LiteDB
 
             return left;
         }
+#endif
     }
 }

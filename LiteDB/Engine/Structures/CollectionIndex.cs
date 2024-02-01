@@ -74,7 +74,11 @@ namespace LiteDB.Engine
             this.Unique = unique;
             this.FreeIndexPageList = uint.MaxValue;
 
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+            this.BsonExpr = BsonExpression.ForIndex(expr);
+#else
             this.BsonExpr = BsonExpression.Create(expr);
+#endif
         }
 
         public CollectionIndex(BufferReader reader)
@@ -89,7 +93,11 @@ namespace LiteDB.Engine
             this.MaxLevel = reader.ReadByte(); // 1
             this.FreeIndexPageList = reader.ReadUInt32(); // 4
 
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+            this.BsonExpr = BsonExpression.ForIndex(this.Expression);
+#else
             this.BsonExpr = BsonExpression.Create(this.Expression);
+#endif
         }
 
         public void UpdateBuffer(BufferWriter writer)

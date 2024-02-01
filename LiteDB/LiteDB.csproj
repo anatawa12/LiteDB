@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net4.5;netstandard1.3;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net4.5;netstandard1.3;netstandard2.0;net8.0</TargetFrameworks>
     <AssemblyVersion>5.0.17</AssemblyVersion>
     <FileVersion>5.0.17</FileVersion>
     <VersionPrefix>5.0.17</VersionPrefix>
@@ -28,6 +28,7 @@
     <SignAssembly Condition="'$(OS)'=='Windows_NT'">true</SignAssembly>
     <AssemblyOriginatorKeyFile Condition="'$(Configuration)' == 'Release'">LiteDB.snk</AssemblyOriginatorKeyFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <IsTrimmable Condition="'$(TargetFramework)' == 'net8.0'">true</IsTrimmable>
   </PropertyGroup>
   
   <!--
@@ -61,6 +62,7 @@
     <DefineConstants>$(DefineConstants);NO_WHERE_QUERY</DefineConstants>
     <DefineConstants>$(DefineConstants);NO_ORDERBY_OR_GROUPBY_QUERY</DefineConstants>
     <DefineConstants>$(DefineConstants);NO_HAVING_QUERY</DefineConstants>
+    <DefineConstants>$(DefineConstants);EXPRESSION_PARSER_ONLY_FOR_INDEX</DefineConstants>
   </PropertyGroup>
 
   <!-- Begin References -->

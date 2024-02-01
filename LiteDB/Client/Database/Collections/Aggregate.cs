@@ -31,6 +31,7 @@ namespace LiteDB
             return this.Query().Where(predicate).Count();
         }
 
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
         /// <summary>
         /// Get document count in collection using predicate filter expression
         /// </summary>
@@ -40,6 +41,7 @@ namespace LiteDB
         /// Get document count in collection using predicate filter expression
         /// </summary>
         public int Count(string predicate, params BsonValue[] args) => this.Count(BsonExpression.Create(predicate, args));
+#endif
 
 #if !NO_LINQ_EXPRESSION
         /// <summary>
@@ -77,6 +79,7 @@ namespace LiteDB
             return this.Query().Where(predicate).LongCount();
         }
 
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
         /// <summary>
         /// Get document count in collection using predicate filter expression
         /// </summary>
@@ -86,6 +89,7 @@ namespace LiteDB
         /// Get document count in collection using predicate filter expression
         /// </summary>
         public long LongCount(string predicate, params BsonValue[] args) => this.LongCount(BsonExpression.Create(predicate, args));
+#endif
 
 #if !NO_LINQ_EXPRESSION
         /// <summary>
@@ -116,6 +120,7 @@ etExpression(predicate));
             return this.Query().Where(predicate).Exists();
         }
 
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
         /// <summary>
         /// Get true if collection contains at least 1 document that satisfies the predicate expression
         /// </summary>
@@ -125,6 +130,7 @@ etExpression(predicate));
         /// Get true if collection contains at least 1 document that satisfies the predicate expression
         /// </summary>
         public bool Exists(string predicate, params BsonValue[] args) => this.Exists(BsonExpression.Create(predicate, args));
+#endif
 
 #if !NO_LINQ_EXPRESSION
         /// <summary>
@@ -164,7 +170,7 @@ etExpression(predicate));
         /// <summary>
         /// Returns the min value of _id index
         /// </summary>
-        public BsonValue Min() => this.Min("_id");
+        public BsonValue Min() => this.Min(BsonExpression.Root);
 
 #if !NO_LINQ_EXPRESSION
         /// <summary>
@@ -202,7 +208,7 @@ etExpression(predicate));
         /// <summary>
         /// Returns the max _id index key value
         /// </summary>
-        public BsonValue Max() => this.Max("_id");
+        public BsonValue Max() => this.Max(BsonExpression.IdExpression);
 
 #if !NO_LINQ_EXPRESSION
         /// <summary>

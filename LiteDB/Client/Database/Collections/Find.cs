@@ -85,6 +85,7 @@ namespace LiteDB
         /// </summary>
         public T FindOne(BsonExpression predicate) => this.Find(predicate).FirstOrDefault();
 
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
         /// <summary>
         /// Find the first document using predicate expression. Returns null if not found
         /// </summary>
@@ -94,6 +95,7 @@ namespace LiteDB
         /// Find the first document using predicate expression. Returns null if not found
         /// </summary>
         public T FindOne(BsonExpression predicate, params BsonValue[] args) => this.FindOne(BsonExpression.Create(predicate, args));
+#endif
 
 #if !NO_LINQ_EXPRESSION
         /// <summary>

@@ -53,7 +53,7 @@ namespace LiteDB.Engine
 
             IEnumerable<BsonDocument> transformDocs()
             {
-                var q = new Query { Select = "$", ForUpdate = true };
+                var q = new Query { Select = BsonExpression.Root, ForUpdate = true };
 
                 if (predicate != null)
                 {
@@ -75,7 +75,11 @@ namespace LiteDB.Engine
 
                         if (!value.IsDocument) throw new ArgumentException("Extend expression must return a document", nameof(transform));
 
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+                        var result = BsonExprInterpreter.EXTEND(doc, value.AsDocument).AsDocument;
+#else
                         var result = BsonExpressionMethods.EXTEND(doc, value.AsDocument).AsDocument;
+#endif
 
                         // be sure result document will contain same _id as current doc
                         if (result.TryGetValue("_id", out var newId))

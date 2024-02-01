@@ -8,6 +8,7 @@ namespace LiteDB
 {
     public class QueryAny
     {
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
         /// <summary>
         /// Returns all documents for which at least one value in arrayFields is equal to value
         /// </summary>
@@ -89,5 +90,6 @@ namespace LiteDB
 
             return BsonExpression.Create($"{arrayField} ANY != {value ?? BsonValue.Null}");
         }
+#endif
     }
 }

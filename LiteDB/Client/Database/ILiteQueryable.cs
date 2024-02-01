@@ -19,8 +19,10 @@ namespace LiteDB
 
 #if !NO_WHERE_QUERY
         ILiteQueryable<T> Where(BsonExpression predicate);
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
         ILiteQueryable<T> Where(string predicate, BsonDocument parameters);
         ILiteQueryable<T> Where(string predicate, params BsonValue[] args);
+#endif
 #if !NO_LINQ_EXPRESSION
         ILiteQueryable<T> Where(Expression<Func<T, bool>> predicate);
 #endif

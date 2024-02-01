@@ -12,7 +12,9 @@ using static LiteDB.Constants;
 
 namespace LiteDB
 {
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
     internal enum BsonExpressionParserMode { Full, Single, SelectDocument, UpdateDocument }
+#endif
 
     /// <summary>
     /// Compile and execute simple expressions using BsonDocuments. Used in indexes and updates operations. See https://github.com/mbdavid/LiteDB/wiki/Expressions
@@ -21,6 +23,7 @@ namespace LiteDB
     {
         #region Operators quick access
 
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
         private static MethodInfo M(string s) => typeof(BsonExpressionOperators).GetMethod(s);
 
         /// <summary>
@@ -87,6 +90,7 @@ namespace LiteDB
 
         private static readonly MethodInfo _itemsMethod = typeof(BsonExpressionMethods).GetMethod("ITEMS");
         private static readonly MethodInfo _arrayMethod = typeof(BsonExpressionMethods).GetMethod("ARRAY");
+#endif
 
         #endregion
 
@@ -107,6 +111,9 @@ namespace LiteDB
 
                 if (op == null) break;
 
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+                throw Unsupported.OperatorsInExpression;
+#else
                 var expr = ParseSingleExpression(tokenizer, context, parameters, scope);
 
                 // special BETWEEN "AND" read
@@ -122,13 +129,19 @@ namespace LiteDB
 
                 values.Add(expr);
                 ops.Add(op.ToUpperInvariant());
+#endif
             }
 
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
             var order = 0;
+#endif
 
             // now, process operator in correct order
             while (values.Count >= 2)
             {
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+                throw Unsupported.OperatorsInExpression;
+#else
                 var op = _operators.ElementAt(order);
                 var n = ops.IndexOf(op.Key);
 
@@ -198,6 +211,7 @@ namespace LiteDB
                     // remove operation
                     ops.RemoveAt(n);
                 }
+#endif
             }
 
             return values.Single();
@@ -228,6 +242,7 @@ namespace LiteDB
                 throw LiteException.UnexpectedToken(token);
         }
 
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
         /// <summary>
         /// Parse a document builder syntax used in SELECT statment: {expr0} [AS] [{alias}], {expr1} [AS] [{alias}], ...
         /// </summary>
@@ -406,6 +421,7 @@ namespace LiteDB
                 Source = src.ToString()
             };
         }
+#endif
 
         #region Constants
 
@@ -433,17 +449,27 @@ namespace LiteDB
             if (value != null)
             {
                 var number = Convert.ToDouble(value, CultureInfo.InvariantCulture.NumberFormat);
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+                var constant = new BsonValue(number);
+#else
                 var constant = Expression.Constant(new BsonValue(number));
+#endif
 
                 return new BsonExpression
                 {
                     Type = BsonExpressionType.Double,
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
                     Parameters = parameters,
+#endif
                     IsImmutable = true,
                     UseSource = false,
                     IsScalar = true,
                     Fields = new HashSet<string>(StringComparer.OrdinalIgnoreCase),
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+                    FuncScalar = (_0, _1, _2) => constant,
+#else
                     Expression = constant,
+#endif
                     Source = number.ToString("0.0########", CultureInfo.InvariantCulture.NumberFormat)
                 };
             }
@@ -477,33 +503,53 @@ namespace LiteDB
                 var isInt32 = Int32.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out var i32);
                 if (isInt32)
                 {
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+                    var constant32 = new BsonValue(i32);
+#else
                     var constant32 = Expression.Constant(new BsonValue(i32));
+#endif
 
                     return new BsonExpression
                     {
                         Type = BsonExpressionType.Int,
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
                         Parameters = parameters,
+#endif
                         IsImmutable = true,
                         UseSource = false,
                         IsScalar = true,
                         Fields = new HashSet<string>(StringComparer.OrdinalIgnoreCase),
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+                        FuncScalar = (_0, _1, _2) => constant32,
+#else
                         Expression = constant32,
+#endif
                         Source = i32.ToString(CultureInfo.InvariantCulture.NumberFormat)
                     };
                 }
 
                 var i64 = Int64.Parse(value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat);
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+                var constant64 = new BsonValue(i64);
+#else
                 var constant64 = Expression.Constant(new BsonValue(i64));
+#endif
 
                 return new BsonExpression
                 {
                     Type = BsonExpressionType.Int,
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
                     Parameters = parameters,
+#endif
                     IsImmutable = true,
                     UseSource = false,
                     IsScalar = true,
                     Fields = new HashSet<string>(StringComparer.OrdinalIgnoreCase),
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+                    FuncScalar = (_0, _1, _2) => constant64,
+#else
                     Expression = constant64,
+#endif
                     Source = i64.ToString(CultureInfo.InvariantCulture.NumberFormat)
                 };
             }
@@ -519,17 +565,27 @@ namespace LiteDB
             if (tokenizer.Current.Type == TokenType.Word && (tokenizer.Current.Is("true") || tokenizer.Current.Is("false")))
             {
                 var boolean = Convert.ToBoolean(tokenizer.Current.Value);
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+                var constant = new BsonValue(boolean);
+#else
                 var constant = Expression.Constant(new BsonValue(boolean));
+#endif
 
                 return new BsonExpression
                 {
                     Type = BsonExpressionType.Boolean,
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
                     Parameters = parameters,
+#endif
                     IsImmutable = true,
                     UseSource = false,
                     IsScalar = true,
                     Fields = new HashSet<string>(StringComparer.OrdinalIgnoreCase),
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+                    FuncScalar = (_0, _1, _2) => constant,
+#else
                     Expression = constant,
+#endif
                     Source = boolean.ToString().ToLower()
                 };
             }
@@ -544,17 +600,27 @@ namespace LiteDB
         {
             if (tokenizer.Current.Type == TokenType.Word && tokenizer.Current.Is("null"))
             {
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+                var constant = BsonValue.Null;
+#else
                 var constant = Expression.Constant(BsonValue.Null);
+#endif
 
                 return new BsonExpression
                 {
                     Type = BsonExpressionType.Null,
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
                     Parameters = parameters,
+#endif
                     IsImmutable = true,
                     UseSource = false,
                     IsScalar = true,
                     Fields = new HashSet<string>(StringComparer.OrdinalIgnoreCase),
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+                    FuncScalar = (_0, _1, _2) => constant,
+#else
                     Expression = constant,
+#endif
                     Source = "null"
                 };
             }
@@ -570,17 +636,25 @@ namespace LiteDB
             if (tokenizer.Current.Type == TokenType.String)
             {
                 var bstr = new BsonValue(tokenizer.Current.Value);
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
                 var constant = Expression.Constant(bstr);
+#endif
 
                 return new BsonExpression
                 {
                     Type = BsonExpressionType.String,
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
                     Parameters = parameters,
+#endif
                     IsImmutable = true,
                     UseSource = false,
                     IsScalar = true,
                     Fields = new HashSet<string>(StringComparer.OrdinalIgnoreCase),
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+                    FuncScalar = (_0, _1, _2) => bstr,
+#else
                     Expression = constant,
+#endif
                     Source = JsonSerializer.Serialize(bstr)
                 };
             }
@@ -598,8 +672,13 @@ namespace LiteDB
             if (tokenizer.Current.Type != TokenType.OpenBrace) return null;
 
             // read key value
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
             var keys = new List<Expression>();
             var values = new List<Expression>();
+#else
+            var keys = new List<string>();
+            var values = new List<BsonExpressionScalarDelegate>();
+#endif
             var src = new StringBuilder();
             var isImmutable = true;
             var useSource = false;
@@ -644,14 +723,25 @@ namespace LiteDB
                         value = new BsonExpression
                         {
                             Type = BsonExpressionType.Path,
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
                             Parameters = parameters,
+#endif
                             IsImmutable = isImmutable,
                             UseSource = useSource,
                             IsScalar = true,
                             Fields = new HashSet<string>(StringComparer.OrdinalIgnoreCase).AddRange(new string[] { key }),
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+                            FuncScalar = Simplified,
+#else
                             Expression = Expression.Call(_memberPathMethod, context.Root, Expression.Constant(key)) as Expression,
+#endif
                             Source = "$." + (fname.IsWord() ? fname : "[" + fname + "]")
                         };
+
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+                        BsonValue Simplified(IEnumerable<BsonDocument> _1, BsonDocument root, BsonValue _3) =>
+                            BsonExprInterpreter.MEMBER_PATH(root, key);
+#endif
                     }
 
                     // document value must be a scalar value
@@ -664,8 +754,13 @@ namespace LiteDB
                     fields.AddRange(value.Fields);
 
                     // add key and value to parameter list (as an expression)
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+                    keys.Add(key);
+                    values.Add(value.FuncScalar);
+#else
                     keys.Add(Expression.Constant(key));
                     values.Add(value.Expression);
+#endif
 
                     // include value source in current source
                     src.Append(value.Source);
@@ -680,20 +775,39 @@ namespace LiteDB
                 }
             }
 
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+            var arrKeys = keys.ToArray();
+            var arrValues = values.ToArray();
+#else
             var arrKeys = Expression.NewArrayInit(typeof(string), keys.ToArray());
             var arrValues = Expression.NewArrayInit(typeof(BsonValue), values.ToArray());
+#endif
 
             return new BsonExpression
             {
                 Type = BsonExpressionType.Document,
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
                 Parameters = parameters,
+#endif
                 IsImmutable = isImmutable,
                 UseSource = useSource,
                 IsScalar = true,
                 Fields = fields,
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+                FuncScalar = FuncScalar,
+#else
                 Expression = Expression.Call(_documentInitMethod, new Expression[] { arrKeys, arrValues }),
+#endif
                 Source = src.ToString()
             };
+
+            BsonValue FuncScalar(IEnumerable<BsonDocument> source, BsonDocument root, BsonValue current)
+            {
+                var actualValues = new BsonValue[arrValues.Length];
+                for (var i = 0; i < arrValues.Length; i++)
+                    actualValues[i] = arrValues[i](source, root, current);
+                return BsonExprInterpreter.DOCUMENT_INIT(arrKeys, actualValues);
+            }
         }
 
         /// <summary>
@@ -702,6 +816,9 @@ namespace LiteDB
         private static BsonExpression TryParseSource(Tokenizer tokenizer, ExpressionContext context, BsonDocument parameters, DocumentScope scope)
         {
             if (tokenizer.Current.Type != TokenType.Asterisk) return null;
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+            throw Unsupported.SourceInExpression;
+#else
 
             var sourceExpr = new BsonExpression
             {
@@ -740,6 +857,7 @@ namespace LiteDB
             {
                 return sourceExpr;
             }
+#endif
         }
 
         /// <summary>
@@ -749,7 +867,11 @@ namespace LiteDB
         {
             if (tokenizer.Current.Type != TokenType.OpenBracket) return null;
 
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+            var values = new List<BsonExpressionScalarDelegate>();
+#else
             var values = new List<Expression>();
+#endif
             var src = new StringBuilder();
             var isImmutable = true;
             var useSource = false;
@@ -781,7 +903,11 @@ namespace LiteDB
                     fields.AddRange(value.Fields);
 
                     // include value source in current source
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+                    values.Add(value.FuncScalar);
+#else
                     values.Add(value.Expression);
+#endif
 
                     var next = tokenizer.ReadToken()
                         .Expect(TokenType.Comma, TokenType.CloseBracket);
@@ -793,19 +919,36 @@ namespace LiteDB
                 }
             }
 
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
             var arrValues = Expression.NewArrayInit(typeof(BsonValue), values.ToArray());
+#endif
 
             return new BsonExpression
             {
                 Type = BsonExpressionType.Array,
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
                 Parameters = parameters,
+#endif
                 IsImmutable = isImmutable,
                 UseSource = useSource,
                 IsScalar = true,
                 Fields = fields,
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+                FuncScalar = FuncScalar,
+#else
                 Expression = Expression.Call(_arrayInitMethod, arrValues),
+#endif
                 Source = src.ToString()
             };
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+            BsonValue FuncScalar(IEnumerable<BsonDocument> source, BsonDocument root, BsonValue current)
+            {
+                var array = new BsonValue[values.Count];
+                for (var i = 0; i < values.Count; i++)
+                    array[i] = values[i](source, root, current);
+                return new BsonArray(array);
+            }
+#endif
         }
 
         /// <summary>
@@ -819,6 +962,9 @@ namespace LiteDB
 
             if (ahead.Type == TokenType.Word || ahead.Type == TokenType.Int)
             {
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+                throw Unsupported.ParametersInExpression;
+#else
                 var parameterName = tokenizer.ReadToken(false).Value;
                 var name = Expression.Constant(parameterName);
 
@@ -833,6 +979,7 @@ namespace LiteDB
                     Expression = Expression.Call(_parameterPathMethod, context.Parameters, name),
                     Source = "@" + parameterName
                 };
+#endif
             }
             else
             {
@@ -856,12 +1003,19 @@ namespace LiteDB
             return new BsonExpression
             {
                 Type = inner.Type,
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
                 Parameters = inner.Parameters,
+#endif
                 IsImmutable = inner.IsImmutable,
                 UseSource = inner.UseSource,
                 IsScalar = inner.IsScalar,
                 Fields = inner.Fields,
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+                FuncScalar = inner.FuncScalar,
+                FuncEnumerable = inner.FuncEnumerable,
+#else
                 Expression = inner.Expression,
+#endif
                 Left = inner.Left,
                 Right = inner.Right,
                 Source = "(" + inner.Source + ")"
@@ -877,6 +1031,9 @@ namespace LiteDB
 
             if (tokenizer.Current.Type != TokenType.Word) return null;
             if (tokenizer.LookAhead().Type != TokenType.OpenParenthesis) return null;
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+            throw Unsupported.FunctionsInExpression;
+#else
 
             // read (
             tokenizer.ReadToken();
@@ -975,6 +1132,7 @@ namespace LiteDB
                 Expression = Expression.Call(method, args.ToArray()),
                 Source = src.ToString()
             };
+#endif
         }
 
         /// <summary>
@@ -1010,8 +1168,14 @@ namespace LiteDB
 
             // read field name (or "" if root)
             var field = ReadField(tokenizer, src);
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+            BsonExpressionScalarDelegate expr = (source, root, current) => 
+                BsonExprInterpreter.MEMBER_PATH(defaultScope == TokenType.Dollar ? root : current, field);
+            BsonExpressionEnumerableDelegate exprEnumerable = null;
+#else
             var name = Expression.Constant(field);
             var expr = Expression.Call(_memberPathMethod, defaultScope == TokenType.Dollar ? context.Root : context.Current, name) as Expression;
+#endif
 
             // add as field only if working with root document (or source root)
             if (defaultScope == TokenType.Dollar || scope == DocumentScope.Source)
@@ -1026,31 +1190,50 @@ namespace LiteDB
 
                 if (isScalar == false)
                 {
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+                    expr = (BsonExpressionScalarDelegate)result;
+#else
                     expr = result;
+#endif
                     break;
                 }
 
                 // filter method must exit
                 if (result == null) break;
 
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+                expr = null;
+                exprEnumerable = (BsonExpressionEnumerableDelegate)result;
+#else
                 expr = result;
+#endif
             }
 
             var pathExpr = new BsonExpression
             {
                 Type = BsonExpressionType.Path,
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
                 Parameters = parameters,
+#endif
                 IsImmutable = isImmutable,
                 UseSource = useSource,
                 IsScalar = isScalar,
                 Fields = fields,
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+                FuncScalar = expr,
+                FuncEnumerable = exprEnumerable,
+#else
                 Expression = expr,
+#endif
                 Source = src.ToString()
             };
 
             // if expr is enumerable and next token is . translate do MAP
             if (isScalar == false && tokenizer.LookAhead(false).Type == TokenType.Period)
             {
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+                throw Unsupported.FunctionsInExpression;
+#else
                 tokenizer.ReadToken(); // consume .
 
                 var mapExpr = BsonExpression.ParseAndCompile(tokenizer, BsonExpressionParserMode.Single, parameters, DocumentScope.Current);
@@ -1068,6 +1251,7 @@ namespace LiteDB
                     Expression = Expression.Call(BsonExpression.GetFunction("MAP"), context.Root, context.Collation, context.Parameters, pathExpr.Expression, Expression.Constant(mapExpr)),
                     Source = "MAP(" + pathExpr.Source + "=>" + mapExpr.Source + ")"
                 };
+#endif
             }
             else
             {
@@ -1078,7 +1262,19 @@ namespace LiteDB
         /// <summary>
         /// Implement a JSON-Path like navigation on BsonDocument. Support a simple range of paths
         /// </summary>
-        private static Expression ParsePath(Tokenizer tokenizer, Expression expr, ExpressionContext context, BsonDocument parameters, HashSet<string> fields, ref bool isImmutable, ref bool useSource, ref bool isScalar, StringBuilder src)
+        private static
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+            Delegate
+#else
+            Expression
+#endif
+            ParsePath(Tokenizer tokenizer, 
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+                BsonExpressionScalarDelegate expr,
+#else
+                Expression expr,
+#endif
+                ExpressionContext context, BsonDocument parameters, HashSet<string> fields, ref bool isImmutable, ref bool useSource, ref bool isScalar, StringBuilder src)
         {
             var ahead = tokenizer.LookAhead(false);
 
@@ -1089,9 +1285,15 @@ namespace LiteDB
 
                 var field = ReadField(tokenizer, src);
 
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+                BsonExpressionScalarDelegate funcScalar = (source, root, current) =>
+                    BsonExprInterpreter.MEMBER_PATH(expr(source, root, current), field);
+                return funcScalar;
+#else
                 var name = Expression.Constant(field);
 
                 return Expression.Call(_memberPathMethod, expr, name);
+#endif
             }
             else if (ahead.Type == TokenType.OpenBracket) // array 
             {
@@ -1103,33 +1305,59 @@ namespace LiteDB
 
                 var index = 0;
                 var inner = new BsonExpression();
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
                 var method = _arrayIndexMethod;
+#endif
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+                Delegate result;
+#endif
 
                 if (ahead.Type == TokenType.Int)
                 {
                     // fixed index
                     src.Append(tokenizer.ReadToken().Value);
                     index = Convert.ToInt32(tokenizer.Current.Value);
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+                    BsonExpressionScalarDelegate funcScalar = (source, root, current) =>
+                        BsonExprInterpreter.ARRAY_CONST_INDEX(expr(source, root, current), index);
+                    result = funcScalar;
+#endif
                 }
                 else if (ahead.Type == TokenType.Minus)
                 {
                     // fixed negative index
                     src.Append(tokenizer.ReadToken().Value + tokenizer.ReadToken().Expect(TokenType.Int).Value);
                     index = -Convert.ToInt32(tokenizer.Current.Value);
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+                    BsonExpressionScalarDelegate funcScalar = (source, root, current) =>
+                        BsonExprInterpreter.ARRAY_CONST_INDEX(expr(source, root, current), index);
+                    result = funcScalar;
+#endif
                 }
                 else if (ahead.Type == TokenType.Asterisk)
                 {
                     // all items * (index = MaxValue)
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
                     method = _arrayFilterMethod;
+#endif
                     isScalar = false;
                     index = int.MaxValue;
 
                     src.Append(tokenizer.ReadToken().Value);
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+                    BsonExpressionEnumerableDelegate funcEnumerable = (source, root, current) =>
+                        BsonExprInterpreter.ARRAY_ALL(expr(source, root, current));
+                    result = funcEnumerable;
+#endif
                 }
                 else
                 {
                     // inner expression
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+                    inner = BsonExpression.ParseAndCompileFull(tokenizer, DocumentScope.Current);
+#else
                     inner = BsonExpression.ParseAndCompile(tokenizer, BsonExpressionParserMode.Full, parameters, DocumentScope.Current);
+#endif
 
                     if (inner == null) throw LiteException.UnexpectedToken(tokenizer.Current);
 
@@ -1141,9 +1369,24 @@ namespace LiteDB
                     // otherwise it's an operand filter expression (enumerable)
                     if (inner.Type != BsonExpressionType.Parameter)
                     {
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
                         method = _arrayFilterMethod;
+#endif
                         isScalar = false;
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+                        BsonExpressionEnumerableDelegate funcEnumerable = (source, root, current) =>
+                            BsonExprInterpreter.ARRAY_FILTER(expr(source, root, current), inner, root);
+                        result = funcEnumerable;
+#endif
                     }
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+                    else
+                    {
+                        BsonExpressionScalarDelegate funcEnumerable = (source, root, current) =>
+                            BsonExprInterpreter.ARRAY_INDEX(expr(source, root, current), inner, root);
+                        result = funcEnumerable;
+                    }
+#endif
 
                     // add inner fields (can contains root call)
                     fields.AddRange(inner.Fields);
@@ -1156,7 +1399,11 @@ namespace LiteDB
 
                 src.Append("]");
 
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+                return result;
+#else
                 return Expression.Call(method, expr, Expression.Constant(index), Expression.Constant(inner), context.Root, context.Collation, context.Parameters);
+#endif
             }
 
             return null;
@@ -1190,6 +1437,10 @@ namespace LiteDB
         {
             // check if next token are ( otherwise returns null (is not a function)
             if (tokenizer.LookAhead().Type != TokenType.OpenParenthesis) return null;
+
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+            throw Unsupported.FunctionsInExpression;
+#else
 
             // read (
             tokenizer.ReadToken().Expect(TokenType.OpenParenthesis);
@@ -1274,8 +1525,10 @@ namespace LiteDB
                 Expression = Expression.Call(method, args.ToArray()),
                 Source = src.ToString()
             };
+#endif
         }
 
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
         /// <summary>
         /// Create an array expression with 2 values (used only in BETWEEN statement)
         /// </summary>
@@ -1301,6 +1554,7 @@ namespace LiteDB
                 Source = item0.Source + " AND " + item1.Source
             };
         }
+#endif
 
         /// <summary>
         /// Get field from simple \w regex or ['comp-lex'] - also, add into source. Can read empty field (root)
@@ -1399,6 +1653,7 @@ namespace LiteDB
             return null;
         }
 
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
         /// <summary>
         /// Convert scalar expression into enumerable expression using ITEMS(...) method
         /// Append [*] to path or ITEMS(..) in all others
@@ -1425,25 +1680,38 @@ namespace LiteDB
                 Source = src
             };
         }
+#endif
 
         /// <summary>
         /// Convert enumerable expression into array using ARRAY(...) method
         /// </summary>
         private static BsonExpression ConvertToArray(BsonExpression expr)
         {
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+            DEBUG(!expr.IsScalar);
+            var func = expr.FuncEnumerable;
+#endif
             return new BsonExpression
             {
                 Type = BsonExpressionType.Call,
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
                 Parameters = expr.Parameters,
+#endif
                 IsImmutable = expr.IsImmutable,
                 UseSource = expr.UseSource,
                 IsScalar = true,
                 Fields = expr.Fields,
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+                FuncScalar = (source, root, current) => 
+                    new BsonArray(func(source, root, current)),
+#else
                 Expression = Expression.Call(_arrayMethod, expr.Expression),
+#endif
                 Source = "ARRAY(" + expr.Source + ")"
             };
         }
 
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
         /// <summary>
         /// Create new logic (AND/OR) expression based in 2 expressions
         /// </summary>
@@ -1505,5 +1773,6 @@ namespace LiteDB
 
             return result;
         }
+#endif
     }
 }

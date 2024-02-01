@@ -4,7 +4,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -15,17 +14,25 @@ namespace LiteDB
     /// <summary>
     /// Delegate function to get compiled enumerable expression
     /// </summary>
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+    internal delegate IEnumerable<BsonValue> BsonExpressionEnumerableDelegate(IEnumerable<BsonDocument> source, BsonDocument root, BsonValue current);
+#else
     internal delegate IEnumerable<BsonValue> BsonExpressionEnumerableDelegate(IEnumerable<BsonDocument> source, BsonDocument root, BsonValue current, Collation collation, BsonDocument parameters);
+#endif
 
     /// <summary>
     /// Delegate function to get compiled scalar expression
     /// </summary>
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+    internal delegate BsonValue BsonExpressionScalarDelegate(IEnumerable<BsonDocument> source, BsonDocument root, BsonValue current);
+#else
     internal delegate BsonValue BsonExpressionScalarDelegate(IEnumerable<BsonDocument> source, BsonDocument root, BsonValue current, Collation collation, BsonDocument parameters);
+#endif
 
     /// <summary>
     /// Compile and execute string expressions using BsonDocuments. Used in all document manipulation (transform, filter, indexes, updates). See https://github.com/mbdavid/LiteDB/wiki/Expressions
     /// </summary>
-    public sealed class BsonExpression
+    public sealed partial class BsonExpression
     {
         /// <summary>
         /// Get formatted expression
@@ -42,10 +49,12 @@ namespace LiteDB
         /// </summary>
         public bool IsImmutable { get; internal set; }
 
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
         /// <summary>
         /// Get/Set parameter values that will be used on expression execution
         /// </summary>
         public BsonDocument Parameters { get; internal set; }
+#endif
 
         /// <summary>
         /// In predicate expressions, indicate Left side
@@ -62,10 +71,12 @@ namespace LiteDB
         /// </summary>
         internal bool UseSource { get; set; }
 
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
         /// <summary>
         /// Get transformed LINQ expression
         /// </summary>
         internal Expression Expression { get; set; }
+#endif
 
         /// <summary>
         /// Fill this hashset with all fields used in root level of document (be used to partial deserialize) - "$" means all fields
@@ -99,7 +110,11 @@ namespace LiteDB
         internal bool IsIndexable =>
             this.Fields.Count > 0 &&
             this.IsImmutable == true &&
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+            true;
+#else
             this.Parameters.Count == 0;
+#endif
 
         /// <summary>
         /// This expression has no dependency of BsonDocument so can be used as user value (when select index)
@@ -107,12 +122,14 @@ namespace LiteDB
         internal bool IsValue =>
             this.Fields.Count == 0;
 
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
         /// <summary>
         /// Indicate when predicate expression uses ANY keywork for filter array items
         /// </summary>
         internal bool IsANY =>
             this.IsPredicate &&
             this.Expression.ToString().Contains("_ANY");
+#endif
 
         /// <summary>
         /// Compiled Expression into a function to be executed: func(source[], root, current, parameters)[]
@@ -149,6 +166,7 @@ namespace LiteDB
             return expr.Source;
         }
 
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
         /// <summary>
         /// Implicit string converter
         /// </summary>
@@ -156,6 +174,7 @@ namespace LiteDB
         {
             return BsonExpression.Create(expr);
         }
+#endif
 
         #region Execute Enumerable
 
@@ -199,13 +218,21 @@ namespace LiteDB
         {
             if (this.IsScalar)
             {
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+                var value = _funcScalar(source, root, current);
+#else
                 var value = _funcScalar(source, root, current, collation ?? Collation.Binary, this.Parameters);
+#endif
 
                 yield return value;
             }
             else
             {
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+                var values = _funcEnumerable(source, root, current);
+#else
                 var values = _funcEnumerable(source, root, current, collation ?? Collation.Binary, this.Parameters);
+#endif
 
                 foreach (var value in values)
                 {
@@ -267,7 +294,11 @@ namespace LiteDB
         {
             if (this.IsScalar)
             {
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+                return _funcScalar(source, root, current);
+#else
                 return _funcScalar(source, root, current, collation ?? Collation.Binary, this.Parameters);
+#endif
             }
             else
             {
@@ -277,8 +308,53 @@ namespace LiteDB
 
         #endregion
 
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+        internal BsonExpressionScalarDelegate FuncScalar
+        {
+            get => _funcScalar;
+            set => _funcScalar = value;
+        }
+        internal BsonExpressionEnumerableDelegate FuncEnumerable
+        {
+            get => _funcEnumerable;
+            set => _funcEnumerable = value;
+        }
+
+        internal static BsonExpression ForIndex(string expression)
+        {
+            if (string.IsNullOrWhiteSpace(expression)) throw new ArgumentNullException(nameof(expression));
+
+            var tokenizer = new Tokenizer(expression);
+
+            
+            if (tokenizer == null) throw new ArgumentNullException(nameof(tokenizer));
+
+            //return ParseAndCompile(tokenizer, mode, parameters, DocumentScope.Root);
+            var expr = ParseAndCompileFull(tokenizer, DocumentScope.Root);
+
+            tokenizer.LookAhead().Expect(TokenType.EOF);
+
+            return expr;
+        }
+
+        /// <summary>
+        /// Parse and compile string expression and return BsonExpression
+        /// </summary>
+        internal static BsonExpression ParseAndCompileFull(Tokenizer tokenizer, DocumentScope scope)
+        {
+            if (tokenizer == null) throw new ArgumentNullException(nameof(tokenizer));
+
+            var context = new ExpressionContext();
+
+            // compilation is performed in parser
+            return BsonExpressionParser.ParseFullExpression(tokenizer, context, null, scope);
+        }
+
+#endif
+
         #region Static method
 
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
         private static ConcurrentDictionary<string, BsonExpressionEnumerableDelegate> _cacheEnumerable = new ConcurrentDictionary<string, BsonExpressionEnumerableDelegate>();
         private static ConcurrentDictionary<string, BsonExpressionScalarDelegate> _cacheScalar = new ConcurrentDictionary<string, BsonExpressionScalarDelegate>();
 
@@ -394,16 +470,32 @@ namespace LiteDB
             if (expr.Left != null) SetParameters(expr.Left, parameters);
             if (expr.Right != null) SetParameters(expr.Right, parameters);
         }
+#endif
 
         /// <summary>
         /// Get root document $ expression
         /// </summary>
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+        public static BsonExpression Root = new BsonExpression()
+        {
+            _funcScalar = (_1, root, _2) => root,
+            Source = "$",
+            Fields = new HashSet<string> { "$" },
+            UseSource = false,
+            Type = BsonExpressionType.Path,
+
+            IsScalar = true,
+            IsImmutable = true,
+        };
+#else
         public static BsonExpression Root = Create("$");
+#endif
 
         #endregion
 
         #region MethodCall quick access
 
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
         /// <summary>
         /// Get all registered methods for BsonExpressions
         /// </summary>
@@ -425,11 +517,13 @@ namespace LiteDB
 
             return _methods.GetOrDefault(key);
         }
+#endif
 
         #endregion
 
         #region FunctionCall quick access
 
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
         /// <summary>
         /// Get all registered functions for BsonExpressions
         /// </summary>
@@ -452,6 +546,7 @@ namespace LiteDB
 
             return _functions.GetOrDefault(key);
         }
+#endif
 
         #endregion
 

@@ -369,7 +369,7 @@ namespace LiteDB
 
             try
             {
-                this.Select($"{{ count: COUNT(*._id) }}");
+                this.Select(BsonExpression.Count);
                 var ret = this.ToDocuments().Single()["count"].AsInt32;
 
                 return ret;
@@ -389,7 +389,7 @@ namespace LiteDB
 
             try
             {
-                this.Select($"{{ count: COUNT(*._id) }}");
+                this.Select(BsonExpression.Count);
                 var ret = this.ToDocuments().Single()["count"].AsInt64;
 
                 return ret;
@@ -409,7 +409,7 @@ namespace LiteDB
 
             try
             {
-                this.Select($"{{ exists: ANY(*._id) }}");
+                this.Select(BsonExpression.Exists);
                 var ret = this.ToDocuments().Single()["exists"].AsBoolean;
 
                 return ret;
