@@ -198,6 +198,20 @@ namespace LiteDB
 
             return newDoc;
         }
+
+        public static IEnumerable<BsonValue> MAP(BsonDocument root, IEnumerable<BsonValue> input, BsonExpression mapExpr)
+        {
+            foreach (var item in input)
+            {
+                // execute for each child value and except a first bool value (returns if true)
+                var values = mapExpr.Execute(new BsonDocument[] { root }, root, item, null);
+
+                foreach (var value in values)
+                {
+                    yield return value;
+                }
+            }
+        }
     }
 }
 #endif

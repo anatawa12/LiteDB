@@ -350,6 +350,19 @@ namespace LiteDB
             return BsonExpressionParser.ParseFullExpression(tokenizer, context, null, scope);
         }
 
+        /// <summary>
+        /// Parse and compile string expression and return BsonExpression
+        /// </summary>
+        internal static BsonExpression ParseAndCompileSingle(Tokenizer tokenizer, DocumentScope scope)
+        {
+            if (tokenizer == null) throw new ArgumentNullException(nameof(tokenizer));
+
+            var context = new ExpressionContext();
+
+            // compilation is performed in parser
+            return BsonExpressionParser.ParseSingleExpression(tokenizer, context, null, scope);
+        }
+
 #endif
 
         #region Static method

@@ -816,19 +816,22 @@ namespace LiteDB
         private static BsonExpression TryParseSource(Tokenizer tokenizer, ExpressionContext context, BsonDocument parameters, DocumentScope scope)
         {
             if (tokenizer.Current.Type != TokenType.Asterisk) return null;
-#if EXPRESSION_PARSER_ONLY_FOR_INDEX
-            throw Unsupported.SourceInExpression;
-#else
 
             var sourceExpr = new BsonExpression
             {
                 Type = BsonExpressionType.Source,
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
                 Parameters = parameters,
+#endif
                 IsImmutable = true,
                 UseSource = true,
                 IsScalar = false,
                 Fields = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "$" },
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+                FuncEnumerable = (source, _1, _2) => source,
+#else
                 Expression = context.Source,
+#endif
                 Source = "*"
             };
 
@@ -837,19 +840,30 @@ namespace LiteDB
             {
                 tokenizer.ReadToken(); // consume .
 
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+                var pathExpr = BsonExpression.ParseAndCompileSingle(tokenizer, DocumentScope.Source);
+#else
                 var pathExpr = BsonExpression.ParseAndCompile(tokenizer, BsonExpressionParserMode.Single, parameters, DocumentScope.Source);
+#endif
 
                 if (pathExpr == null) throw LiteException.UnexpectedToken(tokenizer.Current);
 
                 return new BsonExpression
                 {
                     Type = BsonExpressionType.Map,
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
                     Parameters = parameters,
+#endif
                     IsImmutable = pathExpr.IsImmutable,
                     UseSource = true,
                     IsScalar = false,
                     Fields = new HashSet<string>(StringComparer.OrdinalIgnoreCase).AddRange(pathExpr.Fields),
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+                    FuncEnumerable = (source, root, current) => 
+                        BsonExprInterpreter.MAP(root, source, pathExpr),
+#else
                     Expression = Expression.Call(BsonExpression.GetFunction("MAP"), context.Root, context.Collation, context.Parameters, sourceExpr.Expression, Expression.Constant(pathExpr)),
+#endif
                     Source = "MAP(*=>" + pathExpr.Source + ")"
                 };
             }
@@ -857,7 +871,6 @@ namespace LiteDB
             {
                 return sourceExpr;
             }
-#endif
         }
 
         /// <summary>
@@ -1191,7 +1204,8 @@ namespace LiteDB
                 if (isScalar == false)
                 {
 #if EXPRESSION_PARSER_ONLY_FOR_INDEX
-                    expr = (BsonExpressionScalarDelegate)result;
+                    exprEnumerable = (BsonExpressionEnumerableDelegate)result;
+                    expr = null;
 #else
                     expr = result;
 #endif
@@ -1202,8 +1216,7 @@ namespace LiteDB
                 if (result == null) break;
 
 #if EXPRESSION_PARSER_ONLY_FOR_INDEX
-                expr = null;
-                exprEnumerable = (BsonExpressionEnumerableDelegate)result;
+                expr = (BsonExpressionScalarDelegate)result;
 #else
                 expr = result;
 #endif
@@ -1231,27 +1244,34 @@ namespace LiteDB
             // if expr is enumerable and next token is . translate do MAP
             if (isScalar == false && tokenizer.LookAhead(false).Type == TokenType.Period)
             {
-#if EXPRESSION_PARSER_ONLY_FOR_INDEX
-                throw Unsupported.FunctionsInExpression;
-#else
                 tokenizer.ReadToken(); // consume .
 
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+                var mapExpr = BsonExpression.ParseAndCompileSingle(tokenizer, DocumentScope.Current);
+#else
                 var mapExpr = BsonExpression.ParseAndCompile(tokenizer, BsonExpressionParserMode.Single, parameters, DocumentScope.Current);
+#endif
 
                 if (mapExpr == null) throw LiteException.UnexpectedToken(tokenizer.Current);
 
                 return new BsonExpression
                 {
                     Type = BsonExpressionType.Map,
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
                     Parameters = parameters,
+#endif
                     IsImmutable = pathExpr.IsImmutable && mapExpr.IsImmutable,
                     UseSource = pathExpr.UseSource || mapExpr.UseSource,
                     IsScalar = false,
                     Fields = new HashSet<string>(StringComparer.OrdinalIgnoreCase).AddRange(pathExpr.Fields).AddRange(mapExpr.Fields),
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+                    FuncEnumerable = (source, root, current) =>
+                        BsonExprInterpreter.MAP(root, exprEnumerable(source, root, current), mapExpr),
+#else
                     Expression = Expression.Call(BsonExpression.GetFunction("MAP"), context.Root, context.Collation, context.Parameters, pathExpr.Expression, Expression.Constant(mapExpr)),
+#endif
                     Source = "MAP(" + pathExpr.Source + "=>" + mapExpr.Source + ")"
                 };
-#endif
             }
             else
             {
