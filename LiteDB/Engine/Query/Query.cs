@@ -29,7 +29,9 @@ namespace LiteDB
 #if !NO_GROUPBY_QUERY
         public BsonExpression GroupBy { get; set; } = null;
 #endif
+#if !NO_HAVING_QUERY
         public BsonExpression Having { get; set; } = null;
+#endif
 
         public int Offset { get; set; } = 0;
         public int Limit { get; set; } = int.MaxValue;
@@ -93,10 +95,12 @@ namespace LiteDB
             }
 #endif
 
+#if !NO_HAVING_QUERY
             if (this.Having != null)
             {
                 sb.AppendLine($"HAVING {this.Having.Source}");
             }
+#endif
 
 #if !NO_ORDERBY_QUERY
             if (this.OrderBy != null)

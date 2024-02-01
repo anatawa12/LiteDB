@@ -40,7 +40,9 @@ namespace LiteDB
 #if !NO_GROUPBY_QUERY
         ILiteQueryable<T> GroupBy(BsonExpression keySelector);
 #endif
+#if !NO_HAVING_QUERY
         ILiteQueryable<T> Having(BsonExpression predicate);
+#endif
 
         ILiteQueryableResult<BsonDocument> Select(BsonExpression selector);
 #if !NO_LINQ_EXPRESSION

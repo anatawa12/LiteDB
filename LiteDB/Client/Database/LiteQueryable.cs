@@ -169,6 +169,7 @@ namespace LiteDB
 
         #region Having
 
+#if !NO_HAVING_QUERY
         /// <summary>
         /// Filter documents after group by pipe according to predicate expression (requires GroupBy and support only one Having)
         /// </summary>
@@ -179,6 +180,7 @@ namespace LiteDB
             _query.Having = predicate;
             return this;
         }
+#endif
 
         #endregion
 

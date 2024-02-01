@@ -155,7 +155,9 @@ namespace LiteDB.Engine
 #if !NO_GROUPBY_QUERY
             fields.AddRange(_query.GroupBy?.Fields);
 #endif
+#if !NO_HAVING_QUERY
             fields.AddRange(_query.Having?.Fields);
+#endif
 #if !NO_ORDERBY_QUERY
             fields.AddRange(_query.OrderBy?.Fields);
 #endif
