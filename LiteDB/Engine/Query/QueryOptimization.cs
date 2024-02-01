@@ -14,7 +14,9 @@ namespace LiteDB.Engine
         private readonly Query _query;
         private readonly Collation _collation;
         private readonly QueryPlan _queryPlan;
+#if !NO_WHERE_QUERY
         private readonly List<BsonExpression> _terms = new List<BsonExpression>();
+#endif
 
         public QueryOptimization(Snapshot snapshot, Query query, IEnumerable<BsonDocument> source, Collation collation)
         {
@@ -80,6 +82,7 @@ namespace LiteDB.Engine
         /// </summary>
         private void SplitWherePredicateInTerms()
         {
+#if !NO_WHERE_QUERY
             void add(BsonExpression predicate)
             {
                 // do not accept source * in WHERE
@@ -107,7 +110,6 @@ namespace LiteDB.Engine
                 }
             }
 
-#if !NO_WHERE_QUERY
             // check all where predicate for AND operators
             foreach(var predicate in _query.Where)
             {
@@ -121,6 +123,7 @@ namespace LiteDB.Engine
         /// </summary>
         private void OptimizeTerms()
         {
+#if !NO_WHERE_QUERY
             // simple optimization
             for (var i = 0; i < _terms.Count; i++)
             {
@@ -136,6 +139,7 @@ namespace LiteDB.Engine
                     _terms[i] = BsonExpression.Create(term.Right.Source + " IN ARRAY(" + term.Left.Source + ")", term.Parameters);
                 }
             }
+#endif
         }
 
         #endregion
@@ -152,7 +156,9 @@ namespace LiteDB.Engine
 
             // include all fields detected in all used expressions
             fields.AddRange(_query.Select.Fields);
+#if !NO_WHERE_QUERY
             fields.AddRange(_terms.SelectMany(x => x.Fields));
+#endif
 #if !NO_INCLUDE_QUERY
             fields.AddRange(_query.Includes.SelectMany(x => x.Fields));
 #endif
@@ -225,7 +231,9 @@ namespace LiteDB.Engine
             }
 
             // fill filter using all expressions (remove selected term used in Index)
+#if !NO_WHERE_QUERY
             _queryPlan.Filters.AddRange(_terms.Where(x => x != selected));
+#endif
         }
 
         /// <summary>
@@ -247,6 +255,7 @@ namespace LiteDB.Engine
             IndexCost lowest = null;
 
             // test all possible predicates in terms
+#if !NO_WHERE_QUERY
             foreach (var expr in _terms.Where(x => x.IsPredicate))
             {
                 ENSURE(expr.Left != null && expr.Right != null, "predicate expression must has left/right expressions");
@@ -289,6 +298,7 @@ namespace LiteDB.Engine
                     lowest = current;
                 }
             }
+#endif
 
             // if no index found, try use same index in orderby/groupby/preferred
             if (lowest == null && (
