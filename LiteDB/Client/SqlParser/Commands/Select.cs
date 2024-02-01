@@ -1,5 +1,4 @@
-﻿#if !NO_SQL
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -10,6 +9,7 @@ namespace LiteDB
 {
     internal partial class SqlParser
     {
+#if !NO_SQL
         /// <summary>
         /// [ EXPLAIN ]
         ///    SELECT {selectExpr}
@@ -186,6 +186,7 @@ namespace LiteDB
         {
             return ParseCollection(tokenizer, out var name, out var options);
         }
+#endif
 
         /// <summary>
         /// Read collection name and parameter (in case of system collections)
@@ -228,4 +229,3 @@ namespace LiteDB
         }
     }
 }
-#endif

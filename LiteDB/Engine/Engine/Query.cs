@@ -22,9 +22,6 @@ namespace LiteDB.Engine
             // test if is an system collection
             if (collection.StartsWith("$"))
             {
-#if NO_SQL
-                throw Unsupported.Query;
-#else
                 SqlParser.ParseCollection(new Tokenizer(collection), out var name, out var options);
 
                 // get registered system collection to get data source
@@ -32,7 +29,6 @@ namespace LiteDB.Engine
 
                 source = sys.Input(options);
                 collection = sys.Name;
-#endif
             }
 
             var exec = new QueryExecutor(this, _monitor, _sortDisk, _header.Pragmas, collection, query, source);
