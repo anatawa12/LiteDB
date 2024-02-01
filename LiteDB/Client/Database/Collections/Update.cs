@@ -49,7 +49,7 @@ namespace LiteDB
 
             return _engine.Update(_collection, entities.Select(x => _mapper.ToDocument(x)));
         }
-
+#if !NO_WHERE_QUERY
         /// <summary>
         /// Update many documents based on transform expression. This expression must return a new document that will be replaced over current document (according with predicate).
         /// Eg: col.UpdateMany("{ Name: UPPER($.Name), Age }", "_id > 0")
@@ -87,6 +87,7 @@ namespace LiteDB
 
             return _engine.UpdateMany(_collection, ext, pred);
         }
+#endif
 #endif
     }
 }

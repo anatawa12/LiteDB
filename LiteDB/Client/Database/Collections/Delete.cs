@@ -26,6 +26,7 @@ namespace LiteDB
             return _engine.DeleteMany(_collection, null);
         }
 
+#if !NO_WHERE_QUERY
         /// <summary>
         /// Delete all documents based on predicate expression. Returns how many documents was deleted
         /// </summary>
@@ -51,6 +52,7 @@ namespace LiteDB
         /// Delete all documents based on predicate expression. Returns how many documents was deleted
         /// </summary>
         public int DeleteMany(Expression<Func<T, bool>> predicate) => this.DeleteMany(_mapper.GetExpression(predicate));
+#endif
 #endif
     }
 }

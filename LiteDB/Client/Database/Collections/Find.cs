@@ -25,6 +25,7 @@ namespace LiteDB
 
         #region Find
 
+#if !NO_WHERE_QUERY
         /// <summary>
         /// Find documents inside a collection using predicate expression.
         /// </summary>
@@ -41,6 +42,7 @@ namespace LiteDB
                 .Limit(limit)
                 .ToEnumerable();
         }
+#endif
 
         /// <summary>
         /// Find documents inside a collection using query definition.
@@ -67,6 +69,7 @@ namespace LiteDB
 
         #region FindById + One + All
 
+#if !NO_WHERE_QUERY
         /// <summary>
         /// Find a document using Document Id. Returns null if not found.
         /// </summary>
@@ -97,6 +100,7 @@ namespace LiteDB
         /// Find the first document using predicate expression. Returns null if not found
         /// </summary>
         public T FindOne(Expression<Func<T, bool>> predicate) => this.FindOne(_mapper.GetExpression(predicate));
+#endif
 #endif
 
         /// <summary>

@@ -17,7 +17,9 @@ namespace LiteDB
 #if !NO_INCLUDE_QUERY
         public List<BsonExpression> Includes { get; } = new List<BsonExpression>();
 #endif
+#if !NO_WHERE_QUERY
         public List<BsonExpression> Where { get; } = new List<BsonExpression>();
+#endif
 
         public BsonExpression OrderBy { get; set; } = null;
         public int Order { get; set; } = Query.Ascending;
@@ -73,10 +75,12 @@ namespace LiteDB
             }
 #endif
 
+#if !NO_WHERE_QUERY
             if (this.Where.Count > 0)
             {
                 sb.AppendLine($"WHERE {string.Join(" AND ", this.Where.Select(x => x.Source))}");
             }
+#endif
 
             if (this.GroupBy != null)
             {

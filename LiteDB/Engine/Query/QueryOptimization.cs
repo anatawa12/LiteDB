@@ -103,11 +103,13 @@ namespace LiteDB.Engine
                 }
             }
 
+#if !NO_WHERE_QUERY
             // check all where predicate for AND operators
             foreach(var predicate in _query.Where)
             {
                 add(predicate);
             }
+#endif
         }
 
         /// <summary>

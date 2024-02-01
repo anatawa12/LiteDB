@@ -69,6 +69,7 @@ namespace LiteDB
 
         #region Where
 
+#if !NO_WHERE_QUERY
         /// <summary>
         /// Filters a sequence of documents based on a predicate expression
         /// </summary>
@@ -95,6 +96,7 @@ namespace LiteDB
             _query.Where.Add(BsonExpression.Create(predicate, args));
             return this;
         }
+#endif
 
 #if !NO_LINQ_EXPRESSION
         /// <summary>

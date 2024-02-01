@@ -17,11 +17,13 @@ namespace LiteDB
 #endif
 #endif
 
+#if !NO_WHERE_QUERY
         ILiteQueryable<T> Where(BsonExpression predicate);
         ILiteQueryable<T> Where(string predicate, BsonDocument parameters);
         ILiteQueryable<T> Where(string predicate, params BsonValue[] args);
 #if !NO_LINQ_EXPRESSION
         ILiteQueryable<T> Where(Expression<Func<T, bool>> predicate);
+#endif
 #endif
 
         ILiteQueryable<T> OrderBy(BsonExpression keySelector, int order = 1);

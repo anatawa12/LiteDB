@@ -69,6 +69,7 @@ namespace LiteDB
         /// </summary>
         int Update(IEnumerable<T> entities);
 
+#if !NO_WHERE_QUERY
         /// <summary>
         /// Update many documents based on transform expression. This expression must return a new document that will be replaced over current document (according with predicate).
         /// Eg: col.UpdateMany("{ Name: UPPER($.Name), Age }", "_id > 0")
@@ -81,6 +82,7 @@ namespace LiteDB
         /// Eg: col.UpdateMany(x => new Customer { Name = x.Name.ToUpper(), Salary: 100 }, x => x.Name == "John")
         /// </summary>
         int UpdateMany(Expression<Func<T, T>> extend, Expression<Func<T, bool>> predicate);
+#endif
 #endif
 
         /// <summary>
@@ -145,6 +147,7 @@ namespace LiteDB
         /// </summary>
         ILiteQueryable<T> Query();
 
+#if !NO_WHERE_QUERY
         /// <summary>
         /// Find documents inside a collection using predicate expression.
         /// </summary>
@@ -161,7 +164,9 @@ namespace LiteDB
         /// </summary>
         IEnumerable<T> Find(Expression<Func<T, bool>> predicate, int skip = 0, int limit = int.MaxValue);
 #endif
+#endif
 
+#if !NO_WHERE_QUERY
         /// <summary>
         /// Find a document using Document Id. Returns null if not found.
         /// </summary>
@@ -188,6 +193,7 @@ namespace LiteDB
         /// </summary>
         T FindOne(Expression<Func<T, bool>> predicate);
 #endif
+#endif
 
         /// <summary>
         /// Find the first document using defined query structure. Returns null if not found
@@ -209,6 +215,7 @@ namespace LiteDB
         /// </summary>
         int DeleteAll();
 
+#if !NO_WHERE_QUERY
         /// <summary>
         /// Delete all documents based on predicate expression. Returns how many documents was deleted
         /// </summary>
@@ -230,12 +237,14 @@ namespace LiteDB
         /// </summary>
         int DeleteMany(Expression<Func<T, bool>> predicate);
 #endif
+#endif
 
         /// <summary>
         /// Get document count using property on collection.
         /// </summary>
         int Count();
 
+#if !NO_WHERE_QUERY
         /// <summary>
         /// Count documents matching a query. This method does not deserialize any document. Needs indexes on query expression
         /// </summary>
@@ -257,6 +266,7 @@ namespace LiteDB
         /// </summary>
         int Count(Expression<Func<T, bool>> predicate);
 #endif
+#endif
 
         /// <summary>
         /// Count documents matching a query. This method does not deserialize any documents. Needs indexes on query expression
@@ -268,6 +278,7 @@ namespace LiteDB
         /// </summary>
         long LongCount();
 
+#if !NO_WHERE_QUERY
         /// <summary>
         /// Count documents matching a query. This method does not deserialize any documents. Needs indexes on query expression
         /// </summary>
@@ -289,12 +300,14 @@ namespace LiteDB
         /// </summary>
         long LongCount(Expression<Func<T, bool>> predicate);
 #endif
+#endif
 
         /// <summary>
         /// Count documents matching a query. This method does not deserialize any documents. Needs indexes on query expression
         /// </summary>
         long LongCount(Query query);
 
+#if !NO_WHERE_QUERY
         /// <summary>
         /// Returns true if query returns any document. This method does not deserialize any document. Needs indexes on query expression
         /// </summary>
@@ -315,6 +328,7 @@ namespace LiteDB
         /// Returns true if query returns any document. This method does not deserialize any document. Needs indexes on query expression
         /// </summary>
         bool Exists(Expression<Func<T, bool>> predicate);
+#endif
 #endif
 
         /// <summary>

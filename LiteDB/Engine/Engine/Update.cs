@@ -57,7 +57,11 @@ namespace LiteDB.Engine
 
                 if (predicate != null)
                 {
+#if NO_WHERE_QUERY
+                    throw Unsupported.WhereQuery;
+#else
                     q.Where.Add(predicate);
+#endif
                 }
 
                 using (var reader = this.Query(collection, q))

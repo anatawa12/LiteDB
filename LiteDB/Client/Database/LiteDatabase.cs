@@ -181,9 +181,14 @@ namespace LiteDB
         {
             // use $cols system collection with type = user only
             var cols = this.GetCollection("$cols")
+#if NO_WHERE_QUERY
+                .FindAll()
+                .Where(x => x["type"] == "user")
+#else
                 .Query()
                 .Where("type = 'user'")
                 .ToDocuments()
+#endif
                 .Select(x => x["name"].AsString)
                 .ToArray();
 

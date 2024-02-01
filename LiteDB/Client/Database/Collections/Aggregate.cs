@@ -20,6 +20,7 @@ namespace LiteDB
             return this.Query().Count();
         }
 
+#if !NO_WHERE_QUERY
         /// <summary>
         /// Get document count in collection using predicate filter expression
         /// </summary>
@@ -46,6 +47,7 @@ namespace LiteDB
         /// </summary>
         public int Count(Expression<Func<T, bool>> predicate) => this.Count(_mapper.GetExpression(predicate));
 #endif
+#endif
 
         /// <summary>
         /// Get document count in collection using predicate filter expression
@@ -64,6 +66,7 @@ namespace LiteDB
             return this.Query().LongCount();
         }
 
+#if !NO_WHERE_QUERY
         /// <summary>
         /// Get document count in collection using predicate filter expression
         /// </summary>
@@ -91,6 +94,7 @@ namespace LiteDB
         public long LongCount(Expression<Func<T, bool>> predicate) => this.LongCount(_mapper.G
 etExpression(predicate));
 #endif
+#endif
 
         /// <summary>
         /// Get document count in collection using predicate filter expression
@@ -101,6 +105,7 @@ etExpression(predicate));
 
         #region Exists
 
+#if !NO_WHERE_QUERY
         /// <summary>
         /// Get true if collection contains at least 1 document that satisfies the predicate expression
         /// </summary>
@@ -126,6 +131,7 @@ etExpression(predicate));
         /// Get true if collection contains at least 1 document that satisfies the predicate expression
         /// </summary>
         public bool Exists(Expression<Func<T, bool>> predicate) => this.Exists(_mapper.GetExpression(predicate));
+#endif
 #endif
 
         /// <summary>
