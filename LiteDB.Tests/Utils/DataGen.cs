@@ -4,6 +4,7 @@ using System.Linq;
 
 namespace LiteDB.Tests
 {
+#if !VRC_GET// NO_ENTITY_MAPPER
     public class DataGen
     {
         /// <summary>
@@ -68,4 +69,5 @@ namespace LiteDB.Tests
             }
         }
     }
+#endif
 }

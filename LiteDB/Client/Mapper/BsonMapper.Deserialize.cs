@@ -11,6 +11,7 @@ namespace LiteDB
     {
         #region Basic direct .NET convert types
 
+#if !NO_ENTITY_MAPPER
         // direct bson types
         private HashSet<Type> _bsonTypes = new HashSet<Type>
         {
@@ -37,9 +38,11 @@ namespace LiteDB
             typeof(Byte),
             typeof(SByte)
         };
+#endif
 
         #endregion
 
+#if !NO_ENTITY_MAPPER
         /// <summary>
         /// Deserialize a BsonDocument to entity class
         /// </summary>
@@ -72,6 +75,7 @@ namespace LiteDB
 
             return (T)result;
         }
+#endif
 
         /// <summary>
         /// Deserilize a BsonValue to .NET object based on type parameter
@@ -80,6 +84,12 @@ namespace LiteDB
         {
             // null value - null returns
             if (value.IsNull) return null;
+
+#if NO_ENTITY_MAPPER
+            if (type != typeof(BsonDocument))
+                throw Unsupported.EntityMapper;
+            return value.AsDocument;
+#else
 
             // if is nullable, get underlying type
             if (Reflection.IsNullable(type))
@@ -149,20 +159,15 @@ namespace LiteDB
                 }
                 else
                 {
-#if NO_ENTITY_MAPPER
                     throw Unsupported.EntityMapper;
-#else
                     return this.DeserializeList(type, value.AsArray);
-#endif
                 }
             }
 
             // if value is document, deserialize as document
             else if (value.IsDocument)
             {
-#if NO_ENTITY_MAPPER
                 throw Unsupported.EntityMapper;
-#else
                 // if type is anonymous use special handler
                 if (type.IsAnonymousType())
                 {
@@ -231,13 +236,14 @@ namespace LiteDB
                 }
 
                 return o;
-#endif
             }
 
             // in last case, return value as-is - can cause "cast error"
             // it's used for "public object MyInt { get; set; }"
             return value.RawValue;
+#endif
         }
+#if !NO_ENTITY_MAPPER
 
         private object DeserializeArray(Type type, BsonArray array)
         {
@@ -252,7 +258,6 @@ namespace LiteDB
             return arr;
         }
 
-#if !NO_ENTITY_MAPPER
         private object DeserializeList(Type type, BsonArray value)
         {
             var itemType = Reflection.GetListItemType(type);

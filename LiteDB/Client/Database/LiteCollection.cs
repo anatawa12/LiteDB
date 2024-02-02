@@ -15,8 +15,8 @@ namespace LiteDB
         private readonly BsonMapper _mapper;
 #if !NO_ENTITY_MAPPER
         private readonly EntityMapper _entity;
-#endif
         private readonly MemberMapper _id;
+#endif
         private readonly BsonAutoId _autoId;
 
         /// <summary>
@@ -54,8 +54,8 @@ namespace LiteDB
             {
 #if !NO_ENTITY_MAPPER
                 _entity = null;
-#endif
                 _id = null;
+#endif
                 _autoId = autoId;
             }
             else

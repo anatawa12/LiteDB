@@ -15,17 +15,21 @@ namespace LiteDB
             if (entity == null) throw new ArgumentNullException(nameof(entity));
 
             var doc = _mapper.ToDocument(entity);
+#if !NO_ENTITY_MAPPER
             var removed = this.RemoveDocId(doc);
+#endif
 
             _engine.Insert(_collection, new[] { doc }, _autoId);
 
             var id = doc["_id"];
 
+#if !NO_ENTITY_MAPPER
             // checks if must update _id value in entity
             if (removed)
             {
                 _id.Setter(entity, id.RawValue);
             }
+#endif
 
             return id;
         }
@@ -74,17 +78,22 @@ namespace LiteDB
             foreach (var document in documents)
             {
                 var doc = _mapper.ToDocument(document);
+#if !NO_ENTITY_MAPPER
                 var removed = this.RemoveDocId(doc);
+#endif
 
                 yield return doc;
 
+#if !NO_ENTITY_MAPPER
                 if (removed && _id != null)
                 {
                     _id.Setter(document, doc["_id"].RawValue);
                 }
+#endif
             }
         }
 
+#if !NO_ENTITY_MAPPER
         /// <summary>
         /// Remove document _id if contains a "empty" value (checks for autoId bson type)
         /// </summary>
@@ -106,5 +115,6 @@ namespace LiteDB
 
             return false;   
         }
+#endif
     }
 }

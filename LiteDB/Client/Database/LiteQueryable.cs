@@ -22,7 +22,9 @@ namespace LiteDB
         protected readonly Query _query;
 
         // indicate that T type are simple and result are inside first document fields (query always return a BsonDocument)
+#if !NO_ENTITY_MAPPER
         private readonly bool _isSimpleType = Reflection.IsSimpleType(typeof(T));
+#endif
 
         internal LiteQueryable(ILiteEngine engine, BsonMapper mapper, string collection, Query query)
         {
@@ -279,6 +281,7 @@ namespace LiteDB
         /// </summary>
         public IEnumerable<T> ToEnumerable()
         {
+#if !NO_ENTITY_MAPPER
             if (_isSimpleType)
             {
                 return this.ToDocuments()
@@ -286,6 +289,7 @@ namespace LiteDB
                     .Select(x => (T)_mapper.Deserialize(typeof(T), x));
             }
             else
+#endif
             {
                 return this.ToDocuments()
                     .Select(x => (T)_mapper.Deserialize(typeof(T), x));

@@ -19,7 +19,11 @@ namespace LiteDB
             // if object is BsonDocument, just return them
             if (entity is BsonDocument) return (BsonDocument)(object)entity;
 
+#if NO_ENTITY_MAPPER
+            throw Unsupported.EntityMapper;
+#else
             return this.Serialize(type, entity, 0).AsDocument;
+#endif
         }
 
         /// <summary>
@@ -30,6 +34,7 @@ namespace LiteDB
             return this.ToDocument(typeof(T), entity)?.AsDocument;
         }
 
+#if !NO_ENTITY_MAPPER
         /// <summary>
         /// Serialize to BsonValue any .NET object based on T type (using mapping rules)
         /// </summary>
@@ -140,11 +145,7 @@ namespace LiteDB
             // otherwise serialize as a plain object
             else
             {
-#if NO_ENTITY_MAPPER
-                throw Unsupported.EntityMapper;
-#else
                 return this.SerializeObject(type, obj, depth);
-#endif
             }
         }
 
@@ -180,7 +181,6 @@ namespace LiteDB
             return o;
         }
 
-#if !NO_ENTITY_MAPPER
         private BsonDocument SerializeObject(Type type, object obj, int depth)
         {
             var t = obj.GetType();

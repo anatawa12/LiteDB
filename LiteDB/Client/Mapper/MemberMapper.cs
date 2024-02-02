@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !NO_ENTITY_MAPPER
+using System;
 using System.Reflection;
 using static LiteDB.Constants;
 
@@ -65,3 +66,4 @@ namespace LiteDB
         public Type UnderlyingType { get; set; }
     }
 }
+#endif

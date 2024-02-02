@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace LiteDB.Tests
 {
+#if !VRC_GET //NO_ENTITY_MAPPER
     // { 
     //     "_id": "01001", 
     //     "city": "AGAWAM", 
@@ -40,4 +41,5 @@ namespace LiteDB.Tests
             return new BsonMapper().Serialize(this).ToString();
         }
     }
+#endif
 }

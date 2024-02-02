@@ -58,7 +58,6 @@ namespace LiteDB.Tests.Mapper
             Assert.Single(dic);
             Assert.Equal(1, dic["x"]);
         }
-#endif
 
         [Fact]
         public void Serialize_Hashtable()
@@ -72,7 +71,6 @@ namespace LiteDB.Tests.Mapper
             Assert.Equal(1, result["x"].AsInt32);
         }
 
-#if !VRC_GET
         [Fact]
         public void Deserialize_Uri()
         {

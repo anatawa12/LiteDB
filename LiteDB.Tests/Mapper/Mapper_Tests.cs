@@ -9,6 +9,7 @@ namespace LiteDB.Tests.Mapper
     {
         private BsonMapper _mapper = new BsonMapper();
 
+#if !VRC_GET
         [Fact]
         public void ToDocument_ReturnsNull_WhenFail()
         {
@@ -20,7 +21,6 @@ namespace LiteDB.Tests.Mapper
             doc2.Should<BsonDocument>().Be(null);
         }
 
-#if !VRC_GET
         [Fact]
         public void Class_Not_Assignable()
         {

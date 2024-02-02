@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace LiteDB.Tests
 {
+#if !VRC_GET //NO_ENTITY_MAPPER
     public class Person : IEqualityComparer<Person>, IComparable<Person>
     {
         public int Id { get; set; }
@@ -41,4 +42,5 @@ namespace LiteDB.Tests
         public string City { get; set; }
         public string State { get; set; }
     }
+#endif
 }

@@ -33,7 +33,6 @@ namespace LiteDB
         /// Mapping cache between Class/BsonDocument
         /// </summary>
         private Dictionary<Type, EntityMapper> _entities = new Dictionary<Type, EntityMapper>();
-#endif
 
         /// <summary>
         /// Map serializer/deserialize for custom types
@@ -42,7 +41,6 @@ namespace LiteDB
 
         private ConcurrentDictionary<Type, Func<BsonValue, object>> _customDeserializer = new ConcurrentDictionary<Type, Func<BsonValue, object>>();
 
-#if !NO_ENTITY_MAPPER
         /// <summary>
         /// Type instantiator function to support IoC
         /// </summary>
@@ -64,7 +62,6 @@ namespace LiteDB
         /// A resolver name for field
         /// </summary>
         public Func<string, string> ResolveFieldName;
-#endif
 
         /// <summary>
         /// Indicate that mapper do not serialize null values (default false)
@@ -92,19 +89,16 @@ namespace LiteDB
         /// </summary>
         public bool IncludeFields { get; set; }
 
-#if !NO_ENTITY_MAPPER
         /// <summary>
         /// Get/Set that mapper must include non public (private, protected and internal) (default: false)
         /// </summary>
         public bool IncludeNonPublic { get; set; }
-#endif
 
         /// <summary>
         /// Get/Set maximum depth for nested object (default 20)
         /// </summary>
         public int MaxDepth { get; set; }
 
-#if !NO_ENTITY_MAPPER
         /// <summary>
         /// A custom callback to change MemberInfo behavior when converting to MemberMapper.
         /// Use mapper.ResolveMember(Type entity, MemberInfo property, MemberMapper documentMappedField)
@@ -126,22 +120,19 @@ namespace LiteDB
         public BsonMapper(Func<Type, object> customTypeInstantiator = null, ITypeNameBinder typeNameBinder = null)
 #endif
         {
+#if !NO_ENTITY_MAPPER
             this.SerializeNullValues = false;
             this.TrimWhitespace = true;
             this.EmptyStringToNull = true;
             this.EnumAsInteger = false;
-#if !NO_ENTITY_MAPPER
             this.ResolveFieldName = (s) => s;
             this.ResolveMember = (t, mi, mm) => { };
             this.ResolveCollectionName = (t) => Reflection.IsEnumerable(t) ? Reflection.GetListItemType(t).Name : t.Name;
-#endif
             this.IncludeFields = false;
             this.MaxDepth = 20;
 
-#if !NO_ENTITY_MAPPER
             _typeInstantiator = customTypeInstantiator ?? ((Type t) => null);
             _typeNameBinder = typeNameBinder ?? DefaultTypeNameBinder.Instance;
-#endif
 
             #region Register CustomTypes
 
@@ -157,8 +148,10 @@ namespace LiteDB
 
 
             #endregion
+#endif
 
         }
+#if !NO_ENTITY_MAPPER
 
         #region Register CustomType
 
@@ -182,7 +175,6 @@ namespace LiteDB
 
         #endregion
 
-#if !NO_ENTITY_MAPPER
         /// <summary>
         /// Map your entity class to BsonDocument using fluent API
         /// </summary>

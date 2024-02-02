@@ -63,7 +63,6 @@ namespace LiteDB.Tests.Mapper
             expr2.Parameters["p0"].AsInt32.Should().Be(2);
 
         }
-#endif
 
         [Fact]
         public void Enum_Array_Test()
@@ -84,5 +83,6 @@ namespace LiteDB.Tests.Mapper
             var deserialized2 = mapper.Deserialize<CustomerType[]>(serialized1);
             deserialized2.Should().Equal(array);
         }
+#endif
     }
 }
