@@ -113,33 +113,6 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Returns a single value from array according index or expression parameter
-        /// </summary>
-        public static BsonValue ARRAY_CONST_INDEX(BsonValue value, int index)
-        {
-            if (!value.IsArray) return BsonValue.Null;
-            var arr = value.AsArray;
-            var idx = index < 0 ? arr.Count + index : index;
-            return arr.Count > idx ? arr[idx] : BsonValue.Null;
-        }
-
-        /// <summary>
-        /// Returns all values from array according filter expression or all values (index = MaxValue)
-        /// </summary>
-        public static IEnumerable<BsonValue> ARRAY_ALL(BsonValue value)
-        {
-            if (!value.IsArray) yield break;
-
-            var arr = value.AsArray;
-
-            // [*] - index are all values
-            foreach (var item in arr)
-            {
-                yield return item;
-            }
-        }
-
-        /// <summary>
         /// Returns all values from array according filter expression or all values (index = MaxValue)
         /// </summary>
         public static IEnumerable<BsonValue> ARRAY_FILTER(BsonValue value, BsonExpression filterExpr, BsonDocument root)
@@ -177,24 +150,6 @@ namespace LiteDB
             newDoc.RawId = source.AsDocument.RawId;
 
             return newDoc;
-        }
-
-        public static IEnumerable<BsonValue> MAP(BsonDocument root, IEnumerable<BsonValue> input, BsonExpression mapExpr)
-        {
-            foreach (var item in input)
-            {
-                // execute for each child value and except a first bool value (returns if true)
-#if INVARIANT_CULTURE
-                var values = mapExpr.Execute(new BsonDocument[] { root }, root, item);
-#else
-                var values = mapExpr.Execute(new BsonDocument[] { root }, root, item, null);
-#endif
-
-                foreach (var value in values)
-                {
-                    yield return value;
-                }
-            }
         }
     }
 }

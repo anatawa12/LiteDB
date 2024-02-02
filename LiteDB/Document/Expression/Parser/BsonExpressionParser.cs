@@ -859,8 +859,7 @@ namespace LiteDB
                     IsScalar = false,
                     Fields = new HashSet<string>(StringComparer.OrdinalIgnoreCase).AddRange(pathExpr.Fields),
 #if EXPRESSION_PARSER_ONLY_FOR_INDEX
-                    FuncEnumerable = (source, root, current) => 
-                        BsonExprInterpreter.MAP(root, source, pathExpr),
+                    FuncEnumerable = MapExpression(pathExpr),
 #else
                     Expression = Expression.Call(BsonExpression.GetFunction("MAP"), context.Root, context.Collation, context.Parameters, sourceExpr.Expression, Expression.Constant(pathExpr)),
 #endif
@@ -1275,8 +1274,7 @@ namespace LiteDB
                     IsScalar = false,
                     Fields = new HashSet<string>(StringComparer.OrdinalIgnoreCase).AddRange(pathExpr.Fields).AddRange(mapExpr.Fields),
 #if EXPRESSION_PARSER_ONLY_FOR_INDEX
-                    FuncEnumerable = (source, root, current) =>
-                        BsonExprInterpreter.MAP(root, exprEnumerable(source, root, current), mapExpr),
+                    FuncEnumerable = MapExpression(exprEnumerable, mapExpr),
 #else
                     Expression = Expression.Call(BsonExpression.GetFunction("MAP"), context.Root, context.Collation, context.Parameters, pathExpr.Expression, Expression.Constant(mapExpr)),
 #endif
@@ -1353,7 +1351,12 @@ namespace LiteDB
                     index = Convert.ToInt32(tokenizer.Current.Value);
 #if EXPRESSION_PARSER_ONLY_FOR_INDEX
                     BsonExpressionScalarDelegate funcScalar = (source, root, current) =>
-                        BsonExprInterpreter.ARRAY_CONST_INDEX(expr(source, root, current), index);
+                    {
+                        var value = expr(source, root, current);
+                        if (!value.IsArray) return BsonValue.Null;
+                        var arr = value.AsArray;
+                        return index < arr.Count ? value.AsArray[index] : BsonValue.Null;
+                    };
                     result = funcScalar;
 #endif
                 }
@@ -1364,7 +1367,13 @@ namespace LiteDB
                     index = -Convert.ToInt32(tokenizer.Current.Value);
 #if EXPRESSION_PARSER_ONLY_FOR_INDEX
                     BsonExpressionScalarDelegate funcScalar = (source, root, current) =>
-                        BsonExprInterpreter.ARRAY_CONST_INDEX(expr(source, root, current), index);
+                    {
+                        var value = expr(source, root, current);
+                        if (!value.IsArray) return BsonValue.Null;
+                        var arr = value.AsArray;
+                        var idx = arr.Count + index;
+                        return idx < arr.Count ? arr[idx] : BsonValue.Null;
+                    };
                     result = funcScalar;
 #endif
                 }
@@ -1380,7 +1389,10 @@ namespace LiteDB
                     src.Append(tokenizer.ReadToken().Value);
 #if EXPRESSION_PARSER_ONLY_FOR_INDEX
                     BsonExpressionEnumerableDelegate funcEnumerable = (source, root, current) =>
-                        BsonExprInterpreter.ARRAY_ALL(expr(source, root, current));
+                    {
+                        var value = expr(source, root, current);
+                        return value.IsArray ? value.AsArray : Array.Empty<BsonValue>();
+                    };
                     result = funcEnumerable;
 #endif
                 }
@@ -1803,6 +1815,35 @@ namespace LiteDB
 
             return result;
         }
+#endif
+
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+        #region Helpers
+
+        private static BsonExpressionEnumerableDelegate MapExpression(BsonExpression pathExpr)
+        {
+            if (pathExpr.FuncEnumerable != null)
+                return (source, root, current) =>
+                    source.SelectMany(item => pathExpr.FuncEnumerable(new[] { root }, root, item));
+            else
+                return (source, root, current) =>
+                    source.Select(item => pathExpr.FuncScalar(new[] { root }, root, item));
+        }
+        
+        private static BsonExpressionEnumerableDelegate MapExpression(
+            BsonExpressionEnumerableDelegate exprEnumerable, BsonExpression pathExpr)
+        {
+            if (pathExpr.FuncEnumerable != null)
+                return (source, root, current) =>
+                    exprEnumerable(source, root, current)
+                        .SelectMany(item => pathExpr.FuncEnumerable(new[] { root }, root, item));
+            else
+                return (source, root, current) =>
+                    exprEnumerable(source, root, current)
+                        .Select(item => pathExpr.FuncScalar(new[] { root }, root, item));
+        }
+
+        #endregion
 #endif
     }
 }
