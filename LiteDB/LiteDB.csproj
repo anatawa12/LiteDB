@@ -65,6 +65,7 @@
     <DefineConstants>$(DefineConstants);EXPRESSION_PARSER_ONLY_FOR_INDEX</DefineConstants>
     <DefineConstants>$(DefineConstants);NO_ENTITY_MAPPER</DefineConstants>
     <DefineConstants>$(DefineConstants);NO_REGEX</DefineConstants>
+    <DefineConstants>$(DefineConstants);INVARIANT_CULTURE</DefineConstants>
   </PropertyGroup>
 
   <!-- Begin References -->

@@ -65,7 +65,11 @@ namespace LiteDB.Engine
                 predicate.Left.Source == "$._id" && 
                 predicate.Right.IsValue)
             {
+#if INVARIANT_CULTURE
+                var id = predicate.Right.Execute().First();
+#else
                 var id = predicate.Right.Execute(_header.Pragmas.Collation).First();
+#endif
 
                 return this.Delete(collection, new BsonValue[] { id });
             }

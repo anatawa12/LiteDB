@@ -50,7 +50,11 @@ namespace LiteDB.Engine
             {
                 LOG($"creating new database: '{Path.GetFileName(_dataFactory.Name)}'", "DISK");
 
+#if INVARIANT_CULTURE
+                this.Initialize(_dataPool.Writer, settings.InitialSize);
+#else
                 this.Initialize(_dataPool.Writer, settings.Collation, settings.InitialSize);
+#endif
             }
 
             // if not readonly, force open writable datafile
@@ -91,13 +95,19 @@ namespace LiteDB.Engine
         /// <summary>
         /// Create a new empty database (use synced mode)
         /// </summary>
+#if INVARIANT_CULTURE
+        private void Initialize(Stream stream, long initialSize)
+#else
         private void Initialize(Stream stream, Collation collation, long initialSize)
+#endif
         {
             var buffer = new PageBuffer(new byte[PAGE_SIZE], 0, 0);
             var header = new HeaderPage(buffer, 0);
 
             // update collation
+#if !INVARIANT_CULTURE
             header.Pragmas.Set(Pragmas.COLLATION, (collation ?? Collation.Default).ToString(), false);
+#endif
 
             // update buffer
             header.UpdateBuffer();

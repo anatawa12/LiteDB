@@ -13,7 +13,11 @@ namespace LiteDB.Engine
         /// Upgrade old version of LiteDB into new LiteDB file structure. Returns true if database was completed converted
         /// If database already in current version just return false
         /// </summary>
+#if INVARIANT_CULTURE
+        public static bool Upgrade(string filename, string password = null)
+#else
         public static bool Upgrade(string filename, string password = null, Collation collation = null)
+#endif
         {
             if (filename.IsNullOrWhiteSpace()) throw new ArgumentNullException(nameof(filename));
             if (!File.Exists(filename)) return false;
@@ -22,7 +26,9 @@ namespace LiteDB.Engine
             {
                 Filename = filename,
                 Password = password,
+#if !INVARIANT_CULTURE
                 Collation = collation
+#endif
             };
 
             var backup = FileHelper.GetSufixFile(filename, "-backup", true);

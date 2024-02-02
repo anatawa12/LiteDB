@@ -90,6 +90,7 @@ namespace LiteDB.Tests.Engine
         }
 #endif
 
+#if !VRC_GET // INVALIANT_CULTURE
         [Fact (Skip = "Must fix how catch this exception")]
         public void Rebuild_Change_Culture_Error()
         {
@@ -117,6 +118,7 @@ namespace LiteDB.Tests.Engine
                 db.Pragma(Pragmas.COLLATION).AsString.Should().Be("en-US/None");
             }
         }
+#endif
     }
 }
 

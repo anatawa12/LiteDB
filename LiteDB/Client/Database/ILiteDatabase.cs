@@ -151,9 +151,11 @@ namespace LiteDB
         /// </summary>
         int CheckpointSize { get; set; }
 
+#if !INVARIANT_CULTURE
         /// <summary>
         /// Get database collection (this options can be changed only in rebuild proces)
         /// </summary>
         Collation Collation { get; }
+#endif
     }
 }

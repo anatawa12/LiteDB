@@ -152,7 +152,11 @@ namespace LiteDB
             foreach (var item in arr)
             {
                 // execute for each child value and except a first bool value (returns if true)
+#if INVARIANT_CULTURE
+                var c = filterExpr.ExecuteScalar(new [] { root }, root, item);
+#else
                 var c = filterExpr.ExecuteScalar(new BsonDocument[] { root }, root, item, null);
+#endif
 
                 if (c.IsBoolean && c.AsBoolean == true)
                 {
@@ -180,7 +184,11 @@ namespace LiteDB
             foreach (var item in input)
             {
                 // execute for each child value and except a first bool value (returns if true)
+#if INVARIANT_CULTURE
+                var values = mapExpr.Execute(new BsonDocument[] { root }, root, item);
+#else
                 var values = mapExpr.Execute(new BsonDocument[] { root }, root, item, null);
+#endif
 
                 foreach (var value in values)
                 {

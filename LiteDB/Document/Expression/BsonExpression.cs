@@ -181,6 +181,9 @@ namespace LiteDB
         /// <summary>
         /// Execute expression with an empty document (used only for resolve math/functions).
         /// </summary>
+#if INVARIANT_CULTURE
+        public IEnumerable<BsonValue> Execute() => this.Execute(new BsonDocument());
+#else
         public IEnumerable<BsonValue> Execute(Collation collation = null)
         {
             var root = new BsonDocument();
@@ -188,10 +191,14 @@ namespace LiteDB
 
             return this.Execute(source, root, root, collation);
         }
+#endif
 
         /// <summary>
         /// Execute expression and returns IEnumerable values
         /// </summary>
+#if INVARIANT_CULTURE
+        public IEnumerable<BsonValue> Execute(BsonDocument root) => this.Execute(new[] { root }, root, root);
+#else
         public IEnumerable<BsonValue> Execute(BsonDocument root, Collation collation = null)
         {
             if (root == null) throw new ArgumentNullException(nameof(root));
@@ -200,21 +207,30 @@ namespace LiteDB
 
             return this.Execute(source, root, root, collation);
         }
+#endif
 
         /// <summary>
         /// Execute expression and returns IEnumerable values
         /// </summary>
+#if INVARIANT_CULTURE
+        public IEnumerable<BsonValue> Execute(IEnumerable<BsonDocument> source) => this.Execute(source, null, null);
+#else
         public IEnumerable<BsonValue> Execute(IEnumerable<BsonDocument> source, Collation collation = null)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
 
             return this.Execute(source, null, null, collation);
         }
+#endif
 
         /// <summary>
         /// Execute expression and returns IEnumerable values - returns NULL if no elements
         /// </summary>
+#if INVARIANT_CULTURE
+        internal IEnumerable<BsonValue> Execute(IEnumerable<BsonDocument> source, BsonDocument root, BsonValue current)
+#else
         internal IEnumerable<BsonValue> Execute(IEnumerable<BsonDocument> source, BsonDocument root, BsonValue current, Collation collation)
+#endif
         {
             if (this.IsScalar)
             {
@@ -245,10 +261,14 @@ namespace LiteDB
         /// Execute expression over document to get all index keys. 
         /// Return distinct value (no duplicate key to same document)
         /// </summary>
+#if INVARIANT_CULTURE
+        internal IEnumerable<BsonValue> GetIndexKeys(BsonDocument doc) => this.Execute(doc).Distinct();
+#else
         internal IEnumerable<BsonValue> GetIndexKeys(BsonDocument doc, Collation collation)
         {
             return this.Execute(doc, collation).Distinct();
         }
+#endif
 
         #endregion
 
@@ -257,6 +277,9 @@ namespace LiteDB
         /// <summary>
         /// Execute scalar expression with an blank document and empty source (used only for resolve math/functions).
         /// </summary>
+#if INVARIANT_CULTURE
+        public BsonValue ExecuteScalar() => this.ExecuteScalar(new BsonDocument());
+#else
         public BsonValue ExecuteScalar(Collation collation = null)
         {
             var root = new BsonDocument();
@@ -264,10 +287,14 @@ namespace LiteDB
 
             return this.ExecuteScalar(source, root, root, collation);
         }
+#endif
 
         /// <summary>
         /// Execute scalar expression over single document and return a single value (or BsonNull when empty). Throws exception if expression are not scalar expression
         /// </summary>
+#if INVARIANT_CULTURE
+        public BsonValue ExecuteScalar(BsonDocument root) => this.ExecuteScalar(new[] { root }, root, root);
+#else
         public BsonValue ExecuteScalar(BsonDocument root, Collation collation = null)
         {
             if (root == null) throw new ArgumentNullException(nameof(root));
@@ -276,21 +303,30 @@ namespace LiteDB
 
             return this.ExecuteScalar(source, root, root, collation);
         }
+#endif
 
         /// <summary>
         /// Execute scalar expression over multiple documents and return a single value (or BsonNull when empty). Throws exception if expression are not scalar expression
         /// </summary>
+#if INVARIANT_CULTURE
+        public BsonValue ExecuteScalar(IEnumerable<BsonDocument> source) => this.ExecuteScalar(source, null, null);
+#else
         public BsonValue ExecuteScalar(IEnumerable<BsonDocument> source, Collation collation = null)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
 
             return this.ExecuteScalar(source, null, null, collation);
         }
+#endif
 
         /// <summary>
         /// Execute expression and returns IEnumerable values - returns NULL if no elements
         /// </summary>
+#if INVARIANT_CULTURE
+        internal BsonValue ExecuteScalar(IEnumerable<BsonDocument> source, BsonDocument root, BsonValue current)
+#else
         internal BsonValue ExecuteScalar(IEnumerable<BsonDocument> source, BsonDocument root, BsonValue current, Collation collation)
+#endif
         {
             if (this.IsScalar)
             {

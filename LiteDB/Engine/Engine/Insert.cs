@@ -74,7 +74,11 @@ namespace LiteDB.Engine
             {
                 // for each index, get all keys (supports multi-key) - gets distinct values only
                 // if index are unique, get single key only
+#if INVARIANT_CULTURE
+                var keys = index.BsonExpr.GetIndexKeys(doc);
+#else
                 var keys = index.BsonExpr.GetIndexKeys(doc, _header.Pragmas.Collation);
+#endif
 
                 // do a loop with all keys (multi-key supported)
                 foreach(var key in keys)

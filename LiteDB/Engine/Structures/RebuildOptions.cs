@@ -13,9 +13,11 @@ namespace LiteDB.Engine
         /// </summary>
         public string Password { get; set; } = null;
 
+#if !INVARIANT_CULTURE
         /// <summary>
         /// Define a new collation when rebuild
         /// </summary>
         public Collation Collation { get; set; } = null;
+#endif
     }
 }

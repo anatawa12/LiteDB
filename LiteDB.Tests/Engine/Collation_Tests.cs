@@ -72,6 +72,7 @@ namespace LiteDB.Tests.Engine
         }
 #endif
 
+#if !VRC_GET // INVALIANT_CULTURE
         [Fact(Skip = "Must fix in CI - works only in Windows local machine")]
         public void Create_Database_Using_Current_Culture()
         {
@@ -88,6 +89,7 @@ namespace LiteDB.Tests.Engine
 
             CultureInfo.CurrentCulture = current;
         }
+#endif
 
 #if !VRC_GET
         [Fact]
@@ -123,6 +125,7 @@ namespace LiteDB.Tests.Engine
         }
 #endif
 
+#if !VRC_GET //INVALIANT_CULTURE
         [Fact]
         public void Collaction_New_Database()
         {
@@ -138,6 +141,7 @@ namespace LiteDB.Tests.Engine
                 db.Collation.SortOptions.Should().Be(CompareOptions.None);
             }
         }
+#endif
 
         private string[] data = new string[]
         {

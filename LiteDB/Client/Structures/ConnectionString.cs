@@ -43,10 +43,12 @@ namespace LiteDB
         /// </summary>
         public bool Upgrade { get; set; } = false;
 
+#if !INVARIANT_CULTURE
         /// <summary>
         /// "collation": Set default collaction when database creation (default: "[CurrentCulture]/IgnoreCase")
         /// </summary>
         public Collation Collation { get; set; }
+#endif
 
         /// <summary>
         /// Initialize empty connection string
@@ -88,7 +90,11 @@ namespace LiteDB
             this.InitialSize = _values.GetFileSize(@"initial size", this.InitialSize);
             this.ReadOnly = _values.GetValue("readonly", this.ReadOnly);
 
+#if INVARIANT_CULTURE
+            if (_values.ContainsKey("collation")) throw Unsupported.Culture;
+#else
             this.Collation = _values.ContainsKey("collation") ? new Collation(_values.GetValue<string>("collation")) : this.Collation;
+#endif
 
             this.Upgrade = _values.GetValue("upgrade", this.Upgrade);
         }
@@ -109,7 +115,9 @@ namespace LiteDB
                 Password = this.Password,
                 InitialSize = this.InitialSize,
                 ReadOnly = this.ReadOnly,
+#if !INVARIANT_CULTURE
                 Collation = this.Collation
+#endif
             };
 
             // create engine implementation as Connection Type

@@ -24,7 +24,9 @@ namespace LiteDB.Internals
             this.Invoking(x => header.Pragmas.Set(Pragmas.USER_VERSION, "invalid value", true)).Should().Throw<Exception>();
             this.Invoking(x => header.Pragmas.Set(Pragmas.USER_VERSION, 1, true)).Should().NotThrow();
 
+#if !VRC_GET //INVALIANT_CULTURE
             this.Invoking(x => header.Pragmas.Set(Pragmas.COLLATION, "en-US/IgnoreCase", true)).Should().Throw<Exception>();
+#endif
 
             this.Invoking(x => header.Pragmas.Set(Pragmas.TIMEOUT, -1, true)).Should().Throw<Exception>();
             this.Invoking(x => header.Pragmas.Set(Pragmas.TIMEOUT, 1, true)).Should().NotThrow();

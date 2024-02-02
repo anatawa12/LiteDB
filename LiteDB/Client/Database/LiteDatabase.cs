@@ -47,7 +47,11 @@ namespace LiteDB
             if (connectionString.Upgrade == true)
             {
                 // try upgrade if need
+#if INVARIANT_CULTURE
+                LiteEngine.Upgrade(connectionString.Filename, connectionString.Password);
+#else
                 LiteEngine.Upgrade(connectionString.Filename, connectionString.Password, connectionString.Collation);
+#endif
             }
 
             _engine = connectionString.CreateEngine();
@@ -365,6 +369,7 @@ namespace LiteDB
             set => _engine.Pragma(Pragmas.CHECKPOINT, value);
         }
 
+#if !INVARIANT_CULTURE
         /// <summary>
         /// Get database collection (this options can be changed only in rebuild proces)
         /// </summary>
@@ -372,6 +377,7 @@ namespace LiteDB
         {
             get => new Collation(_engine.Pragma(Pragmas.COLLATION).AsString);
         }
+#endif
 
         #endregion
 

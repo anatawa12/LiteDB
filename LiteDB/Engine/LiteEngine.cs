@@ -78,10 +78,12 @@ namespace LiteDB.Engine
                 _header = new HeaderPage(buffer);
                 
                 // test for same collation
+#if !INVARIANT_CULTURE
                 if (settings.Collation != null && settings.Collation.ToString() != _header.Pragmas.Collation.ToString())
                 {
                     throw new LiteException(0, $"Datafile collation '{_header.Pragmas.Collation}' is different from engine settings. Use Rebuild database to change collation.");
                 }
+#endif
 
                 // initialize locker service
                 _locker = new LockService(_header.Pragmas);

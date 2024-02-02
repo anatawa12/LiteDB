@@ -42,11 +42,13 @@ namespace LiteDB.Engine
                 _header.LastPageID = 0;
                 _header.GetCollections().ToList().ForEach(c => _header.DeleteCollection(c.Key));
 
+#if !INVARIANT_CULTURE
                 // override collation pragma
                 if (options?.Collation != null)
                 {
                     _header.Pragmas.Set(Pragmas.COLLATION, options.Collation.ToString(), false);
                 }
+#endif
 
                 // rebuild entrie database using FileReader
                 this.RebuildContent(reader);

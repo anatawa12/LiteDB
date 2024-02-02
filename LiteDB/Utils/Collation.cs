@@ -15,6 +15,14 @@ namespace LiteDB
     /// </summary>
     public class Collation : IComparer<BsonValue>, IComparer<string>, IEqualityComparer<BsonValue>
     {
+
+#if INVARIANT_CULTURE
+        public Collation(CompareOptions sortOptions) => this.SortOptions = sortOptions;
+
+        public static Collation Default = new Collation(CompareOptions.IgnoreCase);
+
+        public static Collation Binary = new Collation(CompareOptions.Ordinal);
+#else
         private readonly CompareInfo _compareInfo;
 
         public Collation(string collation)
@@ -54,6 +62,7 @@ namespace LiteDB
         /// Get database language culture
         /// </summary>
         public CultureInfo Culture { get; }
+#endif
 
         /// <summary>
         /// Get options to how string should be compared in sort
@@ -65,7 +74,11 @@ namespace LiteDB
         /// </summary>
         public int Compare(string left, string right)
         {
+#if INVARIANT_CULTURE
+            var result = CultureInfo.InvariantCulture.CompareInfo.Compare(left, right, this.SortOptions);
+#else
             var result = _compareInfo.Compare(left, right, this.SortOptions);
+#endif
 
             return result < 0 ? -1 : result > 0 ? +1 : 0;
         }
@@ -87,7 +100,11 @@ namespace LiteDB
 
         public override string ToString()
         {
+#if INVARIANT_CULTURE
+            return "Invariant" + "/" + this.SortOptions.ToString();
+#else
             return this.Culture.Name + "/" + this.SortOptions.ToString();
+#endif
         }
     }
 }

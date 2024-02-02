@@ -62,7 +62,11 @@ namespace LiteDB.Engine
                         IndexNode first = null;
 
                         // get values from expression in document
+#if INVARIANT_CULTURE
+                        var keys = expression.GetIndexKeys(doc);
+#else
                         var keys = expression.GetIndexKeys(doc, _header.Pragmas.Collation);
+#endif
 
                         // adding index node for each value
                         foreach (var key in keys)

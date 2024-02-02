@@ -71,7 +71,11 @@ namespace LiteDB.Engine
                     // if query use Source (*) need runs with empty data source
                     if (_query.Select.UseSource)
                     {
+#if INVARIANT_CULTURE
+                        yield return _query.Select.ExecuteScalar().AsDocument;
+#else
                         yield return _query.Select.ExecuteScalar(_pragmas.Collation).AsDocument;
+#endif
                     }
 
                     transaction.OpenCursors.Remove(_cursor);
@@ -85,7 +89,11 @@ namespace LiteDB.Engine
                 }
 
                 // execute optimization before run query (will fill missing _query properties instance)
+#if INVARIANT_CULTURE
+                var optimizer = new QueryOptimization(snapshot, _query, _source);
+#else
                 var optimizer = new QueryOptimization(snapshot, _query, _source, _pragmas.Collation);
+#endif
 
                 var queryPlan = optimizer.ProcessQuery();
 

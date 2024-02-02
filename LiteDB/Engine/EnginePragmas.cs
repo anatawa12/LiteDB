@@ -83,6 +83,7 @@ namespace LiteDB.Engine
                     Validate = (v, h) => { },
                     Write = (b) => b.Write(this.UserVersion, P_USER_VERSION)
                 },
+#if !INVARIANT_CULTURE
                 [Engine.Pragmas.COLLATION] = new Pragma
                 {
                     Name = Engine.Pragmas.COLLATION,
@@ -96,6 +97,7 @@ namespace LiteDB.Engine
                         b.Write((int)this.Collation.SortOptions, P_COLLATION_SORT);
                     }
                 },
+#endif
                 [Engine.Pragmas.TIMEOUT] = new Pragma
                 {
                     Name = Engine.Pragmas.TIMEOUT,

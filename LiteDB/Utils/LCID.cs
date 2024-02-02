@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !INVARIANT_CULTURE
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -493,3 +494,4 @@ namespace LiteDB
         }
     }
 }
+#endif

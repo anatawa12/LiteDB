@@ -9,6 +9,7 @@ namespace LiteDB
         public static Exception Shared => Create("Shared Connection is removed");
         public static Exception WhereQuery => Create("Where querty support is removed");
         public static Exception EntityMapper => Create("EntityMapper is removed");
+        public static Exception Culture => Create("Culture support is removed");
 
         // EXPRESSION_PARSER_ONLY_FOR_INDEX
         public static Exception ParametersInExpression => Create("Parameters in expression");

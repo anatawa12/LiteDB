@@ -12,19 +12,27 @@ namespace LiteDB.Engine
     {
         private readonly Snapshot _snapshot;
         private readonly Query _query;
+#if !INVARIANT_CULTURE
         private readonly Collation _collation;
+#endif
         private readonly QueryPlan _queryPlan;
 #if !NO_WHERE_QUERY
         private readonly List<BsonExpression> _terms = new List<BsonExpression>();
 #endif
 
+#if INVARIANT_CULTURE
+        public QueryOptimization(Snapshot snapshot, Query query, IEnumerable<BsonDocument> source)
+#else
         public QueryOptimization(Snapshot snapshot, Query query, IEnumerable<BsonDocument> source, Collation collation)
+#endif
         {
             if (query.Select == null) throw new ArgumentNullException(nameof(query.Select));
 
             _snapshot = snapshot;
             _query = query;
+#if !INVARIANT_CULTURE
             _collation = collation;
+#endif
 
             _queryPlan = new QueryPlan(snapshot.CollectionName)
             {

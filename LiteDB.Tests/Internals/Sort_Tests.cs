@@ -21,7 +21,9 @@ namespace LiteDB.Internals
                 .ToArray();
 
             var pragmas = new EnginePragmas(null);
+#if !VRC_GET // INVALIANT_CULTURE
             pragmas.Set(Pragmas.COLLATION, Collation.Binary.ToString(), false);
+#endif
 
             using (var tempDisk = new SortDisk(_factory, 10 * 8192, pragmas))
             using (var s = new SortService(tempDisk, Query.Ascending, pragmas))
@@ -49,7 +51,9 @@ namespace LiteDB.Internals
                 .ToArray();
 
             var pragmas = new EnginePragmas(null);
+#if !VRC_GET // INVALIANT_CULTURE
             pragmas.Set(Pragmas.COLLATION, Collation.Binary.ToString(), false);
+#endif
 
             using (var tempDisk = new SortDisk(_factory, 10 * 8192, pragmas))
             using (var s = new SortService(tempDisk, Query.Descending, pragmas))

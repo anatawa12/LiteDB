@@ -71,7 +71,11 @@ namespace LiteDB.Engine
                         var doc = reader.Current.AsDocument;
 
                         var id = doc["_id"];
+#if INVARIANT_CULTURE
+                        var value = transform.ExecuteScalar(doc);
+#else
                         var value = transform.ExecuteScalar(doc, _header.Pragmas.Collation);
+#endif
 
                         if (!value.IsDocument) throw new ArgumentException("Extend expression must return a document", nameof(transform));
 
@@ -131,7 +135,11 @@ namespace LiteDB.Engine
             foreach (var index in col.GetCollectionIndexes().Where(x => x.Name != "_id"))
             {
                 // getting all keys from expression over document
+#if INVARIANT_CULTURE
+                var keys = index.BsonExpr.GetIndexKeys(doc);
+#else
                 var keys = index.BsonExpr.GetIndexKeys(doc, _header.Pragmas.Collation);
+#endif
 
                 foreach (var key in keys)
                 {

@@ -17,7 +17,9 @@ namespace LiteDB.Tests.Database
             {
                 db.Timeout.TotalSeconds.Should().Be(60.0);
                 db.UtcDate.Should().Be(false);
+#if !VRC_GET //INVALIANT_CULTURE
                 db.Collation.SortOptions.Should().Be(CompareOptions.IgnoreCase);
+#endif
                 db.LimitSize.Should().Be(long.MaxValue);
                 db.UserVersion.Should().Be(0);
                 db.CheckpointSize.Should().Be(1000);

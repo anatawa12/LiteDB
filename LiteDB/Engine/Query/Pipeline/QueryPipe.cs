@@ -90,7 +90,11 @@ namespace LiteDB.Engine
 
             foreach (var doc in source)
             {
+#if INVARIANT_CULTURE
+                var value = select.ExecuteScalar(doc);
+#else
                 var value = select.ExecuteScalar(doc, _pragmas.Collation);
+#endif
 
                 if (value.IsDocument)
                 {
@@ -111,7 +115,11 @@ namespace LiteDB.Engine
             var cached = new DocumentCacheEnumerable(source, _lookup);
 
             var defaultName = select.DefaultFieldName();
+#if INVARIANT_CULTURE
+            var result = select.Execute(cached);
+#else
             var result = select.Execute(cached, _pragmas.Collation);
+#endif
 
             foreach (var value in result)
             {

@@ -28,6 +28,7 @@ namespace LiteDB.Engine
         /// </summary>
         public Index Index { get; }
 
+#if !INVARIANT_CULTURE
         public IndexCost(CollectionIndex index, BsonExpression expr, BsonExpression value, Collation collation)
         {
             this.IndexExpression = index.Expression;
@@ -65,6 +66,7 @@ namespace LiteDB.Engine
             // calcs index cost
             this.Cost = this.Index.GetCost(index);
         }
+#endif
 
         // used when full index search
         public IndexCost(CollectionIndex index)
