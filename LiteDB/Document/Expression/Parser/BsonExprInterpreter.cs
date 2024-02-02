@@ -160,30 +160,6 @@ namespace LiteDB
                 }
             }
         }
-        
-        public static BsonValue ARRAY_INDEX(BsonValue value, BsonExpression expr, BsonDocument root)
-        {
-            if (!value.IsArray) return BsonValue.Null;
-
-            var arr = value.AsArray;
-
-            // for expr.Type = parameter, just get value as index (fixed position)
-            // get fixed position based on parameter value (must return int value)
-            var indexValue = expr.ExecuteScalar(root);
-
-            if (!indexValue.IsNumber) throw new LiteException(0, "Parameter expression must return number when called inside an array");
-
-            var index = indexValue.AsInt32;
-
-            var idx = index < 0 ? arr.Count + index : index;
-
-            if (arr.Count > idx)
-            {
-                return arr[idx];
-            }
-
-            return BsonValue.Null;
-        }
 
         public static BsonValue EXTEND(BsonDocument source, BsonDocument extend)
         {

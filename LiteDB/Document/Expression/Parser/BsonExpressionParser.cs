@@ -1383,7 +1383,9 @@ namespace LiteDB
 
                     // if inner expression returns a single parameter, still Scalar
                     // otherwise it's an operand filter expression (enumerable)
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
                     if (inner.Type != BsonExpressionType.Parameter)
+#endif
                     {
 #if !EXPRESSION_PARSER_ONLY_FOR_INDEX
                         method = _arrayFilterMethod;
@@ -1395,14 +1397,6 @@ namespace LiteDB
                         result = funcEnumerable;
 #endif
                     }
-#if EXPRESSION_PARSER_ONLY_FOR_INDEX
-                    else
-                    {
-                        BsonExpressionScalarDelegate funcEnumerable = (source, root, current) =>
-                            BsonExprInterpreter.ARRAY_INDEX(expr(source, root, current), inner, root);
-                        result = funcEnumerable;
-                    }
-#endif
 
                     // add inner fields (can contains root call)
                     fields.AddRange(inner.Fields);

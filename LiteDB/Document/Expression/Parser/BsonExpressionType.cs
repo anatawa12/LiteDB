@@ -18,7 +18,9 @@ namespace LiteDB
         Array = 6,
         Document = 7,
 
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
         Parameter = 8,
+#endif
         Call = 9,
         Path = 10,
 
