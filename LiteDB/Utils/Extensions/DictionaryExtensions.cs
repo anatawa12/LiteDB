@@ -131,6 +131,73 @@ namespace LiteDB
             }
         }
 
+#if NO_REFLECTION_MORE // try to minimize reflection
+        public static string 
+            GetValue(this Dictionary<string, string> dict, string key, string defaultValue = default) =>
+            dict.GetValueOrDefault(key, defaultValue);
+
+        public static TimeSpan GetValue(this Dictionary<string, string> dict, string key, TimeSpan defaultValue = default)
+        {
+            try
+            {
+                if (dict.TryGetValue(key, out var value) == false) return defaultValue;
+
+                {
+                    // if timespan are numbers only, convert as seconds
+#if NO_REGEX
+                    var isAsciiDigit = value.Length > 0;
+                    if (isAsciiDigit)
+                        foreach (var c in value)
+                            if (c < '0' || c > '9')
+                                isAsciiDigit = false;
+                    if (isAsciiDigit)
+#else
+                    if (Regex.IsMatch(value, @"^\d+$", RegexOptions.Compiled))
+#endif
+                    {
+                        return TimeSpan.FromSeconds(Convert.ToInt32(value));
+                    }
+                    else
+                    {
+                        return TimeSpan.Parse(value);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                //TODO: fix string connection parser
+                throw new LiteException(0, $"Invalid connection string value type for `{key}`");
+            }
+        }
+        
+        public static bool GetValue(this Dictionary<string, string> dict, string key, bool defaultValue = default)
+        {
+            try
+            {
+                return dict.TryGetValue(key, out var value) == false ? defaultValue : Convert.ToBoolean(value);
+            }
+            catch (Exception)
+            {
+                //TODO: fix string connection parser
+                throw new LiteException(0, $"Invalid connection string value type for `{key}`");
+            }
+        }
+
+        public static ConnectionType GetValue(this Dictionary<string, string> dict, string key, ConnectionType defaultValue = default)
+        {
+            try
+            {
+                return dict.TryGetValue(key, out var value) == false
+                    ? defaultValue
+                    : Enum.Parse<ConnectionType>(value, true);
+            }
+            catch (Exception)
+            {
+                //TODO: fix string connection parser
+                throw new LiteException(0, $"Invalid connection string value type for `{key}`");
+            }
+        }
+#else
         /// <summary>
         /// Get value from dictionary converting datatype T
         /// </summary>
@@ -176,13 +243,18 @@ namespace LiteDB
                 throw new LiteException(0, $"Invalid connection string value type for `{key}`");
             }
         }
+#endif
 
         /// <summary>
         /// Get a value from a key converted in file size format: "1gb", "10 mb", "80000"
         /// </summary>
         public static long GetFileSize(this Dictionary<string, string> dict, string key, long defaultValue)
         {
+#if NO_REFLECTION_MORE
+            var size = dict.GetValue(key, null);
+#else
             var size = dict.GetValue<string>(key, null);
+#endif
 
             if (size == null) return defaultValue;
 

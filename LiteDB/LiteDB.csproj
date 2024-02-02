@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
-    <AssemblyVersion>5.0.17</AssemblyVersion>
+    <AssemblyVersion>5.0.17</AssemblyVersion> <!-- copied to SysDatabase.cs don't forget to update --> 
     <FileVersion>5.0.17</FileVersion>
     <VersionPrefix>5.0.17</VersionPrefix>
     <PackageVersion>5.0.17</PackageVersion>
@@ -66,6 +66,7 @@
     <DefineConstants>$(DefineConstants);NO_ENTITY_MAPPER</DefineConstants>
     <DefineConstants>$(DefineConstants);NO_REGEX</DefineConstants>
     <DefineConstants>$(DefineConstants);INVARIANT_CULTURE</DefineConstants>
+    <DefineConstants>$(DefineConstants);NO_REFLECTION_MORE</DefineConstants>
   </PropertyGroup>
 
   <!-- Begin References -->
