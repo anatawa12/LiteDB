@@ -181,9 +181,9 @@ namespace LiteDB.Tests.Expressions
             T("*").ExpectValue(BsonExpressionType.Source);
 
             // maps
-#if !VRC_GET
             T("MAP(arr[*] => @)").ExpectValue(BsonExpressionType.Map);
             T("MAP(el.arr[*] => @)").ExpectValue(BsonExpressionType.Map);
+#if !VRC_GET
             T("MAP(el.arr[*] => (@ + 10 + UPPER(@)))").ExpectValue(BsonExpressionType.Map);
 #endif
 

@@ -16,6 +16,7 @@ namespace LiteDB
         public static Exception FunctionsInExpression => Create("Functions in expression");
         public static Exception SourceInExpression => Create("'*' in expression");
         public static Exception OperatorsInExpression => Create("Operators in expression");
+        public static Exception SortFunction => Create("SORT function");
 
         private static Exception Create(string message) => new LiteException(LiteException.UNSUPPORTED, message);
     }

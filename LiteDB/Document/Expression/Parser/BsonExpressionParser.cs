@@ -1480,9 +1480,6 @@ namespace LiteDB
             // check if next token are ( otherwise returns null (is not a function)
             if (tokenizer.LookAhead().Type != TokenType.OpenParenthesis) return null;
 
-#if EXPRESSION_PARSER_ONLY_FOR_INDEX
-            throw Unsupported.FunctionsInExpression;
-#else
 
             // read (
             tokenizer.ReadToken().Expect(TokenType.OpenParenthesis);
@@ -1495,17 +1492,26 @@ namespace LiteDB
                 left = ConvertToEnumerable(left);
             }
 
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+            BsonExpression right = null;
+            BsonExpression parameter = null;
+#else
             var args = new List<Expression>();
             args.Add(context.Root);
             args.Add(context.Collation);
             args.Add(context.Parameters);
+#endif
 
             var src = new StringBuilder(functionName + "(" + left.Source);
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
             var isImmutable = left.IsImmutable;
+#endif            
             var useSource = left.UseSource;
             var fields = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
             args.Add(left.Expression);
+#endif
             fields.AddRange(left.Fields);
 
             // read =>
@@ -1514,11 +1520,18 @@ namespace LiteDB
                 tokenizer.ReadToken().Expect(TokenType.Equals);
                 tokenizer.ReadToken().Expect(TokenType.Greater);
 
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+                right = BsonExpression.ParseAndCompileFull(tokenizer,
+                    left.Type == BsonExpressionType.Source ? DocumentScope.Source : DocumentScope.Current);
+#else
                 var right = BsonExpression.ParseAndCompile(tokenizer, BsonExpressionParserMode.Full, parameters,
                     left.Type == BsonExpressionType.Source ? DocumentScope.Source : DocumentScope.Current);
+#endif
 
                 src.Append("=>" + right.Source);
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
                 args.Add(Expression.Constant(right));
+#endif
                 fields.AddRange(right.Fields);
             }
 
@@ -1531,13 +1544,21 @@ namespace LiteDB
                 // try more parameters ,
                 while (!tokenizer.CheckEOF())
                 {
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+                    parameter = ParseFullExpression(tokenizer, context, parameters, scope);
+#else
                     var parameter = ParseFullExpression(tokenizer, context, parameters, scope);
+#endif
 
                     // update isImmutable only when came false
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
                     if (parameter.IsImmutable == false) isImmutable = false;
+#endif
                     if (parameter.UseSource) useSource = true;
 
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
                     args.Add(parameter.Expression);
+#endif
                     src.Append(parameter.Source);
                     fields.AddRange(parameter.Fields);
 
@@ -1554,6 +1575,34 @@ namespace LiteDB
             tokenizer.ReadToken().Expect(TokenType.CloseParenthesis);
             src.Append(")");
 
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+            if (right == null && parameter != null)
+            {
+                right = parameter;
+                parameter = null;
+            }
+
+            var enumerable = (functionName, right, parameter) switch
+            {
+                ("MAP", { } _, null) => left.IsScalar
+                    ? MapExpression(left.FuncScalar, right)
+                    : MapExpression(left.FuncEnumerable, right),
+                ("FILTER", { } _, null) => left.IsScalar
+                    ? FilterExpression(left.FuncScalar, right)
+                    : FilterExpression(left.FuncEnumerable, right),
+                ("SORT", _, _) => throw Unsupported.SortFunction,
+                _ => throw new Exception("invalid overload")
+            };
+            return new BsonExpression
+            {
+                Type = type,
+                UseSource = useSource,
+                IsScalar = false,
+                Fields = fields,
+                FuncEnumerable = enumerable,
+                Source = src.ToString()
+            };
+#else
             var method = BsonExpression.GetFunction(functionName, args.Count - 5);
 
             return new BsonExpression
@@ -1695,7 +1744,6 @@ namespace LiteDB
             return null;
         }
 
-#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
         /// <summary>
         /// Convert scalar expression into enumerable expression using ITEMS(...) method
         /// Append [*] to path or ITEMS(..) in all others
@@ -1709,20 +1757,33 @@ namespace LiteDB
             var exprType = expr.Type == BsonExpressionType.Path ?
                 BsonExpressionType.Path :
                 BsonExpressionType.Call;
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+            var function = expr.FuncScalar;
+#endif
 
             return new BsonExpression
             {
                 Type = exprType,
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
                 Parameters = expr.Parameters,
                 IsImmutable = expr.IsImmutable,
+#endif
                 UseSource = expr.UseSource,
                 IsScalar = false,
                 Fields = expr.Fields,
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+                FuncEnumerable = (source, root, current) =>
+                {
+                    var array = function(source, root, current);
+                    return array.IsArray ? array.AsArray :
+                        array.IsBinary ? array.AsBinary.Select(x => (BsonValue)(int)x) : new[] { array };
+                },
+#else
                 Expression = Expression.Call(_itemsMethod, expr.Expression),
+#endif
                 Source = src
             };
         }
-#endif
 
         /// <summary>
         /// Convert enumerable expression into array using ARRAY(...) method
@@ -1829,7 +1890,18 @@ namespace LiteDB
                 return (source, root, current) =>
                     source.Select(item => pathExpr.FuncScalar(new[] { root }, root, item));
         }
-        
+
+        private static BsonExpressionEnumerableDelegate MapExpression(
+            BsonExpressionScalarDelegate exprScalar, BsonExpression pathExpr)
+        {
+            if (pathExpr.FuncEnumerable != null)
+                return (source, root, current) =>
+                    pathExpr.FuncEnumerable(new[] { root }, root, exprScalar(source, root, current));
+            else
+                return (source, root, current) =>
+                    new [] { pathExpr.FuncScalar(new[] { root }, root, exprScalar(source, root, current)) };
+        }
+
         private static BsonExpressionEnumerableDelegate MapExpression(
             BsonExpressionEnumerableDelegate exprEnumerable, BsonExpression pathExpr)
         {
@@ -1841,6 +1913,34 @@ namespace LiteDB
                 return (source, root, current) =>
                     exprEnumerable(source, root, current)
                         .Select(item => pathExpr.FuncScalar(new[] { root }, root, item));
+        }
+
+        private static BsonExpressionEnumerableDelegate FilterExpression(
+            BsonExpressionScalarDelegate exprScalar, BsonExpression pathExpr)
+        {
+            if (pathExpr.FuncEnumerable != null)
+                return (_, _, _) => throw BsonExpression.NonScalar(pathExpr.Source);
+            else
+                return (source, root, current) =>
+                {
+                    var value = exprScalar(source, root, current);
+                    var cond = pathExpr.FuncScalar(new[] { root }, root, value);
+                    return cond.IsBoolean && cond.AsBoolean ? [cond] : Array.Empty<BsonValue>();
+                };
+        }
+
+        private static BsonExpressionEnumerableDelegate FilterExpression(
+            BsonExpressionEnumerableDelegate exprEnumerable, BsonExpression pathExpr)
+        {
+            if (pathExpr.FuncEnumerable != null)
+                return (_, _, _) => throw BsonExpression.NonScalar(pathExpr.Source);
+            else
+                return (source, root, current) =>
+                    exprEnumerable(source, root, current).Where(item =>
+                    {
+                        var cond = pathExpr.FuncScalar(new[] { root }, root, item);
+                        return cond.IsBoolean && cond.AsBoolean;
+                    });
         }
 
         #endregion

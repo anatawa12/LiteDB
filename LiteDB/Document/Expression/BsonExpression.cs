@@ -341,6 +341,10 @@ namespace LiteDB
                 throw new LiteException(0, $"Expression `{this.Source}` is not a scalar expression and can return more than one result");
             }
         }
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+        internal static LiteException NonScalar(string source) => throw new LiteException(0,
+            $"Expression `{source}` is not a scalar expression and can return more than one result");
+#endif
 
         #endregion
 
