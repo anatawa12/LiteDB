@@ -4,11 +4,33 @@ using System.Linq;
 #if !NO_LINQ_EXPRESSION
 using System.Linq.Expressions;
 #endif
+#if !NO_REGEX
 using System.Text.RegularExpressions;
+#endif
 using static LiteDB.Constants;
 
 namespace LiteDB
 {
+    
+#if NO_REGEX
+    internal class IndexName
+    {
+        internal static string NormalizeIndexName(string source)
+        {
+            var nameCharCount = 0;
+            foreach (var c in source)
+                if ('a' <= c && c <= 'z' || 'A' <= c && c <= 'Z' || '0' <= c && c <= '9') 
+                    nameCharCount++;
+            var nameChars = new char[nameCharCount];
+            var nameIndex = 0;
+            foreach (var c in source)
+                if ('a' <= c && c <= 'z' || 'A' <= c && c <= 'Z' || '0' <= c && c <= '9') 
+                    nameChars[nameIndex++] = c;
+            return new string(nameChars);
+        }
+    }
+#endif
+
     public partial class LiteCollection<T>
     {
         /// <summary>
@@ -34,7 +56,11 @@ namespace LiteDB
         {
             if (expression == null) throw new ArgumentNullException(nameof(expression));
 
+#if NO_REGEX
+            var name = IndexName.NormalizeIndexName(expression.Source);
+#else
             var name = Regex.Replace(expression.Source, @"[^a-z0-9]", "", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+#endif
 
             return this.EnsureIndex(name, expression, unique);
         }

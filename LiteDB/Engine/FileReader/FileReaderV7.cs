@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+#if !NO_REGEX
 using System.Text.RegularExpressions;
+#endif
 using System.Threading;
 using System.Threading.Tasks;
 using static LiteDB.Constants;
@@ -79,7 +81,11 @@ namespace LiteDB.Engine
 
             foreach(var index in page["indexes"].AsArray)
             {
+#if NO_REGEX
+                string name = IndexName.NormalizeIndexName(index["name"].AsString);
+#else
                 string name = Regex.Replace(index["name"].AsString, @"[^a-z0-9]", "", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+#endif
                 if(name.Length > INDEX_NAME_MAX_LENGTH)
                 {
                     name = name.Substring(0, INDEX_NAME_MAX_LENGTH);

@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !NO_ENTITY_MAPPER
+using System;
 using System.Linq.Expressions;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -58,3 +59,4 @@ namespace LiteDB
         }
     }
 }
+#endif

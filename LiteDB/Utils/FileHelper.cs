@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+#if !NO_REGEX
 using System.Text.RegularExpressions;
+#endif
 using static LiteDB.Constants;
 
 namespace LiteDB
@@ -93,6 +95,7 @@ namespace LiteDB
             return false;
         }
 
+#if !NO_REGEX
         /// <summary>
         /// Convert storage unit string "1gb", "10 mb", "80000" to long bytes
         /// </summary>
@@ -115,6 +118,7 @@ namespace LiteDB
 
             return 0;
         }
+#endif
 
         /// <summary>
         /// Format a long file length to pretty file unit

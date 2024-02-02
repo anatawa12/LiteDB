@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
+#if !NO_REGEX
 using System.Text.RegularExpressions;
+#endif
 using static LiteDB.Constants;
 
 namespace LiteDB
@@ -141,7 +143,16 @@ namespace LiteDB
                 if (typeof(T) == typeof(TimeSpan))
                 {
                     // if timespan are numbers only, convert as seconds
+#if NO_REGEX
+                    var isAsciiDigit = value.Length > 0;
+                    if (isAsciiDigit)
+                        foreach (var c in value)
+                            if (c < '0' || c > '9')
+                                isAsciiDigit = false;
+                    if (isAsciiDigit)
+#else
                     if (Regex.IsMatch(value, @"^\d+$", RegexOptions.Compiled))
+#endif
                     {
                         return (T)(object)TimeSpan.FromSeconds(Convert.ToInt32(value));
                     }
@@ -175,6 +186,25 @@ namespace LiteDB
 
             if (size == null) return defaultValue;
 
+#if NO_REGEX
+            var index = 0;
+            while (index < size.Length && '0' <= size[index] && size[index] <= '9') index++;
+            var num = Convert.ToInt64(size.Substring(0, index));
+            var unit = size.Substring(index).TrimStart().ToLower();
+            if (unit.EndsWith("b")) unit = unit.Substring(0, unit.Length - 1);
+            else if (unit.EndsWith("byte")) unit = unit.Substring(0, unit.Length - 4);
+            else if (unit.EndsWith("bytes")) unit = unit.Substring(0, unit.Length - 5);
+
+            switch (unit)
+            {
+                case "t": return num * 1024L * 1024L * 1024L * 1024L;
+                case "g": return num * 1024L * 1024L * 1024L;
+                case "m": return num * 1024L * 1024L;
+                case "k": return num * 1024L;
+                case "": return num;
+                default: return 0;
+            }
+#else
             var match = Regex.Match(size, @"^(\d+)\s*([tgmk])?(b|byte|bytes)?$", RegexOptions.IgnoreCase);
 
             if (!match.Success) return 0;
@@ -191,6 +221,7 @@ namespace LiteDB
             }
 
             return 0;
+#endif
         }
     }
 }
