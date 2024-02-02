@@ -4,7 +4,9 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
 using System.Linq.Expressions;
+#endif
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -449,9 +451,7 @@ namespace LiteDB
             if (value != null)
             {
                 var number = Convert.ToDouble(value, CultureInfo.InvariantCulture.NumberFormat);
-#if EXPRESSION_PARSER_ONLY_FOR_INDEX
-                var constant = new BsonValue(number);
-#else
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
                 var constant = Expression.Constant(new BsonValue(number));
 #endif
 
@@ -466,7 +466,7 @@ namespace LiteDB
                     IsScalar = true,
                     Fields = new HashSet<string>(StringComparer.OrdinalIgnoreCase),
 #if EXPRESSION_PARSER_ONLY_FOR_INDEX
-                    FuncScalar = (_0, _1, _2) => constant,
+                    FuncScalar = Constant(new BsonValue(number)),
 #else
                     Expression = constant,
 #endif
@@ -503,9 +503,7 @@ namespace LiteDB
                 var isInt32 = Int32.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out var i32);
                 if (isInt32)
                 {
-#if EXPRESSION_PARSER_ONLY_FOR_INDEX
-                    var constant32 = new BsonValue(i32);
-#else
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
                     var constant32 = Expression.Constant(new BsonValue(i32));
 #endif
 
@@ -520,7 +518,7 @@ namespace LiteDB
                         IsScalar = true,
                         Fields = new HashSet<string>(StringComparer.OrdinalIgnoreCase),
 #if EXPRESSION_PARSER_ONLY_FOR_INDEX
-                        FuncScalar = (_0, _1, _2) => constant32,
+                        FuncScalar = Constant(new BsonValue(i32)),
 #else
                         Expression = constant32,
 #endif
@@ -529,9 +527,7 @@ namespace LiteDB
                 }
 
                 var i64 = Int64.Parse(value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat);
-#if EXPRESSION_PARSER_ONLY_FOR_INDEX
-                var constant64 = new BsonValue(i64);
-#else
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
                 var constant64 = Expression.Constant(new BsonValue(i64));
 #endif
 
@@ -546,7 +542,7 @@ namespace LiteDB
                     IsScalar = true,
                     Fields = new HashSet<string>(StringComparer.OrdinalIgnoreCase),
 #if EXPRESSION_PARSER_ONLY_FOR_INDEX
-                    FuncScalar = (_0, _1, _2) => constant64,
+                    FuncScalar = Constant(new BsonValue(i64)),
 #else
                     Expression = constant64,
 #endif
@@ -565,9 +561,7 @@ namespace LiteDB
             if (tokenizer.Current.Type == TokenType.Word && (tokenizer.Current.Is("true") || tokenizer.Current.Is("false")))
             {
                 var boolean = Convert.ToBoolean(tokenizer.Current.Value);
-#if EXPRESSION_PARSER_ONLY_FOR_INDEX
-                var constant = new BsonValue(boolean);
-#else
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
                 var constant = Expression.Constant(new BsonValue(boolean));
 #endif
 
@@ -582,7 +576,7 @@ namespace LiteDB
                     IsScalar = true,
                     Fields = new HashSet<string>(StringComparer.OrdinalIgnoreCase),
 #if EXPRESSION_PARSER_ONLY_FOR_INDEX
-                    FuncScalar = (_0, _1, _2) => constant,
+                    FuncScalar = Constant(new BsonValue(boolean)),
 #else
                     Expression = constant,
 #endif
@@ -600,9 +594,7 @@ namespace LiteDB
         {
             if (tokenizer.Current.Type == TokenType.Word && tokenizer.Current.Is("null"))
             {
-#if EXPRESSION_PARSER_ONLY_FOR_INDEX
-                var constant = BsonValue.Null;
-#else
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
                 var constant = Expression.Constant(BsonValue.Null);
 #endif
 
@@ -617,7 +609,7 @@ namespace LiteDB
                     IsScalar = true,
                     Fields = new HashSet<string>(StringComparer.OrdinalIgnoreCase),
 #if EXPRESSION_PARSER_ONLY_FOR_INDEX
-                    FuncScalar = (_0, _1, _2) => constant,
+                    FuncScalar = Constant(BsonValue.Null),
 #else
                     Expression = constant,
 #endif
@@ -651,7 +643,7 @@ namespace LiteDB
                     IsScalar = true,
                     Fields = new HashSet<string>(StringComparer.OrdinalIgnoreCase),
 #if EXPRESSION_PARSER_ONLY_FOR_INDEX
-                    FuncScalar = (_0, _1, _2) => bstr,
+                    FuncScalar = Constant(bstr),
 #else
                     Expression = constant,
 #endif
@@ -661,6 +653,10 @@ namespace LiteDB
 
             return null;
         }
+
+#if EXPRESSION_PARSER_ONLY_FOR_INDEX
+        private static BsonExpressionScalarDelegate Constant(BsonValue value) => (_0, _1, _2) => value;
+#endif
 
         #endregion
 
