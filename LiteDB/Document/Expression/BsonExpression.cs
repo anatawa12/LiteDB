@@ -44,12 +44,12 @@ namespace LiteDB
         /// </summary>
         public BsonExpressionType Type { get; internal set; }
 
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
         /// <summary>
         /// If true, this expression do not change if same document/paramter are passed (only few methods change - like NOW() - or parameters)
         /// </summary>
         public bool IsImmutable { get; internal set; }
 
-#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
         /// <summary>
         /// Get/Set parameter values that will be used on expression execution
         /// </summary>
@@ -109,10 +109,10 @@ namespace LiteDB
         /// </summary>
         internal bool IsIndexable =>
             this.Fields.Count > 0 &&
-            this.IsImmutable == true &&
 #if EXPRESSION_PARSER_ONLY_FOR_INDEX
             true;
 #else
+            this.IsImmutable == true &&
             this.Parameters.Count == 0;
 #endif
 
@@ -494,7 +494,6 @@ namespace LiteDB
             Type = BsonExpressionType.Path,
 
             IsScalar = true,
-            IsImmutable = true,
         };
 #else
         public static BsonExpression Root = Create("$");

@@ -460,8 +460,8 @@ namespace LiteDB
                     Type = BsonExpressionType.Double,
 #if !EXPRESSION_PARSER_ONLY_FOR_INDEX
                     Parameters = parameters,
-#endif
                     IsImmutable = true,
+#endif
                     UseSource = false,
                     IsScalar = true,
                     Fields = new HashSet<string>(StringComparer.OrdinalIgnoreCase),
@@ -512,8 +512,8 @@ namespace LiteDB
                         Type = BsonExpressionType.Int,
 #if !EXPRESSION_PARSER_ONLY_FOR_INDEX
                         Parameters = parameters,
-#endif
                         IsImmutable = true,
+#endif
                         UseSource = false,
                         IsScalar = true,
                         Fields = new HashSet<string>(StringComparer.OrdinalIgnoreCase),
@@ -536,8 +536,8 @@ namespace LiteDB
                     Type = BsonExpressionType.Int,
 #if !EXPRESSION_PARSER_ONLY_FOR_INDEX
                     Parameters = parameters,
-#endif
                     IsImmutable = true,
+#endif
                     UseSource = false,
                     IsScalar = true,
                     Fields = new HashSet<string>(StringComparer.OrdinalIgnoreCase),
@@ -570,8 +570,8 @@ namespace LiteDB
                     Type = BsonExpressionType.Boolean,
 #if !EXPRESSION_PARSER_ONLY_FOR_INDEX
                     Parameters = parameters,
-#endif
                     IsImmutable = true,
+#endif
                     UseSource = false,
                     IsScalar = true,
                     Fields = new HashSet<string>(StringComparer.OrdinalIgnoreCase),
@@ -603,8 +603,8 @@ namespace LiteDB
                     Type = BsonExpressionType.Null,
 #if !EXPRESSION_PARSER_ONLY_FOR_INDEX
                     Parameters = parameters,
-#endif
                     IsImmutable = true,
+#endif
                     UseSource = false,
                     IsScalar = true,
                     Fields = new HashSet<string>(StringComparer.OrdinalIgnoreCase),
@@ -637,8 +637,8 @@ namespace LiteDB
                     Type = BsonExpressionType.String,
 #if !EXPRESSION_PARSER_ONLY_FOR_INDEX
                     Parameters = parameters,
-#endif
                     IsImmutable = true,
+#endif
                     UseSource = false,
                     IsScalar = true,
                     Fields = new HashSet<string>(StringComparer.OrdinalIgnoreCase),
@@ -676,7 +676,9 @@ namespace LiteDB
             var values = new List<BsonExpressionScalarDelegate>();
 #endif
             var src = new StringBuilder();
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
             var isImmutable = true;
+#endif
             var useSource = false;
             var fields = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
@@ -721,8 +723,8 @@ namespace LiteDB
                             Type = BsonExpressionType.Path,
 #if !EXPRESSION_PARSER_ONLY_FOR_INDEX
                             Parameters = parameters,
-#endif
                             IsImmutable = isImmutable,
+#endif
                             UseSource = useSource,
                             IsScalar = true,
                             Fields = new HashSet<string>(StringComparer.OrdinalIgnoreCase).AddRange(new string[] { key }),
@@ -744,7 +746,9 @@ namespace LiteDB
                     if (!value.IsScalar) value = ConvertToArray(value);
 
                     // update isImmutable only when came false
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
                     if (value.IsImmutable == false) isImmutable = false;
+#endif
                     if (value.UseSource) useSource = true;
 
                     fields.AddRange(value.Fields);
@@ -784,8 +788,8 @@ namespace LiteDB
                 Type = BsonExpressionType.Document,
 #if !EXPRESSION_PARSER_ONLY_FOR_INDEX
                 Parameters = parameters,
-#endif
                 IsImmutable = isImmutable,
+#endif
                 UseSource = useSource,
                 IsScalar = true,
                 Fields = fields,
@@ -818,8 +822,8 @@ namespace LiteDB
                 Type = BsonExpressionType.Source,
 #if !EXPRESSION_PARSER_ONLY_FOR_INDEX
                 Parameters = parameters,
-#endif
                 IsImmutable = true,
+#endif
                 UseSource = true,
                 IsScalar = false,
                 Fields = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "$" },
@@ -849,8 +853,8 @@ namespace LiteDB
                     Type = BsonExpressionType.Map,
 #if !EXPRESSION_PARSER_ONLY_FOR_INDEX
                     Parameters = parameters,
-#endif
                     IsImmutable = pathExpr.IsImmutable,
+#endif
                     UseSource = true,
                     IsScalar = false,
                     Fields = new HashSet<string>(StringComparer.OrdinalIgnoreCase).AddRange(pathExpr.Fields),
@@ -882,7 +886,9 @@ namespace LiteDB
             var values = new List<Expression>();
 #endif
             var src = new StringBuilder();
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
             var isImmutable = true;
+#endif
             var useSource = false;
             var fields = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
@@ -906,7 +912,9 @@ namespace LiteDB
                     src.Append(value.Source);
 
                     // update isImmutable only when came false
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
                     if (value.IsImmutable == false) isImmutable = false;
+#endif
                     if (value.UseSource) useSource = true;
 
                     fields.AddRange(value.Fields);
@@ -937,8 +945,8 @@ namespace LiteDB
                 Type = BsonExpressionType.Array,
 #if !EXPRESSION_PARSER_ONLY_FOR_INDEX
                 Parameters = parameters,
-#endif
                 IsImmutable = isImmutable,
+#endif
                 UseSource = useSource,
                 IsScalar = true,
                 Fields = fields,
@@ -1014,8 +1022,8 @@ namespace LiteDB
                 Type = inner.Type,
 #if !EXPRESSION_PARSER_ONLY_FOR_INDEX
                 Parameters = inner.Parameters,
-#endif
                 IsImmutable = inner.IsImmutable,
+#endif
                 UseSource = inner.UseSource,
                 IsScalar = inner.IsScalar,
                 Fields = inner.Fields,
@@ -1168,7 +1176,9 @@ namespace LiteDB
             }
 
             var src = new StringBuilder();
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
             var isImmutable = true;
+#endif
             var useSource = false;
             var isScalar = true;
             var fields = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -1195,7 +1205,11 @@ namespace LiteDB
             // parse the rest of path
             while (!tokenizer.EOF)
             {
-                var result = ParsePath(tokenizer, expr, context, parameters, fields, ref isImmutable, ref useSource, ref isScalar, src);
+                var result = ParsePath(tokenizer, expr, context, parameters, fields,
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
+                    ref isImmutable, 
+#endif
+                    ref useSource, ref isScalar, src);
 
                 if (isScalar == false)
                 {
@@ -1223,8 +1237,8 @@ namespace LiteDB
                 Type = BsonExpressionType.Path,
 #if !EXPRESSION_PARSER_ONLY_FOR_INDEX
                 Parameters = parameters,
-#endif
                 IsImmutable = isImmutable,
+#endif
                 UseSource = useSource,
                 IsScalar = isScalar,
                 Fields = fields,
@@ -1255,8 +1269,8 @@ namespace LiteDB
                     Type = BsonExpressionType.Map,
 #if !EXPRESSION_PARSER_ONLY_FOR_INDEX
                     Parameters = parameters,
-#endif
                     IsImmutable = pathExpr.IsImmutable && mapExpr.IsImmutable,
+#endif
                     UseSource = pathExpr.UseSource || mapExpr.UseSource,
                     IsScalar = false,
                     Fields = new HashSet<string>(StringComparer.OrdinalIgnoreCase).AddRange(pathExpr.Fields).AddRange(mapExpr.Fields),
@@ -1290,7 +1304,11 @@ namespace LiteDB
 #else
                 Expression expr,
 #endif
-                ExpressionContext context, BsonDocument parameters, HashSet<string> fields, ref bool isImmutable, ref bool useSource, ref bool isScalar, StringBuilder src)
+                ExpressionContext context, BsonDocument parameters, HashSet<string> fields,
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
+                ref bool isImmutable,
+#endif
+                ref bool useSource, ref bool isScalar, StringBuilder src)
         {
             var ahead = tokenizer.LookAhead(false);
 
@@ -1378,7 +1396,9 @@ namespace LiteDB
                     if (inner == null) throw LiteException.UnexpectedToken(tokenizer.Current);
 
                     // if array filter is not immutable, update ref (update only when false)
+#if !EXPRESSION_PARSER_ONLY_FOR_INDEX
                     if (inner.IsImmutable == false) isImmutable = false;
+#endif
                     if (inner.UseSource) useSource = true;
 
                     // if inner expression returns a single parameter, still Scalar
@@ -1706,8 +1726,8 @@ namespace LiteDB
                 Type = BsonExpressionType.Call,
 #if !EXPRESSION_PARSER_ONLY_FOR_INDEX
                 Parameters = expr.Parameters,
-#endif
                 IsImmutable = expr.IsImmutable,
+#endif
                 UseSource = expr.UseSource,
                 IsScalar = true,
                 Fields = expr.Fields,

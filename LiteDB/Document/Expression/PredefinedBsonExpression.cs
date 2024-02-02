@@ -23,7 +23,6 @@ namespace LiteDB
             Type = BsonExpressionType.Document,
 
             IsScalar = true,
-            IsImmutable = true,
         };
 
         // "{ count: COUNT(*._id) }" is compiled to "{count:COUNT(MAP(*=>@._id))}"
@@ -36,7 +35,6 @@ namespace LiteDB
             Type = BsonExpressionType.Document,
 
             IsScalar = true,
-            IsImmutable = true,
         };
 
         // "{ exists: ANY(*._id) }" is compiled to "{exists:ANY(MAP(*=>@._id))}"
@@ -49,7 +47,6 @@ namespace LiteDB
             Type = BsonExpressionType.Document,
 
             IsScalar = true,
-            IsImmutable = true,
         };
 
         // DOCUMENT_INIT(new [] {"exists"}, new [] {ANY(MAP(root, collation, parameters, source, `@._id` [Path]))})

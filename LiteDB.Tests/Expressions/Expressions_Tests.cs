@@ -103,33 +103,28 @@ namespace LiteDB.Tests.Expressions
 #endif
         }
 
+#if !VRC_GET
         [Fact]
         public void Expression_Immutable()
         {
             bool I(string s)
             {
-#if VRC_GET
                 return BsonExpression.ForIndex(s).IsImmutable;
-#else
                 return BsonExpression.Create(s).IsImmutable;
-#endif
             }
 
             // some immutable expression
             I("_id").ExpectValue(true);
-#if !VRC_GET
             I("{ a: 1, n: UPPER(name) }").ExpectValue(true);
             I("GUID('00000000-0000-0000-0000-000000000000')").ExpectValue(true);
-#endif
 
             // using method that are not immutable 
-#if !VRC_GET
             I("_id + DAY(NOW())").ExpectValue(false);
             I("r + 10 > 10 AND GUID() = true").ExpectValue(false);
             I("r + 10 > 10 AND Name LIKE OBJECTID() + '%'").ExpectValue(false);
             I("_id > @0").ExpectValue(false);
-#endif
         }
+#endif
 
         [Fact]
         public void Expression_Type()
