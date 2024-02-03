@@ -96,28 +96,37 @@ namespace LiteDB
         /// Initializes a new instance of the ObjectId class from byte array.
         /// </summary>
         public ObjectId(byte[] bytes, int startIndex = 0)
+            : this(bytes.AsSpan(startIndex, 12))
+        {
+        }
+        /// <summary>
+        /// Initializes a new instance of the ObjectId class from byte slice.
+        /// </summary>
+        public ObjectId(ReadOnlySpan<byte> bytes)
         {
             if (bytes == null) throw new ArgumentNullException(nameof(bytes));
+            if (bytes.Length < 12)
+                throw new ArgumentOutOfRangeException(nameof(bytes), "Byte array must be at least 12 bytes long");
 
             this.Timestamp = 
-                (bytes[startIndex + 0] << 24) + 
-                (bytes[startIndex + 1] << 16) + 
-                (bytes[startIndex + 2] << 8) + 
-                bytes[startIndex + 3];
+                (bytes[0] << 24) + 
+                (bytes[1] << 16) + 
+                (bytes[2] << 8) + 
+                bytes[3];
 
             this.Machine = 
-                (bytes[startIndex + 4] << 16) + 
-                (bytes[startIndex + 5] << 8) + 
-                bytes[startIndex + 6];
+                (bytes[4] << 16) + 
+                (bytes[5] << 8) + 
+                bytes[6];
 
             this.Pid = (short)
-                ((bytes[startIndex + 7] << 8) + 
-                bytes[startIndex + 8]);
+                ((bytes[7] << 8) + 
+                bytes[8]);
 
             this.Increment = 
-                (bytes[startIndex + 9] << 16) + 
-                (bytes[startIndex + 10] << 8) + 
-                bytes[startIndex + 11];
+                (bytes[9] << 16) + 
+                (bytes[10] << 8) + 
+                bytes[11];
         }
 
         /// <summary>
@@ -194,23 +203,34 @@ namespace LiteDB
             return this.Increment.CompareTo(other.Increment);
         }
 
+
         /// <summary>
         /// Represent ObjectId as 12 bytes array
         /// </summary>
         public void ToByteArray(byte[] bytes, int startIndex)
         {
-            bytes[startIndex + 0] = (byte)(this.Timestamp >> 24);
-            bytes[startIndex + 1] = (byte)(this.Timestamp >> 16);
-            bytes[startIndex + 2] = (byte)(this.Timestamp >> 8);
-            bytes[startIndex + 3] = (byte)(this.Timestamp);
-            bytes[startIndex + 4] = (byte)(this.Machine >> 16);
-            bytes[startIndex + 5] = (byte)(this.Machine >> 8);
-            bytes[startIndex + 6] = (byte)(this.Machine);
-            bytes[startIndex + 7] = (byte)(this.Pid >> 8);
-            bytes[startIndex + 8] = (byte)(this.Pid);
-            bytes[startIndex + 9] = (byte)(this.Increment >> 16);
-            bytes[startIndex + 10] = (byte)(this.Increment >> 8);
-            bytes[startIndex + 11] = (byte)(this.Increment);
+            ToByteSpan(bytes.AsSpan(startIndex, 12));
+        }
+
+        /// <summary>
+        /// Represent ObjectId as 12 bytes array
+        /// </summary>
+        public void ToByteSpan(Span<byte> bytes)
+        {
+            if (bytes.Length < 12)
+                throw new ArgumentOutOfRangeException(nameof(bytes), "Byte array must be at least 12 bytes long");
+            bytes[0] = (byte)(this.Timestamp >> 24);
+            bytes[1] = (byte)(this.Timestamp >> 16);
+            bytes[2] = (byte)(this.Timestamp >> 8);
+            bytes[3] = (byte)(this.Timestamp);
+            bytes[4] = (byte)(this.Machine >> 16);
+            bytes[5] = (byte)(this.Machine >> 8);
+            bytes[6] = (byte)(this.Machine);
+            bytes[7] = (byte)(this.Pid >> 8);
+            bytes[8] = (byte)(this.Pid);
+            bytes[9] = (byte)(this.Increment >> 16);
+            bytes[10] = (byte)(this.Increment >> 8);
+            bytes[11] = (byte)(this.Increment);
         }
 
         public byte[] ToByteArray()
