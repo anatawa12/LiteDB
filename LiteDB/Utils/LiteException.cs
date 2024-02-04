@@ -14,70 +14,116 @@ namespace LiteDB
     {
         #region Errors code
 
-        public const int FILE_NOT_FOUND = 101;
-        public const int DATABASE_SHUTDOWN = 102;
-        public const int INVALID_DATABASE = 103;
-        public const int FILE_SIZE_EXCEEDED = 105;
-        public const int COLLECTION_LIMIT_EXCEEDED = 106;
-        public const int INDEX_DROP_ID = 108;
-        public const int INDEX_DUPLICATE_KEY = 110;
-        public const int INVALID_INDEX_KEY = 111;
-        public const int INDEX_NOT_FOUND = 112;
-        public const int INVALID_DBREF = 113;
-        public const int LOCK_TIMEOUT = 120;
-        public const int INVALID_COMMAND = 121;
-        public const int ALREADY_EXISTS_COLLECTION_NAME = 122;
-        public const int ALREADY_OPEN_DATAFILE = 124;
-        public const int INVALID_TRANSACTION_STATE = 126;
-        public const int INDEX_NAME_LIMIT_EXCEEDED = 128;
-        public const int INVALID_INDEX_NAME = 129;
-        public const int INVALID_COLLECTION_NAME = 130;
-        public const int TEMP_ENGINE_ALREADY_DEFINED = 131;
-        public const int INVALID_EXPRESSION_TYPE = 132;
-        public const int COLLECTION_NOT_FOUND = 133;
-        public const int COLLECTION_ALREADY_EXIST = 134;
-        public const int INDEX_ALREADY_EXIST = 135;
-        public const int INVALID_UPDATE_FIELD = 136;
+        public enum LiteErrorCode
+        {
+            UNKNOWN = 0,
+            FILE_NOT_FOUND = 101,
+            DATABASE_SHUTDOWN = 102,
+            INVALID_DATABASE = 103,
+            FILE_SIZE_EXCEEDED = 105,
+            COLLECTION_LIMIT_EXCEEDED = 106,
+            INDEX_DROP_ID = 108,
+            INDEX_DUPLICATE_KEY = 110,
+            INVALID_INDEX_KEY = 111,
+            INDEX_NOT_FOUND = 112,
+            INVALID_DBREF = 113,
+            LOCK_TIMEOUT = 120,
+            INVALID_COMMAND = 121,
+            ALREADY_EXISTS_COLLECTION_NAME = 122,
+            ALREADY_OPEN_DATAFILE = 124,
+            INVALID_TRANSACTION_STATE = 126,
+            INDEX_NAME_LIMIT_EXCEEDED = 128,
+            INVALID_INDEX_NAME = 129,
+            INVALID_COLLECTION_NAME = 130,
+            TEMP_ENGINE_ALREADY_DEFINED = 131,
+            INVALID_EXPRESSION_TYPE = 132,
+            COLLECTION_NOT_FOUND = 133,
+            COLLECTION_ALREADY_EXIST = 134,
+            INDEX_ALREADY_EXIST = 135,
+            INVALID_UPDATE_FIELD = 136,
+            INVALID_FORMAT = 200,
+            DOCUMENT_MAX_DEPTH = 201,
+            INVALID_CTOR = 202,
+            UNEXPECTED_TOKEN = 203,
+            INVALID_DATA_TYPE = 204,
+            PROPERTY_NOT_MAPPED = 206,
+            INVALID_TYPED_NAME = 207,
+            PROPERTY_READ_WRITE = 209,
+            INITIALSIZE_CRYPTO_NOT_SUPPORTED = 210,
+            INVALID_INITIALSIZE = 211,
+            INVALID_NULL_CHAR_STRING = 212,
+            INVALID_FREE_SPACE_PAGE = 213,
+            DATA_TYPE_NOT_ASSIGNABLE = 214,
+            AVOID_USE_OF_PROCESS = 215,
+            NOT_ENCRYPTED = 216,
+            INVALID_PASSWORD = 217,
+            UNSUPPORTED = 300,
+        }
 
-        public const int INVALID_FORMAT = 200;
-        public const int DOCUMENT_MAX_DEPTH = 201;
-        public const int INVALID_CTOR = 202;
-        public const int UNEXPECTED_TOKEN = 203;
-        public const int INVALID_DATA_TYPE = 204;
-        public const int PROPERTY_NOT_MAPPED = 206;
-        public const int INVALID_TYPED_NAME = 207;
-        public const int PROPERTY_READ_WRITE = 209;
-        public const int INITIALSIZE_CRYPTO_NOT_SUPPORTED = 210;
-        public const int INVALID_INITIALSIZE = 211;
-        public const int INVALID_NULL_CHAR_STRING = 212;
-        public const int INVALID_FREE_SPACE_PAGE = 213;
-        public const int DATA_TYPE_NOT_ASSIGNABLE = 214;
-        public const int AVOID_USE_OF_PROCESS = 215;
-        public const int NOT_ENCRYPTED = 216;
-        public const int INVALID_PASSWORD = 217;
+        public const LiteErrorCode FILE_NOT_FOUND = LiteErrorCode.FILE_NOT_FOUND;
+        public const LiteErrorCode DATABASE_SHUTDOWN = LiteErrorCode.DATABASE_SHUTDOWN;
+        public const LiteErrorCode INVALID_DATABASE = LiteErrorCode.INVALID_DATABASE;
+        public const LiteErrorCode FILE_SIZE_EXCEEDED = LiteErrorCode.FILE_SIZE_EXCEEDED;
+        public const LiteErrorCode COLLECTION_LIMIT_EXCEEDED = LiteErrorCode.COLLECTION_LIMIT_EXCEEDED;
+        public const LiteErrorCode INDEX_DROP_ID = LiteErrorCode.INDEX_DROP_ID;
+        public const LiteErrorCode INDEX_DUPLICATE_KEY = LiteErrorCode.INDEX_DUPLICATE_KEY;
+        public const LiteErrorCode INVALID_INDEX_KEY = LiteErrorCode.INVALID_INDEX_KEY;
+        public const LiteErrorCode INDEX_NOT_FOUND = LiteErrorCode.INDEX_NOT_FOUND;
+        public const LiteErrorCode INVALID_DBREF = LiteErrorCode.INVALID_DBREF;
+        public const LiteErrorCode LOCK_TIMEOUT = LiteErrorCode.LOCK_TIMEOUT;
+        public const LiteErrorCode INVALID_COMMAND = LiteErrorCode.INVALID_COMMAND;
+        public const LiteErrorCode ALREADY_EXISTS_COLLECTION_NAME = LiteErrorCode.ALREADY_EXISTS_COLLECTION_NAME;
+        public const LiteErrorCode ALREADY_OPEN_DATAFILE = LiteErrorCode.ALREADY_OPEN_DATAFILE;
+        public const LiteErrorCode INVALID_TRANSACTION_STATE = LiteErrorCode.INVALID_TRANSACTION_STATE;
+        public const LiteErrorCode INDEX_NAME_LIMIT_EXCEEDED = LiteErrorCode.INDEX_NAME_LIMIT_EXCEEDED;
+        public const LiteErrorCode INVALID_INDEX_NAME = LiteErrorCode.INVALID_INDEX_NAME;
+        public const LiteErrorCode INVALID_COLLECTION_NAME = LiteErrorCode.INVALID_COLLECTION_NAME;
+        public const LiteErrorCode TEMP_ENGINE_ALREADY_DEFINED = LiteErrorCode.TEMP_ENGINE_ALREADY_DEFINED;
+        public const LiteErrorCode INVALID_EXPRESSION_TYPE = LiteErrorCode.INVALID_EXPRESSION_TYPE;
+        public const LiteErrorCode COLLECTION_NOT_FOUND = LiteErrorCode.COLLECTION_NOT_FOUND;
+        public const LiteErrorCode COLLECTION_ALREADY_EXIST = LiteErrorCode.COLLECTION_ALREADY_EXIST;
+        public const LiteErrorCode INDEX_ALREADY_EXIST = LiteErrorCode.INDEX_ALREADY_EXIST;
+        public const LiteErrorCode INVALID_UPDATE_FIELD = LiteErrorCode.INVALID_UPDATE_FIELD;
 
-        public const int UNSUPPORTED = 300;
+        public const LiteErrorCode INVALID_FORMAT = LiteErrorCode.INVALID_FORMAT;
+        public const LiteErrorCode DOCUMENT_MAX_DEPTH = LiteErrorCode.DOCUMENT_MAX_DEPTH;
+        public const LiteErrorCode INVALID_CTOR = LiteErrorCode.INVALID_CTOR;
+        public const LiteErrorCode UNEXPECTED_TOKEN = LiteErrorCode.UNEXPECTED_TOKEN;
+        public const LiteErrorCode INVALID_DATA_TYPE = LiteErrorCode.INVALID_DATA_TYPE;
+        public const LiteErrorCode PROPERTY_NOT_MAPPED = LiteErrorCode.PROPERTY_NOT_MAPPED;
+        public const LiteErrorCode INVALID_TYPED_NAME = LiteErrorCode.INVALID_TYPED_NAME;
+        public const LiteErrorCode PROPERTY_READ_WRITE = LiteErrorCode.PROPERTY_READ_WRITE;
+        public const LiteErrorCode INITIALSIZE_CRYPTO_NOT_SUPPORTED = LiteErrorCode.INITIALSIZE_CRYPTO_NOT_SUPPORTED;
+        public const LiteErrorCode INVALID_INITIALSIZE = LiteErrorCode.INVALID_INITIALSIZE;
+        public const LiteErrorCode INVALID_NULL_CHAR_STRING = LiteErrorCode.INVALID_NULL_CHAR_STRING;
+        public const LiteErrorCode INVALID_FREE_SPACE_PAGE = LiteErrorCode.INVALID_FREE_SPACE_PAGE;
+        public const LiteErrorCode DATA_TYPE_NOT_ASSIGNABLE = LiteErrorCode.DATA_TYPE_NOT_ASSIGNABLE;
+        public const LiteErrorCode AVOID_USE_OF_PROCESS = LiteErrorCode.AVOID_USE_OF_PROCESS;
+        public const LiteErrorCode NOT_ENCRYPTED = LiteErrorCode.NOT_ENCRYPTED;
+        public const LiteErrorCode INVALID_PASSWORD = LiteErrorCode.INVALID_PASSWORD;
+
+        public const LiteErrorCode UNSUPPORTED = LiteErrorCode.UNSUPPORTED;
 
         #endregion
 
         #region Ctor
 
-        public int ErrorCode { get; private set; }
+        public LiteErrorCode ErrorCode { get; private set; }
         public long Position { get; private set; }
 
-        public LiteException(int code, string message)
+        public LiteException(LiteErrorCode code, string message)
             : base(message)
         {
             this.ErrorCode = code;
         }
 
-        internal LiteException(int code, string message, params object[] args)
+        internal LiteException(LiteErrorCode code, string message, params object[] args)
             : base(string.Format(message, args))
         {
             this.ErrorCode = code;
         }
 
-        internal LiteException (int code, Exception inner, string message, params object[] args)
+        internal LiteException (LiteErrorCode code, Exception inner, string message, params object[] args)
         : base (string.Format (message, args), inner)
         {
             this.ErrorCode = code;
