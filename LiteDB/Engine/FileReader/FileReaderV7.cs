@@ -36,7 +36,11 @@ namespace LiteDB.Engine
 
             if (password == null && _header["salt"].AsBinary.IsFullZero() == false)
             {
+#if NO_AES
+                throw Unsupported.AesRemoved;
+#else
                 throw LiteException.InvalidPassword();
+#endif
             }
             else if (password != null)
             {

@@ -67,6 +67,7 @@
     <DefineConstants>$(DefineConstants);NO_REGEX</DefineConstants>
     <DefineConstants>$(DefineConstants);INVARIANT_CULTURE</DefineConstants>
     <DefineConstants>$(DefineConstants);NO_REFLECTION_MORE</DefineConstants>
+    <DefineConstants>$(DefineConstants);NO_UNUSED_ERROR_CODE</DefineConstants>
   </PropertyGroup>
 
   <!-- Begin References -->
