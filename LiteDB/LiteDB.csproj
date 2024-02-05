@@ -68,6 +68,7 @@
     <DefineConstants>$(DefineConstants);INVARIANT_CULTURE</DefineConstants>
     <DefineConstants>$(DefineConstants);NO_REFLECTION_MORE</DefineConstants>
     <DefineConstants>$(DefineConstants);NO_UNUSED_ERROR_CODE</DefineConstants>
+    <DefineConstants>$(DefineConstants);NO_V7_MIGRATION</DefineConstants>
   </PropertyGroup>
 
   <!-- Begin References -->

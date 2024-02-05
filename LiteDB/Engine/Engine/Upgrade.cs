@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !NO_V7_MIGRATION
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -90,3 +91,4 @@ namespace LiteDB.Engine
         }
     }
 }
+#endif

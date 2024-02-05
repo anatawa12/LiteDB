@@ -38,10 +38,12 @@ namespace LiteDB
         /// </summary>
         public bool ReadOnly { get; set; } = false;
 
+#if !NO_V7_MIGRATION
         /// <summary>
         /// "upgrade": Check if data file is an old version and convert before open (default: false)
         /// </summary>
         public bool Upgrade { get; set; } = false;
+#endif
 
 #if !INVARIANT_CULTURE
         /// <summary>
@@ -96,7 +98,11 @@ namespace LiteDB
             this.Collation = _values.ContainsKey("collation") ? new Collation(_values.GetValue<string>("collation")) : this.Collation;
 #endif
 
+#if NO_V7_MIGRATION
+            if (_values.ContainsKey("upgrade")) throw Unsupported.V7Migration;
+#else
             this.Upgrade = _values.GetValue("upgrade", this.Upgrade);
+#endif
         }
 
         /// <summary>

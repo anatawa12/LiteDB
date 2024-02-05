@@ -44,6 +44,7 @@ namespace LiteDB
         {
             if (connectionString == null) throw new ArgumentNullException(nameof(connectionString));
 
+#if !NO_V7_MIGRATION
             if (connectionString.Upgrade == true)
             {
                 // try upgrade if need
@@ -53,6 +54,7 @@ namespace LiteDB
                 LiteEngine.Upgrade(connectionString.Filename, connectionString.Password, connectionString.Collation);
 #endif
             }
+#endif
 
             _engine = connectionString.CreateEngine();
             _mapper = mapper ?? BsonMapper.Global;
