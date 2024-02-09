@@ -45,6 +45,7 @@ namespace LiteDB.Engine
             });
         }
 
+#if !NO_RENAME_COLLECTION
         /// <summary>
         /// Rename a collection (do not support transactions)
         /// </summary>
@@ -87,5 +88,6 @@ namespace LiteDB.Engine
                 return true;
             });
         }
+#endif
     }
 }

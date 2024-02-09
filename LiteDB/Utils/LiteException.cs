@@ -41,7 +41,9 @@ namespace LiteDB
 #if !NO_UNUSED_ERROR_CODE
             INVALID_COMMAND = 121,
 #endif
+#if !NO_RENAME_COLLECTION
             ALREADY_EXISTS_COLLECTION_NAME = 122,
+#endif
 #if !NO_UNUSED_ERROR_CODE
             ALREADY_OPEN_DATAFILE = 124,
 #endif
@@ -120,7 +122,9 @@ namespace LiteDB
 #if !NO_UNUSED_ERROR_CODE
         public const LiteErrorCode INVALID_COMMAND = LiteErrorCode.INVALID_COMMAND;
 #endif
+#if !NO_RENAME_COLLECTION
         public const LiteErrorCode ALREADY_EXISTS_COLLECTION_NAME = LiteErrorCode.ALREADY_EXISTS_COLLECTION_NAME;
+#endif
 #if !NO_UNUSED_ERROR_CODE
         public const LiteErrorCode ALREADY_OPEN_DATAFILE = LiteErrorCode.ALREADY_OPEN_DATAFILE;
 #endif
@@ -335,10 +339,12 @@ namespace LiteDB
         }
 #endif
 
+#if !NO_RENAME_COLLECTION
         internal static LiteException AlreadyExistsCollectionName(string newName)
         {
             return new LiteException(ALREADY_EXISTS_COLLECTION_NAME, "New collection name '{0}' already exists.", newName);
         }
+#endif
 
 #if !NO_UNUSED_ERROR_CODE
         internal static LiteException AlreadyOpenDatafile(string filename)

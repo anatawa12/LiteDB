@@ -223,6 +223,7 @@ namespace LiteDB
             return _engine.DropCollection(name);
         }
 
+#if !NO_RENAME_COLLECTION
         /// <summary>
         /// Rename a collection. Returns false if oldName does not exists or newName already exists
         /// </summary>
@@ -233,6 +234,7 @@ namespace LiteDB
 
             return _engine.RenameCollection(oldName, newName);
         }
+#endif
 
         #endregion
 

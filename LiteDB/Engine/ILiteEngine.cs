@@ -24,7 +24,9 @@ namespace LiteDB.Engine
         int DeleteMany(string collection, BsonExpression predicate);
 
         bool DropCollection(string name);
+#if !NO_RENAME_COLLECTION
         bool RenameCollection(string name, string newName);
+#endif
 
 #if !NO_CREATE_INDEX
         bool EnsureIndex(string collection, string name, BsonExpression expression, bool unique);

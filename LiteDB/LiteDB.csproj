@@ -70,6 +70,7 @@
     <DefineConstants>$(DefineConstants);NO_UNUSED_ERROR_CODE</DefineConstants>
     <DefineConstants>$(DefineConstants);NO_V7_MIGRATION</DefineConstants>
     <DefineConstants>$(DefineConstants);NO_CREATE_INDEX</DefineConstants>
+    <DefineConstants>$(DefineConstants);NO_RENAME_COLLECTION</DefineConstants>
   </PropertyGroup>
 
   <!-- Begin References -->

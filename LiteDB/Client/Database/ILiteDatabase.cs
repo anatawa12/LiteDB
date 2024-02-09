@@ -83,10 +83,12 @@ namespace LiteDB
         /// </summary>
         bool DropCollection(string name);
 
+#if !NO_RENAME_COLLECTION
         /// <summary>
         /// Rename a collection. Returns false if oldName does not exists or newName already exists
         /// </summary>
         bool RenameCollection(string oldName, string newName);
+#endif
 
 #if !NO_SQL
         /// <summary>
