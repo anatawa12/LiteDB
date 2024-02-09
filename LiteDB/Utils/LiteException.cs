@@ -69,7 +69,9 @@ namespace LiteDB
             INDEX_ALREADY_EXIST = 135,
 #endif
             INVALID_UPDATE_FIELD = 136,
+#if !NO_V7_MIGRATION
             INVALID_FORMAT = 200,
+#endif
 #if !NO_ENTITY_MAPPER
             DOCUMENT_MAX_DEPTH = 201,
             INVALID_CTOR = 202,
@@ -151,7 +153,9 @@ namespace LiteDB
 #endif
         public const LiteErrorCode INVALID_UPDATE_FIELD = LiteErrorCode.INVALID_UPDATE_FIELD;
 
+#if !NO_V7_MIGRATION
         public const LiteErrorCode INVALID_FORMAT = LiteErrorCode.INVALID_FORMAT;
+#endif
 #if !NO_ENTITY_MAPPER
         public const LiteErrorCode DOCUMENT_MAX_DEPTH = LiteErrorCode.DOCUMENT_MAX_DEPTH;
         public const LiteErrorCode INVALID_CTOR = LiteErrorCode.INVALID_CTOR;
@@ -368,10 +372,12 @@ namespace LiteDB
             return new LiteException(INVALID_TRANSACTION_STATE, "Collection locker '{0}' was not found inside dictionary.", collection);
         }
 
+#if !NO_V7_MIGRATION
         internal static LiteException InvalidFormat(string field)
         {
             return new LiteException(INVALID_FORMAT, "Invalid format: {0}", field);
         }
+#endif
 
 #if !NO_ENTITY_MAPPER
         internal static LiteException DocumentMaxDepth(int depth, Type type)
