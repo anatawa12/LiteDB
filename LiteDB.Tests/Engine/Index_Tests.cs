@@ -115,7 +115,6 @@ namespace LiteDB.Tests.Engine
                 r6.Length.Should().Be(1);
             }
         }
-#endif
 
         [Fact]
         public void EnsureIndex_Invalid_Arguments()
@@ -142,7 +141,6 @@ namespace LiteDB.Tests.Engine
             }
         }
 
-#if !VRC_GET
         [Fact]
         public void MultiKey_Index_Test()
         {

@@ -6,6 +6,7 @@ namespace LiteDB.Tests.Engine
 {
     public class Update_Tests
     {
+#if !VRC_GET
         [Fact]
         public void Update_IndexNodes()
         {
@@ -29,7 +30,6 @@ namespace LiteDB.Tests.Engine
             }
         }
 
-#if !VRC_GET
         [Fact]
         public void Update_ExtendBlocks()
         {

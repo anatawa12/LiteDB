@@ -69,6 +69,7 @@
     <DefineConstants>$(DefineConstants);NO_REFLECTION_MORE</DefineConstants>
     <DefineConstants>$(DefineConstants);NO_UNUSED_ERROR_CODE</DefineConstants>
     <DefineConstants>$(DefineConstants);NO_V7_MIGRATION</DefineConstants>
+    <DefineConstants>$(DefineConstants);NO_CREATE_INDEX</DefineConstants>
   </PropertyGroup>
 
   <!-- Begin References -->

@@ -110,10 +110,12 @@ namespace LiteDB
         /// </summary>
         void Checkpoint();
 
+#if !NO_CREATE_INDEX // rebuild requires create index
         /// <summary>
         /// Rebuild all database to remove unused pages - reduce data file
         /// </summary>
         long Rebuild(RebuildOptions options = null);
+#endif
 
         /// <summary>
         /// Get value from internal engine variables

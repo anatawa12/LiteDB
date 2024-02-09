@@ -297,6 +297,7 @@ namespace LiteDB
             _engine.Checkpoint();
         }
 
+#if !NO_CREATE_INDEX
         /// <summary>
         /// Rebuild all database to remove unused pages - reduce data file
         /// </summary>
@@ -304,6 +305,7 @@ namespace LiteDB
         {
             return _engine.Rebuild(options);
         }
+#endif
 
         #endregion
 

@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 #endif
 using static LiteDB.Constants;
 
+#if !NO_CREATE_INDEX
 namespace LiteDB
 {
     
@@ -115,7 +116,6 @@ namespace LiteDB
 
             return expression;
         }
-#endif
 
         /// <summary>
         /// Drop index and release slot for another index
@@ -125,4 +125,6 @@ namespace LiteDB
             return _engine.DropIndex(_collection, name);
         }
     }
+#endif
 }
+#endif

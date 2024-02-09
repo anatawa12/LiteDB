@@ -28,7 +28,9 @@ namespace LiteDB
             FILE_SIZE_EXCEEDED = 105,
             COLLECTION_LIMIT_EXCEEDED = 106,
 #endif
+#if !NO_CREATE_INDEX
             INDEX_DROP_ID = 108,
+#endif
             INDEX_DUPLICATE_KEY = 110,
             INVALID_INDEX_KEY = 111,
             INDEX_NOT_FOUND = 112,
@@ -47,7 +49,9 @@ namespace LiteDB
 #if !NO_UNUSED_ERROR_CODE
             INDEX_NAME_LIMIT_EXCEEDED = 128,
 #endif
+#if !NO_CREATE_INDEX
             INVALID_INDEX_NAME = 129,
+#endif
             INVALID_COLLECTION_NAME = 130,
 #if !NO_UNUSED_ERROR_CODE
             TEMP_ENGINE_ALREADY_DEFINED = 131,
@@ -59,7 +63,9 @@ namespace LiteDB
             COLLECTION_NOT_FOUND = 133,
             COLLECTION_ALREADY_EXIST = 134,
 #endif
+#if !NO_CREATE_INDEX
             INDEX_ALREADY_EXIST = 135,
+#endif
             INVALID_UPDATE_FIELD = 136,
             INVALID_FORMAT = 200,
 #if !NO_ENTITY_MAPPER
@@ -101,7 +107,9 @@ namespace LiteDB
         public const LiteErrorCode FILE_SIZE_EXCEEDED = LiteErrorCode.FILE_SIZE_EXCEEDED;
         public const LiteErrorCode COLLECTION_LIMIT_EXCEEDED = LiteErrorCode.COLLECTION_LIMIT_EXCEEDED;
 #endif
+#if !NO_CREATE_INDEX
         public const LiteErrorCode INDEX_DROP_ID = LiteErrorCode.INDEX_DROP_ID;
+#endif
         public const LiteErrorCode INDEX_DUPLICATE_KEY = LiteErrorCode.INDEX_DUPLICATE_KEY;
         public const LiteErrorCode INVALID_INDEX_KEY = LiteErrorCode.INVALID_INDEX_KEY;
         public const LiteErrorCode INDEX_NOT_FOUND = LiteErrorCode.INDEX_NOT_FOUND;
@@ -120,7 +128,9 @@ namespace LiteDB
 #if !NO_UNUSED_ERROR_CODE
         public const LiteErrorCode INDEX_NAME_LIMIT_EXCEEDED = LiteErrorCode.INDEX_NAME_LIMIT_EXCEEDED;
 #endif
+#if !NO_CREATE_INDEX
         public const LiteErrorCode INVALID_INDEX_NAME = LiteErrorCode.INVALID_INDEX_NAME;
+#endif
         public const LiteErrorCode INVALID_COLLECTION_NAME = LiteErrorCode.INVALID_COLLECTION_NAME;
 #if !NO_UNUSED_ERROR_CODE
         public const LiteErrorCode TEMP_ENGINE_ALREADY_DEFINED = LiteErrorCode.TEMP_ENGINE_ALREADY_DEFINED;
@@ -132,7 +142,9 @@ namespace LiteDB
         public const LiteErrorCode COLLECTION_NOT_FOUND = LiteErrorCode.COLLECTION_NOT_FOUND;
         public const LiteErrorCode COLLECTION_ALREADY_EXIST = LiteErrorCode.COLLECTION_ALREADY_EXIST;
 #endif
+#if !NO_CREATE_INDEX
         public const LiteErrorCode INDEX_ALREADY_EXIST = LiteErrorCode.INDEX_ALREADY_EXIST;
+#endif
         public const LiteErrorCode INVALID_UPDATE_FIELD = LiteErrorCode.INVALID_UPDATE_FIELD;
 
         public const LiteErrorCode INVALID_FORMAT = LiteErrorCode.INVALID_FORMAT;
@@ -229,20 +241,24 @@ namespace LiteDB
         }
 #endif
 
+#if !NO_CREATE_INDEX
         internal static LiteException InvalidIndexName(string name, string collection, string reason)
         {
             return new LiteException(INVALID_INDEX_NAME, "Invalid index name '{0}' on collection '{1}': {2}", name, collection, reason);
         }
+#endif
 
         internal static LiteException InvalidCollectionName(string name, string reason)
         {
             return new LiteException(INVALID_COLLECTION_NAME, "Invalid collection name '{0}': {1}", name, reason);
         }
 
+#if !NO_CREATE_INDEX
         internal static LiteException IndexDropId()
         {
             return new LiteException(INDEX_DROP_ID, "Primary key index '_id' can't be dropped.");
         }
+#endif
 
 #if !NO_UNUSED_ERROR_CODE
         internal static LiteException TempEngineAlreadyDefined()
@@ -275,10 +291,12 @@ namespace LiteDB
         }
 #endif
 
+#if !NO_CREATE_INDEX
         internal static LiteException IndexAlreadyExist(string name)
         {
             return new LiteException(INDEX_ALREADY_EXIST, "Index name '{0}' already exist with a differnt expression. Try drop index first.", name);
         }
+#endif
 
         internal static LiteException InvalidUpdateField(string field)
         {

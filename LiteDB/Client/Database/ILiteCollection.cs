@@ -107,6 +107,7 @@ namespace LiteDB
         /// </summary>
         int InsertBulk(IEnumerable<T> entities, int batchSize = 5000);
 
+#if !NO_CREATE_INDEX
         /// <summary>
         /// Create a new permanent index in all documents inside this collections if index not exists already. Returns true if index was created or false if already exits
         /// </summary>
@@ -121,6 +122,7 @@ namespace LiteDB
         /// <param name="expression">Document field/expression</param>
         /// <param name="unique">If is a unique index</param>
         bool EnsureIndex(BsonExpression expression, bool unique = false);
+#endif
 
 #if !NO_LINQ_EXPRESSION
         /// <summary>
@@ -139,10 +141,12 @@ namespace LiteDB
         bool EnsureIndex<K>(string name, Expression<Func<T, K>> keySelector, bool unique = false);
 #endif
 
+#if !NO_CREATE_INDEX
         /// <summary>
         /// Drop index and release slot for another index
         /// </summary>
         bool DropIndex(string name);
+#endif
 
         /// <summary>
         /// Return a new LiteQueryable to build more complex queries

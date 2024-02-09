@@ -81,6 +81,7 @@ namespace LiteDB.Engine
             this.IndexExpression = index.Expression;
         }
 
+#if !NO_CREATE_INDEX && !INVARIANT_CULTURE
         /// <summary>
         /// Create index based on expression predicate
         /// </summary>
@@ -102,5 +103,6 @@ namespace LiteDB.Engine
                 default: return null;
             }
         }
+#endif
     }
 }

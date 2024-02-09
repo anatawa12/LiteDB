@@ -6,7 +6,9 @@ namespace LiteDB.Engine
     public interface ILiteEngine : IDisposable
     {
         int Checkpoint();
+#if !NO_CREATE_INDEX // rebuild requires create index
         long Rebuild(RebuildOptions options);
+#endif
 
         bool BeginTrans();
         bool Commit();
@@ -24,8 +26,10 @@ namespace LiteDB.Engine
         bool DropCollection(string name);
         bool RenameCollection(string name, string newName);
 
+#if !NO_CREATE_INDEX
         bool EnsureIndex(string collection, string name, BsonExpression expression, bool unique);
         bool DropIndex(string collection, string name);
+#endif
 
         BsonValue Pragma(string name);
         bool Pragma(string name, BsonValue value);

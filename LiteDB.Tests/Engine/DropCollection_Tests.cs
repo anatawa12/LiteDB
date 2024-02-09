@@ -26,6 +26,7 @@ namespace LiteDB.Tests.Engine
             }
         }
 
+#if !VRC_GET
         [Fact]
         public void InsertDropCollection()
         {
@@ -46,5 +47,6 @@ namespace LiteDB.Tests.Engine
                 }
             }
         }
+#endif
     }
 }

@@ -8,6 +8,7 @@ namespace LiteDB.Engine
 {
     public partial class LiteEngine
     {
+#if !NO_CREATE_INDEX
         /// <summary>
         /// Create a new index (or do nothing if already exists) to a collection/field
         /// </summary>
@@ -130,5 +131,6 @@ namespace LiteDB.Engine
                 return true;
             });
         }
+#endif
     }
 }

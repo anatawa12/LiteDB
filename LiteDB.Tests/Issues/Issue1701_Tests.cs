@@ -7,6 +7,7 @@ namespace LiteDB.Tests.Issues
 {
     public class Issue1701_Tests
     {
+#if !VRC_GET
         [Fact]
         public void Deleted_Index_Slot_Test()
         {
@@ -21,5 +22,6 @@ namespace LiteDB.Tests.Issues
 
             col.Update(id, new BsonDocument { ["attr1"] = "new" });
         }
+#endif
     }
 }

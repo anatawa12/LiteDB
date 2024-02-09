@@ -7,6 +7,7 @@ namespace LiteDB.Engine
 {
     public partial class LiteEngine
     {
+#if !NO_CREATE_INDEX
         /// <summary>
         /// Recreate database using empty LOG file to re-write all documents with all indexes
         /// </summary>
@@ -146,5 +147,6 @@ namespace LiteDB.Engine
                 _monitor.ReleaseTransaction(transaction);
             }
         }
+#endif
     }
 }
