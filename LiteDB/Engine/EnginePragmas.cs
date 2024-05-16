@@ -83,7 +83,21 @@ namespace LiteDB.Engine
                     Validate = (v, h) => { },
                     Write = (b) => b.Write(this.UserVersion, P_USER_VERSION)
                 },
-#if !INVARIANT_CULTURE
+#if INVARIANT_CULTURE
+                [Engine.Pragmas.COLLATION] = new Pragma
+                {
+                    Name = Engine.Pragmas.COLLATION,
+                    Get = () => this.Collation.ToString(),
+                    Set = (_) => throw new Exception("Pragma COLLATION is read only. Use Rebuild options."),
+                    Read = (b) => this.Collation = new Collation((CompareOptions)b.ReadInt32(P_COLLATION_SORT)),
+                    Validate = (v, h) => { throw new LiteException(0, "Pragma COLLATION is read only. Use Rebuild options."); },
+                    Write = (b) =>
+                    {
+                        b.Write(127, P_COLLATION_LCID); // Invaliant
+                        b.Write((int)this.Collation.SortOptions, P_COLLATION_SORT);
+                    }
+                },
+#else
                 [Engine.Pragmas.COLLATION] = new Pragma
                 {
                     Name = Engine.Pragmas.COLLATION,

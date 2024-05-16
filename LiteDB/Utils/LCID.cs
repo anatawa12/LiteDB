@@ -1,5 +1,4 @@
-﻿#if !INVARIANT_CULTURE
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -13,6 +12,9 @@ namespace LiteDB
     /// </summary>
     internal class LCID
     {
+#if INVARIANT_CULTURE
+        public static int Current => 127; // invaiant
+#else
         private static IDictionary<int, string> _mappings = new Dictionary<int, string>()
         {
             #region Big freaking list LCID
@@ -491,7 +493,7 @@ namespace LiteDB
 
                 return lcid.Key;
             }
-        }
+    }
+#endif
     }
 }
-#endif
