@@ -11,7 +11,7 @@ namespace LiteDB.Engine
     /// </summary>
     internal class IndexScan : Index
     {
-        private Func<BsonValue, bool> _func;
+        private readonly Func<BsonValue, bool> _func;
 
         public IndexScan(string name, Func<BsonValue, bool> func, int order)
             : base(name, order)

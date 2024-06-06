@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using FluentAssertions;
 using Xunit;
@@ -115,5 +115,30 @@ namespace LiteDB.Tests.Document
 
             doc4.ToString().Should().Be(src.ToString());
         }
+
+#if !VRC_GET // NO_ENTITY_MAPPER
+        [Fact]
+        public void BsonMapper_AnonymousType()
+        {
+            var mapper = new BsonMapper();
+
+            var obj = new
+            {
+                Id = 1,
+                Name = "John"
+            };
+
+            var doc = mapper.ToDocument(obj);
+            var obj2 = DeserializeAnonymous(mapper, doc, obj);
+
+            Assert.Equal(obj.Id, obj2.Id);
+            Assert.Equal(obj.Name, obj2.Name);
+
+            static T DeserializeAnonymous<T>(BsonMapper mapper, BsonDocument doc, T obj)
+            {
+                return mapper.Deserialize<T>(doc);
+            }
+        }
+#endif
     }
 }

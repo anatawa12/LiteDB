@@ -45,6 +45,11 @@ namespace LiteDB
         public bool Upgrade { get; set; } = false;
 #endif
 
+        /// <summary>
+        /// "auto-rebuild": If last close database exception result a invalid data state, rebuild datafile on next open (default: false)
+        /// </summary>
+        public bool AutoRebuild { get; set; } = false;
+
 #if !INVARIANT_CULTURE
         /// <summary>
         /// "collation": Set default collaction when database creation (default: "[CurrentCulture]/IgnoreCase")
@@ -103,6 +108,7 @@ namespace LiteDB
 #else
             this.Upgrade = _values.GetValue("upgrade", this.Upgrade);
 #endif
+            this.AutoRebuild = _values.GetValue("auto-rebuild", this.AutoRebuild);
         }
 
         /// <summary>
@@ -123,6 +129,12 @@ namespace LiteDB
                 ReadOnly = this.ReadOnly,
 #if !INVARIANT_CULTURE
                 Collation = this.Collation
+#endif
+#if !NO_V7_MIGRATION
+                Upgrade = this.Upgrade,
+#endif
+#if !NO_CREATE_INDEX
+                AutoRebuild = this.AutoRebuild,
 #endif
             };
 

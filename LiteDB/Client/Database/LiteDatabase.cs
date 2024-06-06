@@ -44,18 +44,6 @@ namespace LiteDB
         {
             if (connectionString == null) throw new ArgumentNullException(nameof(connectionString));
 
-#if !NO_V7_MIGRATION
-            if (connectionString.Upgrade == true)
-            {
-                // try upgrade if need
-#if INVARIANT_CULTURE
-                LiteEngine.Upgrade(connectionString.Filename, connectionString.Password);
-#else
-                LiteEngine.Upgrade(connectionString.Filename, connectionString.Password, connectionString.Collation);
-#endif
-            }
-#endif
-
             _engine = connectionString.CreateEngine();
             _mapper = mapper ?? BsonMapper.Global;
             _disposeOnClose = true;
@@ -305,7 +293,7 @@ namespace LiteDB
         /// </summary>
         public long Rebuild(RebuildOptions options = null)
         {
-            return _engine.Rebuild(options);
+            return _engine.Rebuild(options ?? new RebuildOptions());
         }
 #endif
 

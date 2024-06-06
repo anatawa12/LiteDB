@@ -154,7 +154,7 @@ namespace LiteDB.Engine
             // if fits in current segment, use inner array - otherwise copy from multiples segments
             if (_currentPosition + count <= _current.Count)
             {
-                value = Encoding.UTF8.GetString(_current.Array, _current.Offset + _currentPosition, count);
+                value = StringEncoding.UTF8.GetString(_current.Array, _current.Offset + _currentPosition, count);
 
                 this.MoveForward(count);
             }
@@ -165,7 +165,7 @@ namespace LiteDB.Engine
 
                 this.Read(buffer, 0, count);
 
-                value = Encoding.UTF8.GetString(buffer, 0, count);
+                value = StringEncoding.UTF8.GetString(buffer, 0, count);
 
                 BufferPool.Return(buffer);
             }
@@ -204,7 +204,7 @@ namespace LiteDB.Engine
 
                     this.MoveForward(1); // +1 to '\0'
 
-                    return Encoding.UTF8.GetString(mem.ToArray());
+                    return StringEncoding.UTF8.GetString(mem.ToArray());
                 }
             }
         }
@@ -220,7 +220,7 @@ namespace LiteDB.Engine
             {
                 if (_current[pos] == 0x00)
                 {
-                    value = Encoding.UTF8.GetString(_current.Array, _current.Offset + _currentPosition, count);
+                    value = StringEncoding.UTF8.GetString(_current.Array, _current.Offset + _currentPosition, count);
                     this.MoveForward(count + 1); // +1 means '\0'	
                     return true;
                 }
@@ -397,8 +397,8 @@ namespace LiteDB.Engine
                 // Use +1 byte only for length
                 case BsonType.String: return this.ReadString(this.ReadByte());
 
-                case BsonType.Document: return this.ReadDocument(null);
-                case BsonType.Array: return this.ReadArray();
+                case BsonType.Document: return this.ReadDocument(null).GetValue();
+                case BsonType.Array: return this.ReadArray().GetValue();
 
                 // Use +1 byte only for length
                 case BsonType.Binary: return this.ReadBytes(this.ReadByte());
@@ -422,51 +422,66 @@ namespace LiteDB.Engine
         /// <summary>
         /// Read a BsonDocument from reader
         /// </summary>
-        public BsonDocument ReadDocument(HashSet<string> fields = null)
+        public Result<BsonDocument> ReadDocument(HashSet<string> fields = null)
         {
-            var length = this.ReadInt32();
-            var end = _position + length - 5;
-            var remaining = fields == null || fields.Count == 0 ? null : new HashSet<string>(fields, StringComparer.OrdinalIgnoreCase);
-
             var doc = new BsonDocument();
 
-            while (_position < end && (remaining == null || remaining?.Count > 0))
+            try
             {
-                var value = this.ReadElement(remaining, out string name);
+                var length = this.ReadInt32();
+                var end = _position + length - 5;
+                var remaining = fields == null || fields.Count == 0 ? null : new HashSet<string>(fields, StringComparer.OrdinalIgnoreCase);
 
-                // null value means are not selected field
-                if (value != null)
+                while (_position < end && (remaining == null || remaining?.Count > 0))
                 {
-                    doc[name] = value;
+                    var value = this.ReadElement(remaining, out string name);
 
-                    // remove from remaining fields
-                    remaining?.Remove(name);
+                    // null value means are not selected field
+                    if (value != null)
+                    {
+                        doc[name] = value;
+
+                        // remove from remaining fields
+                        remaining?.Remove(name);
+                    }
                 }
+
+                this.MoveForward(1); // skip \0 ** can read disk here!
+
+                return doc;
             }
-
-            this.MoveForward(1); // skip \0
-
-            return doc;
+            catch (Exception ex)
+            {
+                return new Result<BsonDocument>(doc, ex);
+            }
         }
 
         /// <summary>
         /// Read an BsonArray from reader
         /// </summary>
-        public BsonArray ReadArray()
+        public Result<BsonArray> ReadArray()
         {
-            var length = this.ReadInt32();
-            var end = _position + length - 5;
             var arr = new BsonArray();
 
-            while (_position < end)
+            try
             {
-                var value = this.ReadElement(null, out string name);
-                arr.Add(value);
+                var length = this.ReadInt32();
+                var end = _position + length - 5;
+
+                while (_position < end)
+                {
+                    var value = this.ReadElement(null, out string name);
+                    arr.Add(value);
+                }
+
+                this.MoveForward(1); // skip \0
+
+                return arr;
             }
-
-            this.MoveForward(1); // skip \0
-
-            return arr;
+            catch (Exception ex)
+            {
+                return new Result<BsonArray>(arr, ex);
+            }
         }
 
         /// <summary>
@@ -513,11 +528,11 @@ namespace LiteDB.Engine
             }
             else if (type == 0x03) // Document
             {
-                return this.ReadDocument();
+                return this.ReadDocument().GetValue();
             }
             else if (type == 0x04) // Array
             {
-                return this.ReadArray();
+                return this.ReadArray().GetValue();
             }
             else if (type == 0x05) // Binary
             {

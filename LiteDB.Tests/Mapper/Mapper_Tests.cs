@@ -7,7 +7,7 @@ namespace LiteDB.Tests.Mapper
 {
     public class Mapper_Tests
     {
-        private BsonMapper _mapper = new BsonMapper();
+        private readonly BsonMapper _mapper = new BsonMapper();
 
 #if !VRC_GET
         [Fact]

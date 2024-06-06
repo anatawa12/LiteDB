@@ -32,14 +32,14 @@ namespace LiteDB
         /// <summary>
         /// Mapping cache between Class/BsonDocument
         /// </summary>
-        private Dictionary<Type, EntityMapper> _entities = new Dictionary<Type, EntityMapper>();
+        private readonly Dictionary<Type, EntityMapper> _entities = new Dictionary<Type, EntityMapper>();
 
         /// <summary>
         /// Map serializer/deserialize for custom types
         /// </summary>
-        private ConcurrentDictionary<Type, Func<object, BsonValue>> _customSerializer = new ConcurrentDictionary<Type, Func<object, BsonValue>>();
+        private readonly ConcurrentDictionary<Type, Func<object, BsonValue>> _customSerializer = new ConcurrentDictionary<Type, Func<object, BsonValue>>();
 
-        private ConcurrentDictionary<Type, Func<BsonValue, object>> _customDeserializer = new ConcurrentDictionary<Type, Func<BsonValue, object>>();
+        private readonly ConcurrentDictionary<Type, Func<BsonValue, object>> _customDeserializer = new ConcurrentDictionary<Type, Func<BsonValue, object>>();
 
         /// <summary>
         /// Type instantiator function to support IoC
@@ -229,7 +229,7 @@ namespace LiteDB
             return this;
         }
 
-        private Regex _lowerCaseDelimiter = new Regex("(?!(^[A-Z]))([A-Z])", RegexOptions.Compiled);
+        private readonly Regex _lowerCaseDelimiter = new Regex("(?!(^[A-Z]))([A-Z])", RegexOptions.Compiled);
 
         /// <summary>
         /// Uses lower camel case with delimiter to convert property names to field names
@@ -345,7 +345,8 @@ namespace LiteDB
                 this.ResolveMember?.Invoke(type, memberInfo, member);
 
                 // test if has name and there is no duplicate field
-                if (member.FieldName != null && mapper.Members.Any(x => x.FieldName.Equals(name, StringComparison.OrdinalIgnoreCase)) == false)
+                // when member is not ignore
+                if (member.FieldName != null && mapper.Members.Any(x => x.FieldName.Equals(name, StringComparison.OrdinalIgnoreCase)) == false && !member.IsIgnore)
                 {
                     mapper.Members.Add(member);
                 }
@@ -396,77 +397,53 @@ namespace LiteDB
         /// </summary>
         protected virtual CreateObject GetTypeCtor(EntityMapper mapper)
         {
-            var ctors = mapper.ForType.GetConstructors();
-
-            var ctor =
-                ctors.FirstOrDefault(x => x.GetCustomAttribute<BsonCtorAttribute>() != null && x.GetParameters().All(p => Reflection.ConvertType.ContainsKey(p.ParameterType) || _basicTypes.Contains(p.ParameterType) || p.ParameterType.GetTypeInfo().IsEnum)) ??
-                ctors.FirstOrDefault(x => x.GetParameters().Length == 0) ??
-                ctors.FirstOrDefault(x => x.GetParameters().All(p => Reflection.ConvertType.ContainsKey(p.ParameterType) || _customDeserializer.ContainsKey(p.ParameterType) || _basicTypes.Contains(p.ParameterType) || p.ParameterType.GetTypeInfo().IsEnum));
-
-            if (ctor == null) return null;
-
-            var pars = new List<Expression>();
-            var pDoc = Expression.Parameter(typeof(BsonDocument), "_doc");
-
-            // otherwise, need access ctor with parameter
-            foreach (var p in ctor.GetParameters())
+            Type type = mapper.ForType;
+            List<CreateObject> Mappings = new List<CreateObject>();
+            bool returnZeroParamNull = false;
+            foreach (ConstructorInfo ctor in type.GetConstructors())
             {
-                // try first get converted named (useful for Id => _id)
-                var name = mapper.Members.FirstOrDefault(x => x.MemberName.Equals(p.Name, StringComparison.OrdinalIgnoreCase))?.FieldName ??
-                    p.Name;
-
-                var expr = Expression.MakeIndex(pDoc,
-                    Reflection.DocumentItemProperty,
-                    new[] { Expression.Constant(name) });
-
-                if (_customDeserializer.TryGetValue(p.ParameterType, out var func))
+                ParameterInfo[] pars = ctor.GetParameters();
+                // For 0 parameters, we can let the Reflection.CreateInstance handle it, unless they've specified a [BsonCtor] attribute on a different constructor.
+                if (pars.Length == 0)
                 {
-                    var deserializer = Expression.Constant(func);
-                    var call = Expression.Invoke(deserializer, expr);
-                    var cast = Expression.Convert(call, p.ParameterType);
-                    pars.Add(cast);
+                    returnZeroParamNull = true;
+                    continue;
                 }
-                else if (_basicTypes.Contains(p.ParameterType))
+                KeyValuePair<string, Type>[] paramMap = new KeyValuePair<string, Type>[pars.Length];
+                int i;
+                for (i = 0; i < pars.Length; i++)
                 {
-                    var typeExpr = Expression.Constant(p.ParameterType);
-                    var rawValue = Expression.Property(expr, typeof(BsonValue).GetProperty("RawValue"));
-                    var convertTypeFunc = Expression.Call(typeof(Convert).GetMethod("ChangeType", new Type[] { typeof(object), typeof(Type) }), rawValue, typeExpr);
-                    var cast = Expression.Convert(convertTypeFunc, p.ParameterType);
-                    pars.Add(cast);
+                    ParameterInfo par = pars[i];
+                    MemberMapper  mi  = null;
+                    foreach (MemberMapper member in mapper.Members)
+                    {
+                        if (member.MemberName.ToLower() == par.Name.ToLower() && member.DataType == par.ParameterType)
+                        {
+                            mi = member;
+                            break;
+                        }
+                    }
+                    if (mi == null) {break;}
+                    paramMap[i] = new KeyValuePair<string, Type>(mi.FieldName, mi.DataType);
                 }
-                else if (p.ParameterType.GetTypeInfo().IsEnum && this.EnumAsInteger)
+                if (i < pars.Length) { continue;}
+                CreateObject toAdd = (BsonDocument value) =>
+                Activator.CreateInstance(type, paramMap.Select(x =>
+                this.Deserialize(x.Value, value[x.Key])).ToArray());
+                if (ctor.GetCustomAttribute<BsonCtorAttribute>() != null)
                 {
-                    var typeExpr = Expression.Constant(p.ParameterType);
-                    var rawValue = Expression.PropertyOrField(expr, "AsInt32");
-                    var convertTypeFunc = Expression.Call(typeof(Enum).GetMethod("ToObject", new Type[] { typeof(Type), typeof(Int32) }), typeExpr, rawValue);
-                    var cast = Expression.Convert(convertTypeFunc, p.ParameterType);
-                    pars.Add(cast);
-                }
-                else if (p.ParameterType.GetTypeInfo().IsEnum)
-                {
-                    var typeExpr = Expression.Constant(p.ParameterType);
-                    var rawValue = Expression.PropertyOrField(expr, "AsString");
-                    var convertTypeFunc = Expression.Call(typeof(Enum).GetMethod("Parse", new Type[] { typeof(Type), typeof(string) }), typeExpr, rawValue);
-                    var cast = Expression.Convert(convertTypeFunc, p.ParameterType);
-                    pars.Add(cast);
+                    return toAdd;
                 }
                 else
                 {
-                    var propInfo = Reflection.ConvertType[p.ParameterType];
-                    var prop = Expression.Property(expr, propInfo);
-                    pars.Add(prop);
+                    Mappings.Add(toAdd);
                 }
             }
-
-            // get `new MyClass([params])` expression
-            var newExpr = Expression.New(ctor, pars.ToArray());
-
-            // get lambda expression
-            var fn = mapper.ForType.GetTypeInfo().IsClass ?
-                Expression.Lambda<CreateObject>(newExpr, pDoc).Compile() : // Class
-                Expression.Lambda<CreateObject>(Expression.Convert(newExpr, typeof(object)), pDoc).Compile(); // Struct
-
-            return fn;
+            if (returnZeroParamNull)
+            {
+                return null;
+            }
+            return Mappings.FirstOrDefault();
         }
 
         #endregion

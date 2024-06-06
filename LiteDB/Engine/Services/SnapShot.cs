@@ -17,6 +17,7 @@ namespace LiteDB.Engine
         private readonly HeaderPage _header;
         private readonly LockService _locker;
         private readonly DiskReader _reader;
+        private readonly DiskService _disk;
         private readonly WalIndexService _walIndex;
 
         // instances from transaction
@@ -32,6 +33,8 @@ namespace LiteDB.Engine
         // local page cache - contains only pages about this collection (but do not contains CollectionPage - use this.CollectionPage)
         private readonly Dictionary<uint, BasePage> _localPages = new Dictionary<uint, BasePage>();
 
+        private bool _disposed;
+
         // expose
         public LockMode Mode => _mode;
         public string CollectionName => _collectionName;
@@ -39,7 +42,17 @@ namespace LiteDB.Engine
         public ICollection<BasePage> LocalPages => _localPages.Values;
         public int ReadVersion => _readVersion;
 
-        public Snapshot(LockMode mode, string collectionName, HeaderPage header, uint transactionID, TransactionPages transPages, LockService locker, WalIndexService walIndex, DiskReader reader, bool addIfNotExists)
+        public Snapshot(
+            LockMode mode, 
+            string collectionName, 
+            HeaderPage header, 
+            uint transactionID, 
+            TransactionPages transPages, 
+            LockService locker, 
+            WalIndexService walIndex, 
+            DiskReader reader, 
+            DiskService disk,
+            bool addIfNotExists)
         {
             _mode = mode;
             _collectionName = collectionName;
@@ -49,6 +62,7 @@ namespace LiteDB.Engine
             _locker = locker;
             _walIndex = walIndex;
             _reader = reader;
+            _disk = disk;
 
             // enter in lock mode according initial mode
             if (mode == LockMode.Write)
@@ -59,7 +73,7 @@ namespace LiteDB.Engine
             // get lastest read version from wal-index
             _readVersion = _walIndex.CurrentReadVersion;
 
-            var srv = new CollectionService(_header, this, _transPages);
+            var srv = new CollectionService(_header, _disk, this, _transPages);
 
             // read collection (create if new - load virtual too)
             srv.Get(_collectionName, addIfNotExists, ref _collectionPage);
@@ -77,6 +91,8 @@ namespace LiteDB.Engine
         /// </summary>
         public IEnumerable<BasePage> GetWritablePages(bool dirty, bool includeCollectionPage)
         {
+            ENSURE(!_disposed, "the snapshot is disposed");
+
             // if snapshot is read only, just exit
             if (_mode == LockMode.Read) yield break;
 
@@ -98,6 +114,8 @@ namespace LiteDB.Engine
         /// </summary>
         public void Clear()
         {
+            ENSURE(!_disposed, "the snapshot is disposed");
+
             // release pages only if snapshot are read only
             if (_mode == LockMode.Read)
             {
@@ -116,8 +134,15 @@ namespace LiteDB.Engine
         /// </summary>
         public void Dispose()
         {
+            if (_disposed)
+            {
+                return;
+            }
+
             // release all data/index pages
             this.Clear();
+
+            _disposed = true;
 
             // release collection page (in read mode)
             if (_mode == LockMode.Read && _collectionPage != null)
@@ -148,6 +173,7 @@ namespace LiteDB.Engine
         public T GetPage<T>(uint pageID, out FileOrigin origin, out long position, out int walVersion)
             where T : BasePage
         {
+            ENSURE(!_disposed, "the snapshot is disposed");
             ENSURE(pageID <= _header.LastPageID, "request page must be less or equals lastest page in data file");
 
             // check for header page (return header single instance)
@@ -247,6 +273,8 @@ namespace LiteDB.Engine
         /// </summary>
         public DataPage GetFreeDataPage(int bytesLength)
         {
+            ENSURE(!_disposed, "the snapshot is disposed");
+
             var length = bytesLength + BasePage.SLOT_SIZE; // add +4 bytes for footer slot
 
             // get minimum slot to check for free page. Returns -1 if need NewPage
@@ -280,6 +308,8 @@ namespace LiteDB.Engine
         /// </summary>
         public IndexPage GetFreeIndexPage(int bytesLength, ref uint freeIndexPageList)
         {
+            ENSURE(!_disposed, "the snapshot is disposed");
+
             IndexPage page;
 
             // if there is not page in list pages, create new page
@@ -306,6 +336,7 @@ namespace LiteDB.Engine
         public T NewPage<T>()
             where T : BasePage
         {
+            ENSURE(!_disposed, "the snapshot is disposed");
             ENSURE(_collectionPage == null, typeof(T) == typeof(CollectionPage), "if no collection page defined yet, must be first request");
             ENSURE(typeof(T) == typeof(CollectionPage), _collectionPage == null, "there is no new collection page if page already exists");
 
@@ -380,6 +411,8 @@ namespace LiteDB.Engine
         /// </summary>
         public void AddOrRemoveFreeDataList(DataPage page)
         {
+            ENSURE(!_disposed, "the snapshot is disposed");
+
             var newSlot = DataPage.FreeIndexSlot(page.FreeBytes);
             var initialSlot = page.PageListSlot;
 
@@ -411,6 +444,8 @@ namespace LiteDB.Engine
         /// </summary>
         public void AddOrRemoveFreeIndexList(IndexPage page, ref uint startPageID)
         {
+            ENSURE(!_disposed, "the snapshot is disposed");
+
             var newSlot = IndexPage.FreeIndexSlot(page.FreeBytes);
             var isOnList = page.PageListSlot == 0;
             var mustKeep = newSlot == 0;
@@ -555,7 +590,9 @@ namespace LiteDB.Engine
         /// </summary>
         public void DropCollection(Action safePoint)
         {
-            var indexer = new IndexService(this, _header.Pragmas.Collation);
+            ENSURE(!_disposed, "the snapshot is disposed");
+
+            var indexer = new IndexService(this, _header.Pragmas.Collation, _disk.MAX_ITEMS_COUNT);
 
             // CollectionPage will be last deleted page (there is no NextPageID from CollectionPage)
             _transPages.FirstDeletedPageID = _collectionPage.PageID;

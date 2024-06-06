@@ -11,8 +11,10 @@ Original README is below.
 
 # LiteDB - A .NET NoSQL Document Store in a single data file
 
-[![Join the chat at https://gitter.im/mbdavid/LiteDB](https://badges.gitter.im/mbdavid/LiteDB.svg)](https://gitter.im/mbdavid/LiteDB?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build status](https://ci.appveyor.com/api/projects/status/sfe8he0vik18m033?svg=true)](https://ci.appveyor.com/project/mbdavid/litedb) [![Build Status](https://travis-ci.org/mbdavid/LiteDB.svg?branch=master)](https://travis-ci.org/mbdavid/LiteDB)
+[![Build status](https://ci.appveyor.com/api/projects/status/sfe8he0vik18m033?svg=true)](https://ci.appveyor.com/project/mbdavid/litedb) 
 
+---
+#### Read about LiteDB Project News: https://github.com/mbdavid/LiteDB/issues/2486
 ---
 
 LiteDB is a small, fast and lightweight .NET NoSQL embedded database. 
@@ -50,7 +52,8 @@ LiteDB is a small, fast and lightweight .NET NoSQL embedded database.
 
 New UI to manage and visualize your database:
 
-![LiteDB.Studio](https://camo.githubusercontent.com/61465032cd9df0ccb7c0ff4a2d4f1cf772cdaa14/68747470733a2f2f7062732e7477696d672e636f6d2f6d656469612f454f58564b7674583041412d6c64793f666f726d61743d6a7067266e616d653d6d656469756d)
+
+![LiteDB.Studio](https://www.litedb.org/images/banner.gif)
 
 ## Documentation
 
@@ -161,10 +164,10 @@ using(var db = new LiteDatabase("MyOrderDatafile.db"))
 - A GUI editor tool: https://github.com/JosefNemec/LiteDbExplorer (v4)
 - Lucene.NET directory: https://github.com/sheryever/LiteDBDirectory
 - LINQPad support: https://github.com/adospace/litedbpad
-- F# Support: https://github.com/Zaid-Ajaj/LiteDB.FSharp
+- F# Support: https://github.com/Zaid-Ajaj/LiteDB.FSharp (v4)
 - UltraLiteDB (for Unity or IOT): https://github.com/rejemy/UltraLiteDB
 - OneBella - cross platform (windows, macos, linux) GUI tool : https://github.com/namigop/OneBella
-
+- LiteDB.Migration: Framework that makes schema migrations easier: https://github.com/JKamsker/LiteDB.Migration/
 
 ## Changelog
 

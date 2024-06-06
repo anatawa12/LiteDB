@@ -69,6 +69,7 @@ namespace LiteDB
             INDEX_ALREADY_EXIST = 135,
 #endif
             INVALID_UPDATE_FIELD = 136,
+            ENGINE_DISPOSED = 137,
 #if !NO_V7_MIGRATION
             INVALID_FORMAT = 200,
 #endif
@@ -98,6 +99,8 @@ namespace LiteDB
             INVALID_PASSWORD = 217,
 #endif
             UNSUPPORTED = 300,
+
+            INVALID_DATAFILE_STATE = 999,
         }
 
 #if !NO_FILE_STORAGE
@@ -152,6 +155,7 @@ namespace LiteDB
         public const LiteErrorCode INDEX_ALREADY_EXIST = LiteErrorCode.INDEX_ALREADY_EXIST;
 #endif
         public const LiteErrorCode INVALID_UPDATE_FIELD = LiteErrorCode.INVALID_UPDATE_FIELD;
+        public const LiteErrorCode ENGINE_DISPOSED = LiteErrorCode.ENGINE_DISPOSED;
 
 #if !NO_V7_MIGRATION
         public const LiteErrorCode INVALID_FORMAT = LiteErrorCode.INVALID_FORMAT;
@@ -184,6 +188,8 @@ namespace LiteDB
 
         public const LiteErrorCode UNSUPPORTED = LiteErrorCode.UNSUPPORTED;
 
+        public const LiteErrorCode INVALID_DATAFILE_STATE = LiteErrorCode.INVALID_DATAFILE_STATE;
+
         #endregion
 
         #region Ctor
@@ -208,6 +214,11 @@ namespace LiteDB
         {
             this.ErrorCode = code;
         }
+
+        /// <summary>
+        /// Critical error should be stop engine and release data files and all memory allocation
+        /// </summary>
+        public bool IsCritical => (int)this.ErrorCode >= 900;
 
         #endregion
 
@@ -447,6 +458,11 @@ namespace LiteDB
             return new LiteException(INVALID_INITIALSIZE, "Initial Size must be a multiple of page size ({0} bytes).", PAGE_SIZE);
         }
 
+        internal static LiteException EngineDisposed()
+        {
+            return new LiteException(ENGINE_DISPOSED, "This engine instance already disposed.");
+        }
+
         internal static LiteException InvalidNullCharInString()
         {
             return new LiteException(INVALID_NULL_CHAR_STRING, "Invalid null character (\\0) was found in the string");
@@ -495,6 +511,11 @@ namespace LiteDB
             return new LiteException(AVOID_USE_OF_PROCESS, $"LiteDB do not accept System.Diagnostics.Process class in deserialize mapper");
         }
 #endif
+
+        internal static LiteException InvalidDatafileState(string message)
+        {
+            return new LiteException(INVALID_DATAFILE_STATE, message);
+        }
 
         #endregion
     }

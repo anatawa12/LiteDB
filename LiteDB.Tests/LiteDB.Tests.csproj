@@ -11,18 +11,19 @@
     <NoWarn>1701;1702;1705;1591;0618</NoWarn>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Update="xunit.runner.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+	
   <ItemGroup Condition="'$(Configuration)' == 'Release'">
     <Compile Remove="Internals\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Utils\Json\person.json" />
-    <None Remove="Utils\Json\zip.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Utils\Json\person.json" />
-    <EmbeddedResource Include="Utils\Json\zip.json" />
+    <EmbeddedResource Include="Resources\person.json" />
+    <EmbeddedResource Include="Resources\zip.json" />
   </ItemGroup>
 
   <ItemGroup>

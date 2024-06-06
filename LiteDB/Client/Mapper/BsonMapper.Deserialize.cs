@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,7 +13,7 @@ namespace LiteDB
 
 #if !NO_ENTITY_MAPPER
         // direct bson types
-        private HashSet<Type> _bsonTypes = new HashSet<Type>
+        private readonly HashSet<Type> _bsonTypes = new HashSet<Type>
         {
             typeof(String),
             typeof(Int32),
@@ -28,7 +28,7 @@ namespace LiteDB
         };
 
         // simple convert types
-        private HashSet<Type> _basicTypes = new HashSet<Type>
+        private readonly HashSet<Type> _basicTypes = new HashSet<Type>
         {
             typeof(Int16),
             typeof(UInt16),
@@ -322,6 +322,12 @@ namespace LiteDB
             foreach (var par in ctor.GetParameters())
             {
                 var arg = this.Deserialize(par.ParameterType, value[par.Name]);
+
+                //  if name is Id and arg is null, look for _id
+                if (arg == null && StringComparer.OrdinalIgnoreCase.Equals(par.Name, "Id") && value.TryGetValue("_id", out var id))
+                {
+                    arg = this.Deserialize(par.ParameterType, id);
+                }
 
                 args.Add(arg);
             }

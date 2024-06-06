@@ -101,18 +101,18 @@ namespace LiteDB.Engine
         /// <summary>
         /// Select corrent pipe
         /// </summary>
-        public BasePipe GetPipe(TransactionService transaction, Snapshot snapshot, SortDisk tempDisk, EnginePragmas pragmas)
+        public BasePipe GetPipe(TransactionService transaction, Snapshot snapshot, SortDisk tempDisk, EnginePragmas pragmas, uint maxItemsCount)
         {
 #if !NO_ORDERBY_OR_GROUPBY_QUERY
             if (this.GroupBy == null)
 #endif
             {
-                return new QueryPipe(transaction, this.GetLookup(snapshot, pragmas), tempDisk, pragmas);
+                return new QueryPipe(transaction, this.GetLookup(snapshot, pragmas, maxItemsCount), tempDisk, pragmas, maxItemsCount);
             }
 #if !NO_ORDERBY_OR_GROUPBY_QUERY
             else
             {
-                return new GroupByPipe(transaction, this.GetLookup(snapshot, pragmas), tempDisk, pragmas);
+                return new GroupByPipe(transaction, this.GetLookup(snapshot, pragmas, maxItemsCount), tempDisk, pragmas, maxItemsCount);
             }
 #endif
         }
@@ -120,10 +120,10 @@ namespace LiteDB.Engine
         /// <summary>
         /// Get corrent IDocumentLookup
         /// </summary>
-        public IDocumentLookup GetLookup(Snapshot snapshot, EnginePragmas pragmas)
+        public IDocumentLookup GetLookup(Snapshot snapshot, EnginePragmas pragmas, uint maxItemsCount)
         {
-            var data = new DataService(snapshot);
-            var indexer = new IndexService(snapshot, pragmas.Collation);
+            var data = new DataService(snapshot, maxItemsCount);
+            var indexer = new IndexService(snapshot, pragmas.Collation, maxItemsCount);
 
             // define document loader
             // if index are VirtualIndex - it's also lookup document
