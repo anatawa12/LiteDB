@@ -23,7 +23,7 @@ namespace LiteDB.Utils
 
         public bool InvalidDatafileState => this.Exceptions.Any(ex => 
             ex is LiteException liteEx && 
-            liteEx.ErrorCode == LiteException.INVALID_DATAFILE_STATE);
+            liteEx.ErrorCode == LiteException.LiteErrorCode.INVALID_DATAFILE_STATE);
 
         [DebuggerHidden]
         public void Catch(Action action)

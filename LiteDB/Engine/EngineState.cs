@@ -40,7 +40,7 @@ namespace LiteDB.Engine
             LOG(ex.Message, "ERROR");
 
             if (ex is IOException || 
-                (ex is LiteException lex && lex.ErrorCode == LiteException.INVALID_DATAFILE_STATE))
+                (ex is LiteException lex && lex.ErrorCode == LiteException.LiteErrorCode.INVALID_DATAFILE_STATE))
             {
                 _exception = ex;
 

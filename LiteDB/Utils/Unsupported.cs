@@ -19,6 +19,6 @@ namespace LiteDB
         public static Exception SortFunction => Create("SORT function");
         public static Exception V7Migration => Create("V7 migration is removed");
 
-        private static Exception Create(string message) => new LiteException(LiteException.UNSUPPORTED, message);
+        private static Exception Create(string message) => new LiteException(LiteException.LiteErrorCode.UNSUPPORTED, message);
     }
 }

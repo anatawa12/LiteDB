@@ -27,7 +27,7 @@ namespace LiteDB
                     value = JsonSerializer.Deserialize(json.AsString);
                     isJson = true;
                 }
-                catch (LiteException ex) when (ex.ErrorCode == LiteException.UNEXPECTED_TOKEN)
+                catch (LiteException ex) when (ex.ErrorCode == LiteException.LiteErrorCode.UNEXPECTED_TOKEN)
                 {
                 }
 
