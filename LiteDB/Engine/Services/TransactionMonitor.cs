@@ -101,6 +101,9 @@ namespace LiteDB.Engine
                 isNew = false;
             }
 
+            if (_header.Pragmas.IsWithBadCulture)
+                transaction.Pages.Commit += _ => { }; // To update header page
+
             return transaction;
         }
 

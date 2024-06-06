@@ -61,6 +61,9 @@ namespace LiteDB.Engine
 
         private readonly Dictionary<string, Pragma> _pragmas;
         private bool _isDirty = false;
+#if INVARIANT_CULTURE
+        internal bool IsWithBadCulture = false;
+#endif
         private readonly HeaderPage _headerPage;
 
         /// <summary>
@@ -93,7 +96,11 @@ namespace LiteDB.Engine
                     {
                         this.Collation = new Collation((CompareOptions)b.ReadInt32(P_COLLATION_SORT));
                         var id = b.ReadInt32(P_COLLATION_LCID);
-                        if (id == 0) _isDirty = true; // In legacy datafile, LCID was not persisted
+                        if (id == 0)
+                        {
+                            IsWithBadCulture = true;
+                            Console.Write("Invalid culture detected.");
+                        }
                     },
                     Validate = (v, h) => { throw new LiteException(0, "Pragma COLLATION is read only. Use Rebuild options."); },
                     Write = (b) =>
@@ -179,7 +186,12 @@ namespace LiteDB.Engine
 
         public void UpdateBuffer(BufferSlice buffer)
         {
+#if INVARIANT_CULTURE
+            if (_isDirty == false && IsWithBadCulture == false) return;
+            Console.WriteLine($"Pragma is dirty, {_isDirty}, {IsWithBadCulture}");
+#else
             if (_isDirty == false) return;
+#endif
 
             foreach(var pragma in _pragmas)
             {
