@@ -188,7 +188,6 @@ namespace LiteDB.Engine
         {
 #if INVARIANT_CULTURE
             if (_isDirty == false && IsWithBadCulture == false) return;
-            Console.WriteLine($"Pragma is dirty, {_isDirty}, {IsWithBadCulture}");
 #else
             if (_isDirty == false) return;
 #endif
